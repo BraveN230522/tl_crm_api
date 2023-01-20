@@ -1,7 +1,8 @@
+import { Exclude } from 'class-transformer';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Role, UserStatus } from '../../enums';
-import { Exclude } from 'class-transformer';
 import { Admin } from '../admin/admin.entity';
+import { Task } from '../tasks/tasks.entity';
 
 @Entity()
 export class User {
@@ -22,6 +23,7 @@ export class User {
 
   @Column({
     nullable: false,
+    type: Number,
     default: UserStatus.Inactive,
   })
   status: UserStatus;
@@ -39,11 +41,11 @@ export class User {
   token?: string;
 
   @Exclude({ toPlainOnly: true })
-  @ManyToOne(() => Admin, admin => admin.users, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Admin, (admin) => admin.users, { onDelete: 'CASCADE' })
   admin: Admin;
 
-  // @OneToMany(() => Task, tasks => tasks.user)
-  // tasks: Task[];
+  @OneToMany(() => Task, (tasks) => tasks.user)
+  tasks: Task[];
 
   // @OneToOne(() => Auth, { cascade: true })
   // @JoinColumn()

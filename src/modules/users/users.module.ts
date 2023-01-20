@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersRepository } from './users.repository';
-import { User } from './Users.entity';
 import { PassportModule } from '../../common';
+import { User } from './Users.entity';
+import { UsersController } from './users.controller';
+import { UsersRepository } from './users.repository';
+import { UsersService } from './users.service';
+import { Task } from '../tasks/tasks.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), PassportModule],
+  imports: [TypeOrmModule.forFeature([User, Task]), PassportModule],
   controllers: [UsersController],
   providers: [UsersService, UsersRepository],
   exports: [UsersRepository],

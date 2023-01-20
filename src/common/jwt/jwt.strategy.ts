@@ -1,27 +1,25 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { AppConfigService } from '../../configuration';
+import { ErrorHelper } from '../../helpers';
 import { JwtPayload } from '../../interfaces';
-import { Role } from '../../enums';
 import { Admin } from '../../modules/admin/admin.entity';
-import { AdminRepository } from '../../modules/admin/admin.repository';
-import { UsersRepository } from '../../modules/users/users.repository';
 import { AuthService } from '../../modules/auth/auth.service';
 import { User } from '../../modules/users/users.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private appConfigService: AppConfigService) {
     super({
-      secretOrKey: 'top',
+      secretOrKey: appConfigService.accessTokenSecret,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
 
   async validate(payload: JwtPayload): Promise<User | Admin> {
-    const auth = this.authService.validate(payload);
-    if (!auth) throw new UnauthorizedException();
+    const auth = await this.authService.validate(payload);
+    if (!auth) ErrorHelper.UnauthorizedException();
 
     return auth;
   }

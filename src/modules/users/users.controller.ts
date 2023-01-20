@@ -1,12 +1,22 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { CreateUserDto, FilterUserDto } from './dto/users.dto';
-import { UsersService } from './users.service';
 import _ from 'lodash';
-import { User } from './users.entity';
-import { RolesGuard } from '../../common/guards';
 import { RoleDecorator } from '../../common/decorators';
+import { RolesGuard } from '../../common/guards';
 import { Role } from '../../enums';
+import { CreateUserDto, FilterUserDto } from './dto/users.dto';
+import { User } from './users.entity';
+import { UsersService } from './users.service';
 
 @Controller('users')
 // @UseGuards(AuthGuard())

@@ -28,6 +28,6 @@ export class Admin {
   })
   token?: string;
 
-  @OneToMany(() => User, user => user.admin)
+  @OneToMany(() => User, (user) => user.admin)
   users: User[];
 }
