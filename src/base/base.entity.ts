@@ -1,5 +1,7 @@
-import { IsDate, IsNumber } from 'class-validator';
-import { Column, CreateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { IsNumber } from 'class-validator';
+import { BeforeUpdate, Column, PrimaryGeneratedColumn } from 'typeorm';
+
+//Unix timestamp
 
 export abstract class BaseTable {
   @PrimaryGeneratedColumn('increment')
@@ -7,18 +9,29 @@ export abstract class BaseTable {
   public id: number;
 
   @Column({
-    type: 'timestamp with time zone',
-    default: () => 'CURRENT_TIMESTAMP',
+    name: 'created_at',
+    type: 'bigint',
+    default: new Date().getTime(),
+    transformer: {
+      to: (value) => value,
+      from: (value) => parseInt(value),
+    },
   })
-  @CreateDateColumn({ type: 'timestamp with time zone' })
-  @IsDate()
-  public createdAt: Date;
+  public createdAt: number;
 
   @Column({
-    type: 'timestamp with time zone',
-    default: () => 'CURRENT_TIMESTAMP',
+    name: 'updated_at',
+    type: 'bigint',
+    default: new Date().getTime(),
+    transformer: {
+      to: (value) => value,
+      from: (value) => parseInt(value),
+    },
   })
-  @CreateDateColumn({ type: 'timestamp with time zone' })
-  @IsDate()
-  public updatedAt: Date;
+  public updatedAt: number;
+
+  @BeforeUpdate()
+  updateManagedAt(): void {
+    this.updatedAt = new Date().getTime();
+  }
 }

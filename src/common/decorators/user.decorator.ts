@@ -1,10 +1,12 @@
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 import _ from 'lodash';
-import { User } from '../../modules/users/users.entity';
-import { Admin } from './../../modules/admin/admin.entity';
+import { Member } from '../../entities/members.entity';
+import { User } from '../../entities/users.entity';
 
-export const UserDecorator = createParamDecorator((_data, ctx: ExecutionContext): User | Admin => {
+// import { Admin } from '../../modules/admin/admin.entity';
+
+export const UserDecorator = createParamDecorator((_data, ctx: ExecutionContext): User | Member => {
   const req = ctx.switchToHttp().getRequest();
-  const mappingReqUser = _.omit(req.user, ['password']) as User | Admin;
+  const mappingReqUser = _.omit(req.user, ['password']) as User | Member;
   return mappingReqUser;
 });

@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AppConfigService } from '../../configuration';
+import { Member } from '../../entities/members.entity';
+import { User } from '../../entities/users.entity';
 import { ErrorHelper } from '../../helpers';
 import { JwtPayload } from '../../interfaces';
-import { Admin } from '../../modules/admin/admin.entity';
 import { AuthService } from '../../modules/auth/auth.service';
-import { User } from '../../modules/users/users.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -17,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload): Promise<User | Admin> {
+  async validate(payload: JwtPayload): Promise<User | Member> {
     const auth = await this.authService.validate(payload);
     if (!auth) ErrorHelper.UnauthorizedException();
 
