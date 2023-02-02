@@ -15,11 +15,11 @@ import { AdminCredentialsDto } from './dto/auth.dto';
 export class AuthController {
   constructor(private adminService: AuthService) {}
 
-  // @Post('/login-user')
-  // @UseInterceptors(ClassSerializerInterceptor)
-  // loginUser(
-  //   @Body(new ValidationPipe({ transform: true })) adminCredentialsDto: AdminCredentialsDto,
-  // ): Promise<User> {
-  //   return this.adminService.loginUser(adminCredentialsDto);
-  // }
+  @Post('/login-user')
+  @UseInterceptors(ClassSerializerInterceptor)
+  loginUser(
+    @Body(new ValidationPipe({ transform: true })) adminCredentialsDto: AdminCredentialsDto,
+  ): Promise<User> {
+    return this.adminService.loginUser(adminCredentialsDto);
+  }
 }

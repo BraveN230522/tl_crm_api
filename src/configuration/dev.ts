@@ -3,7 +3,7 @@ export default () => ({
     baseUrlPrefix: '/api',
   },
   accessToken: {
-    expiresIn: '8h',
+    expiresIn: '365d',
     rememberMeIn: '365d',
     secret: 'superSecretKey',
   },

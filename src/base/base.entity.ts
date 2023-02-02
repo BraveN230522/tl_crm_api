@@ -30,8 +30,8 @@ export abstract class BaseTable {
   })
   public updatedAt: number;
 
-  @BeforeUpdate()
-  updateManagedAt(): void {
-    this.updatedAt = new Date().getTime();
-  }
+  // @BeforeUpdate()
+  // updateManagedAt(): void {
+  //   this.updatedAt = new Date().getTime();
+  // }
 }

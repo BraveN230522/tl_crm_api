@@ -11,6 +11,9 @@ export const EMAIL_PATTERN =
 
 export const DATE_PATTERN = /(((0)[0-9])|((1)[0-2]))(\/)([0-2][0-9]|(3)[0-1])(\/)\d{4}$/;
 
+export const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 export const PAGE_LIMIT = 10;
 export const LIMIT = 10;
 export const PAGE = 1;
