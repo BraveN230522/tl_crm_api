@@ -35,7 +35,10 @@ export class User extends BaseTable {
   })
   lastName?: string;
 
-  @Column()
+  @Column({
+    nullable: false,
+    unique: true,
+  })
   phone?: string;
 
   @Exclude({ toPlainOnly: true })

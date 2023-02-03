@@ -27,7 +27,7 @@ export class AuthService {
 
     if (!match) ErrorHelper.UnauthorizedException(`Username or password is incorrect`);
 
-    const payload = { username, role: Role.SUPER_ADMIN };
+    const payload = { username, role: found.role };
     const accessToken = await this.jwtService.sign(payload);
 
     const mappingResponse = _.omit(found, ['password']) as User;
@@ -46,8 +46,10 @@ export class AuthService {
   async validate({ username, role }): Promise<any> {
     switch (role) {
       case Role.USER:
+        console.log(1);
         return await this.userService.getUserByUsername({ username });
       case Role.MEMBER:
+        console.log(2);
         return await this.userService.getUserByUsername({ username });
 
       default:
