@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleDecorator } from '../../common/decorators';
 import { RolesGuard } from '../../common/guards';
@@ -16,5 +16,11 @@ export class UsersController {
   // @RoleDecorator(Role.USER)
   createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.createUser(createUserDto);
+  }
+
+  @Get()
+  // @RoleDecorator(Role.USER)
+  getUser(): any {
+    return 'hello';
   }
 }
