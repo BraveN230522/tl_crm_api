@@ -20,7 +20,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           synchronize: true,
           ssl: true,
           extra: {
-            query_timeout: 5000,
+            query_timeout: 10000,
           },
         };
       },
