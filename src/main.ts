@@ -1,12 +1,12 @@
-import { TransformInterceptor } from './common/transformers/transform.interceptor';
-import express from 'express';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import multer from 'multer';
 import { ValidationPipe } from '@nestjs/common';
-import { HttpExceptionFilter } from './common';
 import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
 import { useContainer } from 'class-validator';
+import express from 'express';
+import multer from 'multer';
+import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common';
+import { TransformInterceptor } from './common/transformers/transform.interceptor';
 import { AppConfigService } from './configuration';
 
 async function bootstrap() {
