@@ -18,7 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           entities: [__dirname + '/../modules/**entities/*.entity{.ts,.js}'],
           autoLoadEntities: true,
           synchronize: true,
-          // ssl: true,
+          ssl: true,
           extra: {
             query_timeout: 5000,
           },
