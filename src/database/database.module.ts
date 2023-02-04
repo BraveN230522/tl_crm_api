@@ -19,7 +19,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           autoLoadEntities: true,
           synchronize: true,
           ssl: true,
-          // synchronize: false,
+          extra: {
+            query_timeout: 5000,
+          },
         };
       },
     }),
