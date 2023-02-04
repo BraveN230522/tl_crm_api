@@ -8,7 +8,7 @@ import { CreateUserDto } from './dto/users.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
-@UseGuards(AuthGuard(), RolesGuard)
+// @UseGuards(AuthGuard(), RolesGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -21,6 +21,6 @@ export class UsersController {
   @Get()
   // @RoleDecorator(Role.USER)
   getUser(): any {
-    return 'hello';
+    return 'hello Long Béo';
   }
 }
