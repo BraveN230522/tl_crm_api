@@ -17,10 +17,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           database: configService.get<string>('POSTGRES_DB'),
           entities: [__dirname + '/../modules/**entities/*.entity{.ts,.js}'],
           autoLoadEntities: true,
-          synchronize: true,
+          // synchronize: true,
           ssl: true,
           extra: {
-            query_timeout: 10000,
+            // query_timeout: 10000,
           },
         };
       },
