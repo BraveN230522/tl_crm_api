@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfigModule } from './configuration';
-import { DatabaseModule } from './database';
+// import { DatabaseModule } from './database';
+import { dataSourceOptions } from './database/data-source';
 import { AuthModule } from './modules/auth/auth.module';
 import { BranchesModule } from './modules/branches/branches.module';
 import { MembersModule } from './modules/members/members.module';
@@ -11,7 +13,8 @@ import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
-    DatabaseModule,
+    // DatabaseModule,
+    TypeOrmModule.forRoot(dataSourceOptions),
     AppConfigModule,
     AuthModule,
     UsersModule,
