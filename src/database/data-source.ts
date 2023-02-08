@@ -14,7 +14,7 @@ export const dataSourceOptions: DataSourceOptions = {
   password: configService.get('POSTGRES_PASSWORD'),
   database: configService.get('POSTGRES_DB'),
   entities: ['dist/**/*.entity.js'],
-  migrations: ['dist/database/migrations/*.js}'],
+  migrations: [__dirname + '/migrations/**/*.js'],
 };
 
 const dataSource = new DataSource(dataSourceOptions);
