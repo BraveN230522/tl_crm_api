@@ -14,7 +14,7 @@ import { UsersModule } from './modules/users/users.module';
 @Module({
   imports: [
     // DatabaseModule,
-    TypeOrmModule.forRoot(dataSourceOptions),
+    TypeOrmModule.forRoot({ ...dataSourceOptions, synchronize: true, autoLoadEntities: true }),
     AppConfigModule,
     AuthModule,
     UsersModule,
