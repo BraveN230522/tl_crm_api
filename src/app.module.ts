@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { BranchesModule } from './modules/branches/branches.module';
 import { MembersModule } from './modules/members/members.module';
 import { RulesModule } from './modules/rules/rules.module';
+import { SmsModule } from './modules/sms/sms.module';
 import { StoresModule } from './modules/stores/stores.module';
 import { TiersModule } from './modules/tiers/tiers.module';
 import { UsersModule } from './modules/users/users.module';
@@ -24,6 +25,7 @@ import { UsersModule } from './modules/users/users.module';
     RulesModule,
     TiersModule,
     UsersModule,
+    SmsModule,
   ],
 })
 export class AppModule {}

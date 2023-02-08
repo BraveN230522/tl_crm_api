@@ -24,7 +24,7 @@ export class Tier extends BaseTable {
   level: number;
 
   @Column()
-  gap: Gender;
+  gap: number;
 
   @Column({
     name: 'tier_rate',

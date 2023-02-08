@@ -41,6 +41,12 @@ export class User extends BaseTable {
   })
   phone?: string;
 
+  @Column({
+    nullable: true,
+    name: 'forgot_password_otp',
+  })
+  forgotPasswordOtp?: string;
+
   @Exclude({ toPlainOnly: true })
   @Column({
     nullable: false,

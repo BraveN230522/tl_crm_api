@@ -1,8 +1,6 @@
-// import { UserType } from 'src/enums';
-
 // password pattern
 export const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/;
-export const PHONE_PATTEN =
+export const PHONE_PATTERN =
   /(([+][[]?[0-9]{1,3}[]]?)|([(]?[0-9]{4}[)]?))s*[)]?[-s.]?[(]?[0-9]{1,3}[)]?([-s.]?[0-9]{3})([-s.]?[0-9]{3,4})/;
 export const SPEC_KEY = 'SPEC';
 

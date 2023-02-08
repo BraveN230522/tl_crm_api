@@ -7,6 +7,6 @@ import { User } from '../../entities/users.entity';
 
 export const UserDecorator = createParamDecorator((_data, ctx: ExecutionContext): User | Member => {
   const req = ctx.switchToHttp().getRequest();
-  const mappingReqUser = _.omit(req.user, ['password']) as User | Member;
-  return mappingReqUser;
+  // const mappingReqUser = _.omit(req.user, ['password']) as User | Member;
+  return req.user;
 });

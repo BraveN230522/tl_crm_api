@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { Member } from '../../entities/members.entity';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
-import { ErrorHelper } from '../../helpers';
+import { EncryptHelper, ErrorHelper } from '../../helpers';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -13,17 +13,12 @@ export class AuthService {
   constructor(private jwtService: JwtService, private userService: UsersService) {}
 
   async loginUser({ username, password }): Promise<User> {
-    // bcrypt.genSalt(1, function (err, salt) {
-    //   bcrypt.hash('123', salt, function (err, hash) {
-    //     console.log({ hash });
-    //     // Store hash in your password DB.
-    //   });
-    // });
-    // return;
     const found = await this.userService.getUserByUsername({ username });
 
-    const match =
-      (await bcrypt.compare(password || '', found?.password || '')) && username === found?.username;
+    const isMatchPassword = await EncryptHelper.compare(password || '', found?.password || '');
+    const isMatchUsername = username === found?.username;
+
+    const match = isMatchPassword && isMatchUsername;
 
     if (!match) ErrorHelper.UnauthorizedException(`Username or password is incorrect`);
 
@@ -38,18 +33,14 @@ export class AuthService {
       ...mappingResponse,
       token: 'Bearer ' + accessToken,
     };
-
-    // return found;
   }
 
   // async validate({ username, role }): Promise<User | Member> {
   async validate({ username, role }): Promise<any> {
     switch (role) {
       case Role.USER:
-        console.log(1);
         return await this.userService.getUserByUsername({ username });
       case Role.MEMBER:
-        console.log(2);
         return await this.userService.getUserByUsername({ username });
 
       default:
