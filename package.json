@@ -9,7 +9,7 @@
     "node": "16.x"
   },
   "scripts": {
-    "build": "nest build",
+    "build": "nest build && npx typeorm -d dist/database/data-source.js migration:run",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "dev": "nest start --watch",
