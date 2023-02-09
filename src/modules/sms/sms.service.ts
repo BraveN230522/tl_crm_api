@@ -19,17 +19,17 @@ export class SmsService {
   constructor() {}
 
   async sendSms(phone): Promise<any> {
+    const random4DigitsCode = getRandom4DigitsCode();
+    const twilioData = await client.messages.create({
+      body: 'Your OTP code is ' + random4DigitsCode,
+      from: '+19205451426',
+      to: '+84' + phone,
+    });
+    return {
+      data: twilioData,
+      code: random4DigitsCode,
+    };
     try {
-      const random4DigitsCode = getRandom4DigitsCode();
-      const twilioData = await client.messages.create({
-        body: 'Your OTP code is ' + random4DigitsCode,
-        from: '+19205451426',
-        to: '+84' + phone,
-      });
-      return {
-        data: twilioData,
-        code: random4DigitsCode,
-      };
     } catch (error) {
       ErrorHelper.InternalServerErrorException(error.response);
 
