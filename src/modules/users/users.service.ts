@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import _ from 'lodash';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
-import { ErrorHelper } from '../../helpers';
+import { ErrorHelper, decryptSha256, encryptSha256 } from '../../helpers';
 import { ISendSMS } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey, matchWord } from '../../utilities';
+import { BranchesService } from '../branches/branches.service';
 import { EncryptHelper } from './../../helpers/encrypt.helper';
 import { SmsService } from './../sms/sms.service';
 import {
@@ -21,6 +23,7 @@ export class UsersService {
   constructor(
     @InjectRepository(UsersRepository) private usersRepository: UsersRepository,
     private smsService: SmsService,
+    private branchesService: BranchesService,
   ) {}
 
   async getUser(id): Promise<User> {
@@ -35,8 +38,6 @@ export class UsersService {
   async getUserByUsername({ username }): Promise<User> {
     const found = await this.usersRepository.findOneByRaw({ username });
 
-    if (!found) ErrorHelper.NotFoundException(`User is not found`);
-
     return found;
   }
 
@@ -49,8 +50,16 @@ export class UsersService {
   }
 
   async createUser(createUserDto): Promise<any> {
-    const { username, password, firstName, lastName, phone } = createUserDto;
-
+    const {
+      username,
+      password,
+      firstName,
+      lastName,
+      phone,
+      branchName,
+      announcements,
+      isActiveTiers,
+    } = createUserDto;
     const hashedPassword = await EncryptHelper.hash(password);
 
     try {
@@ -62,10 +71,40 @@ export class UsersService {
         phone,
         role: Role.USER,
       });
+
       await this.usersRepository.save([user]);
-      // const mappingUser = _.omit(user, ['projects']);
-      return user;
+      const branch = await this.branchesService.createBranch(
+        {
+          branchName,
+          announcements,
+          memberUrl: `/member?${encryptSha256(username, username)}`,
+          isActiveTiers,
+        },
+        user,
+      );
+
+      const mappingUser = _.pick(user, [
+        'username',
+        'firstName',
+        'lastName',
+        'phone',
+        'role',
+        'id',
+      ]);
+
+      const mappingBranch = _.pick(branch, [
+        'name',
+        'announcements',
+        'memberUrl',
+        'isActiveTiers',
+        'id',
+      ]);
+
+      return { user: mappingUser, branch: mappingBranch };
     } catch (error) {
+      console.log({ error });
+      if (error.response) ErrorHelper.ConflictException(error.response);
+
       if (error.code === '23505') {
         const detail = error.detail as string;
         const uniqueArr = ['phone', 'username'];
@@ -153,7 +192,7 @@ export class UsersService {
         ErrorHelper.BadRequestException('Your OTP is invalid');
       }
     } catch (error) {
-      if (error.response) ErrorHelper.InternalServerErrorException(error.response);
+      if (error.response) ErrorHelper.BadRequestException(error.response);
 
       ErrorHelper.InternalServerErrorException();
     }
@@ -180,8 +219,6 @@ export class UsersService {
 
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('password');
     } catch (error) {
-      if (error.response) ErrorHelper.InternalServerErrorException(error.response);
-
       ErrorHelper.InternalServerErrorException();
     }
   }

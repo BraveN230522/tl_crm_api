@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { IsNumber } from 'class-validator';
 import { BeforeUpdate, Column, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -8,6 +9,7 @@ export abstract class BaseTable {
   @IsNumber()
   public id: number;
 
+  @Exclude({ toPlainOnly: true })
   @Column({
     name: 'created_at',
     type: 'bigint',
@@ -19,6 +21,7 @@ export abstract class BaseTable {
   })
   public createdAt: number;
 
+  @Exclude({ toPlainOnly: true })
   @Column({
     name: 'updated_at',
     type: 'bigint',

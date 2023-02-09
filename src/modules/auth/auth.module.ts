@@ -3,6 +3,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '../../common';
 import { JwtStrategy } from '../../common/jwt/jwt.strategy';
 import { AppConfigModule, AppConfigService } from '../../configuration';
+import { BranchesModule } from '../branches/branches.module';
+import { BranchesRepository } from '../branches/branches.repository';
+import { BranchesService } from '../branches/branches.service';
 import { SmsService } from '../sms/sms.service';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
@@ -26,8 +29,16 @@ import { AuthService } from './auth.service';
     // TypeOrmModule.forFeature([UsersRepository, AdminRepository]),
     UsersModule,
     SmsModule,
+    BranchesModule,
   ],
-  providers: [AuthService, UsersService, JwtStrategy, SmsService],
+  providers: [
+    AuthService,
+    UsersService,
+    JwtStrategy,
+    SmsService,
+    BranchesService,
+    BranchesRepository,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

@@ -1,4 +1,13 @@
-import { IsEnum, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  Matches,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { Match } from '../../../common';
 import { VIETNAM_PHONE_PATTERN } from '../../../constants';
 import { Role } from '../../../enums';
@@ -31,6 +40,21 @@ export class CreateUserDto {
 
   @IsEnum({ USER: Role.USER })
   role;
+
+  @IsNotEmpty()
+  @IsString()
+  branchName;
+
+  @IsNotEmpty()
+  @IsString()
+  announcements;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    return value.toLowerCase() === 'true' || false;
+  })
+  isActiveTiers;
 }
 
 export class ChangePasswordDto {

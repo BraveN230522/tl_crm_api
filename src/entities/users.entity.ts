@@ -68,8 +68,4 @@ export class User extends BaseTable {
     default: null,
   })
   token?: string;
-
-  @OneToOne(() => Branch)
-  @JoinColumn()
-  branch?: Branch;
 }
