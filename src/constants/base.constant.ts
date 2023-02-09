@@ -1,7 +1,11 @@
 // password pattern
 export const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/;
+
 export const PHONE_PATTERN =
   /(([+][[]?[0-9]{1,3}[]]?)|([(]?[0-9]{4}[)]?))s*[)]?[-s.]?[(]?[0-9]{1,3}[)]?([-s.]?[0-9]{3})([-s.]?[0-9]{3,4})/;
+
+export const VIETNAM_PHONE_PATTERN = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
+
 export const SPEC_KEY = 'SPEC';
 
 export const EMAIL_PATTERN =

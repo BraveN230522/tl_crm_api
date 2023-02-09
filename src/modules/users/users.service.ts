@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UUID_PATTERN } from '../../constants';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
 import { ErrorHelper } from '../../helpers';
+import { ISendSMS } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey, matchWord } from '../../utilities';
 import { EncryptHelper } from './../../helpers/encrypt.helper';
 import { SmsService } from './../sms/sms.service';
-import { ChangePasswordDto, ForgotPasswordDto } from './dto/users.dto';
+import {
+  ChangePasswordDto,
+  ConfirmForgotPasswordDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+} from './dto/users.dto';
 import { UsersRepository } from './users.repository';
 
 @Injectable()
@@ -29,6 +34,10 @@ export class UsersService {
 
   async getUserByUsername({ username }): Promise<User> {
     return await this.usersRepository.findOneByRaw({ username });
+  }
+
+  async getUserByPhone({ phone }): Promise<User> {
+    return await this.usersRepository.findOneByRaw({ phone });
   }
 
   async createUser(createUserDto): Promise<any> {
@@ -88,7 +97,11 @@ export class UsersService {
     const hashedPassword = await EncryptHelper.hash(newPassword);
 
     try {
-      assignIfHasKey(currentUser, { password: hashedPassword, updatedAt: new Date().getTime() });
+      assignIfHasKey(currentUser, {
+        ...currentUser,
+        password: hashedPassword,
+        updatedAt: new Date().getTime(),
+      });
 
       await this.usersRepository.save([currentUser]);
 
@@ -99,18 +112,71 @@ export class UsersService {
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<string> {
-    const { phone } = forgotPasswordDto;
-    return this.smsService.sendSms(phone);
-    // const hashedPassword = await EncryptHelper.hash(newPassword);
+    try {
+      const { phone } = forgotPasswordDto;
+      const { data, code } = (await this.smsService.sendSms(phone)) as ISendSMS;
+      const user = await this.getUserByPhone({ phone });
 
-    // try {
-    //   assignIfHasKey(currentUser, { password: hashedPassword, updatedAt: new Date().getTime() });
+      assignIfHasKey(user, { ...user, forgotPasswordOtp: code });
 
-    //   await this.usersRepository.save([currentUser]);
+      if (data.errorMessage) ErrorHelper.InternalServerErrorException(data.errorMessage);
 
-    return APP_MESSAGE.UPDATED_SUCCESSFULLY('password');
-    // } catch (error) {
-    //   ErrorHelper.InternalServerErrorException();
-    // }
+      await this.usersRepository.save([user]);
+
+      return APP_MESSAGE.SEND_OTP_SUCCESSFULLY;
+    } catch (error) {
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async confirmForgotPasswordOtp(
+    confirmForgotPasswordDto: ConfirmForgotPasswordDto,
+  ): Promise<string> {
+    const { code, phone } = confirmForgotPasswordDto;
+    const user = await this.getUserByPhone({ phone });
+
+    try {
+      if (code === user.forgotPasswordOtp) {
+        assignIfHasKey(user, { ...user, isForgotPassword: true });
+
+        await this.usersRepository.save([user]);
+
+        return APP_MESSAGE.CONFIRM_OTP_SUCCESSFULLY;
+      } else {
+        ErrorHelper.BadRequestException('Your OTP is invalid');
+      }
+    } catch (error) {
+      if (error.response) ErrorHelper.BadRequestException(error.response);
+
+      ErrorHelper.InternalServerErrorException();
+    }
+    return '';
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<string> {
+    const { newPassword, phone } = resetPasswordDto;
+
+    const user = await this.getUserByPhone({ phone });
+
+    if (!user.isForgotPassword) ErrorHelper.BadRequestException('Failed to reset password');
+
+    const hashedPassword = await EncryptHelper.hash(newPassword);
+
+    try {
+      assignIfHasKey(user, {
+        ...user,
+        password: hashedPassword,
+        isForgotPassword: false,
+        updatedAt: new Date().getTime(),
+      });
+
+      await this.usersRepository.save([user]);
+
+      return APP_MESSAGE.UPDATED_SUCCESSFULLY('password');
+    } catch (error) {
+      if (error.response) ErrorHelper.BadRequestException(error.response);
+
+      ErrorHelper.InternalServerErrorException();
+    }
   }
 }

@@ -15,7 +15,6 @@ export const dataSourceOptions: DataSourceOptions = {
   database: configService.get('POSTGRES_DB'),
   entities: ['dist/**/*.entity.js'],
   migrations: [__dirname + '/migrations/**/*.js'],
-  ssl: configService.get('ENV') === 'PRODUCTION',
 };
 
 const dataSource = new DataSource(dataSourceOptions);

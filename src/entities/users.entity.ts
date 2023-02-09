@@ -47,6 +47,14 @@ export class User extends BaseTable {
   })
   forgotPasswordOtp?: string;
 
+  @Column({
+    nullable: true,
+    type: 'bool',
+    name: 'is_forgot_password',
+    default: false,
+  })
+  isForgotPassword: boolean;
+
   @Exclude({ toPlainOnly: true })
   @Column({
     nullable: false,

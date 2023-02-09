@@ -1,14 +1,6 @@
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsPhoneNumber,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { Match } from '../../../common';
-import { PHONE_PATTERN } from '../../../constants';
+import { VIETNAM_PHONE_PATTERN } from '../../../constants';
 import { Role } from '../../../enums';
 
 export class CreateUserDto {
@@ -22,9 +14,6 @@ export class CreateUserDto {
   @IsString()
   @MinLength(3)
   @MaxLength(32)
-  // @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-  //   message: 'Password is too weak',
-  // })
   password: string;
 
   @IsNotEmpty()
@@ -37,6 +26,7 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
+  @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
   phone;
 
   @IsEnum({ USER: Role.USER })
@@ -48,18 +38,12 @@ export class ChangePasswordDto {
   @IsString()
   @MinLength(3)
   @MaxLength(32)
-  // @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-  //   message: 'Password is too weak',
-  // })
   password: string;
 
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
   @MaxLength(32)
-  // @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-  //   message: 'Password is too weak',
-  // })
   newPassword: string;
 
   @IsNotEmpty()
@@ -72,7 +56,38 @@ export class ChangePasswordDto {
 
 export class ForgotPasswordDto {
   @IsString()
-  @IsPhoneNumber()
   @IsNotEmpty()
+  @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
   phone: string;
+}
+
+export class ConfirmForgotPasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  code: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
+  phone: string;
+}
+
+export class ResetPasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
+  phone: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(32)
+  newPassword: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(32)
+  @Match('newPassword')
+  confirmNewPassword: string;
 }

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { IPagination, ObjectAny } from '../interfaces';
 
-export const assignIfHasKey = (assignedObj: ObjectAny, obj: ObjectAny) => {
+export const assignIfHasKey = <T>(assignedObj: T, obj: T) => {
   Object.entries(obj).forEach(([key, value]) => {
     if (key) assignedObj[key] = value;
   });

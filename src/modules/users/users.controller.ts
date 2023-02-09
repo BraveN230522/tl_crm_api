@@ -1,10 +1,16 @@
-import { Body, Controller, Get, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleDecorator, UserDecorator } from '../../common/decorators';
 import { RolesGuard } from '../../common/guards';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
-import { ChangePasswordDto, CreateUserDto, ForgotPasswordDto } from './dto/users.dto';
+import {
+  ChangePasswordDto,
+  ConfirmForgotPasswordDto,
+  CreateUserDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+} from './dto/users.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -13,14 +19,14 @@ export class UsersController {
 
   @UseGuards(AuthGuard(), RolesGuard)
   @Post()
-  // @RoleDecorator(Role.USER)
+  @RoleDecorator(Role.SUPER_ADMIN)
   createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.createUser(createUserDto);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.USER)
   @Post('/change-password')
-  // @RoleDecorator(Role.USER)
   changePassword(
     @Body() changePasswordDto: ChangePasswordDto,
     @UserDecorator() currentUser,
@@ -33,8 +39,19 @@ export class UsersController {
     return this.usersService.forgotPassword(forgotPasswordDto);
   }
 
+  @Post('/confirm-forgot-password')
+  confirmForgotPassword(
+    @Body() confirmForgotPasswordDto: ConfirmForgotPasswordDto,
+  ): Promise<string> {
+    return this.usersService.confirmForgotPasswordOtp(confirmForgotPasswordDto);
+  }
+
+  @Post('/reset-password')
+  resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<string> {
+    return this.usersService.resetPassword(resetPasswordDto);
+  }
+
   @Get()
-  // @RoleDecorator(Role.USER)
   getUser(): any {
     return 'hello Long Béo';
   }
