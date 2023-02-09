@@ -9,7 +9,7 @@ import { HttpExceptionFilter } from './common';
 import { TransformInterceptor } from './common/transformers/transform.interceptor';
 import { AppConfigService } from './configuration';
 
-export async function bootstrap() {
+async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const upload = multer();
   const configService = app.get<ConfigService>(ConfigService);
@@ -37,3 +37,5 @@ export async function bootstrap() {
   await app.listen(configService.get<string>('SERVER_PORT'));
 }
 bootstrap();
+
+export default bootstrap;
