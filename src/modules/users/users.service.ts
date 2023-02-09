@@ -27,21 +27,28 @@ export class UsersService {
     // if (UUID_PATTERN.test(id)) found = await this.usersRepository.findOneBy({ inviteId: id });
     const found = await this.usersRepository.findOneBy({ id });
 
-    if (!found) ErrorHelper.NotFoundException(`User ${id} is not found`);
+    if (!found) ErrorHelper.NotFoundException(`User is not found`);
 
     return found;
   }
 
   async getUserByUsername({ username }): Promise<User> {
-    return await this.usersRepository.findOneByRaw({ username });
+    const found = await this.usersRepository.findOneByRaw({ username });
+
+    if (!found) ErrorHelper.NotFoundException(`User is not found`);
+
+    return found;
   }
 
   async getUserByPhone({ phone }): Promise<User> {
-    return await this.usersRepository.findOneByRaw({ phone });
+    const found = await this.usersRepository.findOneByRaw({ phone });
+
+    if (!found) ErrorHelper.NotFoundException(`User is not found`);
+
+    return found;
   }
 
   async createUser(createUserDto): Promise<any> {
-    console.log({ createUserDto });
     const { username, password, firstName, lastName, phone } = createUserDto;
 
     const hashedPassword = await EncryptHelper.hash(password);
@@ -112,11 +119,10 @@ export class UsersService {
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<string> {
+    const { phone } = forgotPasswordDto;
+    const user = await this.getUserByPhone({ phone });
+    const { data, code } = (await this.smsService.sendSms(phone)) as ISendSMS;
     try {
-      const { phone } = forgotPasswordDto;
-      const { data, code } = (await this.smsService.sendSms(phone)) as ISendSMS;
-      const user = await this.getUserByPhone({ phone });
-
       assignIfHasKey(user, { ...user, forgotPasswordOtp: code });
 
       if (data.errorMessage) ErrorHelper.InternalServerErrorException(data.errorMessage);
@@ -125,6 +131,7 @@ export class UsersService {
 
       return APP_MESSAGE.SEND_OTP_SUCCESSFULLY;
     } catch (error) {
+      if (error.response) ErrorHelper.InternalServerErrorException(error.response);
       ErrorHelper.InternalServerErrorException();
     }
   }
@@ -146,11 +153,10 @@ export class UsersService {
         ErrorHelper.BadRequestException('Your OTP is invalid');
       }
     } catch (error) {
-      if (error.response) ErrorHelper.BadRequestException(error.response);
+      if (error.response) ErrorHelper.InternalServerErrorException(error.response);
 
       ErrorHelper.InternalServerErrorException();
     }
-    return '';
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<string> {
@@ -174,7 +180,7 @@ export class UsersService {
 
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('password');
     } catch (error) {
-      if (error.response) ErrorHelper.BadRequestException(error.response);
+      if (error.response) ErrorHelper.InternalServerErrorException(error.response);
 
       ErrorHelper.InternalServerErrorException();
     }
