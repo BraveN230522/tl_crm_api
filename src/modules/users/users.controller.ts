@@ -17,8 +17,8 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  // @UseGuards(AuthGuard(), RolesGuard)
-  // @RoleDecorator(Role.SUPER_ADMIN)
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.SUPER_ADMIN)
   @Post()
   createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.createUser(createUserDto);
