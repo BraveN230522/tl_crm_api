@@ -122,18 +122,18 @@ export class UsersService {
     const { phone } = forgotPasswordDto;
     const user = await this.getUserByPhone({ phone });
     const { data, code } = (await this.smsService.sendSms(phone)) as ISendSMS;
+    return '';
+    // if (data.errorMessage) ErrorHelper.InternalServerErrorException(data.errorMessage);
 
-    if (data.errorMessage) ErrorHelper.InternalServerErrorException(data.errorMessage);
+    // try {
+    //   assignIfHasKey(user, { ...user, forgotPasswordOtp: code });
 
-    try {
-      assignIfHasKey(user, { ...user, forgotPasswordOtp: code });
+    //   await this.usersRepository.save([user]);
 
-      await this.usersRepository.save([user]);
-
-      return APP_MESSAGE.SEND_OTP_SUCCESSFULLY;
-    } catch (error) {
-      ErrorHelper.InternalServerErrorException();
-    }
+    //   return APP_MESSAGE.SEND_OTP_SUCCESSFULLY;
+    // } catch (error) {
+    //   ErrorHelper.InternalServerErrorException();
+    // }
   }
 
   async confirmForgotPasswordOtp(
