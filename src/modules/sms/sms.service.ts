@@ -31,6 +31,8 @@ export class SmsService {
         code: random4DigitsCode,
       };
     } catch (error) {
+      ErrorHelper.InternalServerErrorException(error.response);
+
       ErrorHelper.InternalServerErrorException();
     }
   }
