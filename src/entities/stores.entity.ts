@@ -1,7 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { BaseTable } from '../base';
 import { Branch } from './branches.entity';
-import { Member } from './members.entity';
+import { Customer } from './customers.entity';
 import { Rule } from './rules.entity';
 import { Tier } from './tiers.entity';
 
@@ -42,11 +42,11 @@ export class Store extends BaseTable {
   @OneToMany(() => Tier, (tier) => tier.store)
   tiers: Tier[];
 
-  @ManyToMany(() => Member, (member) => member.id, { cascade: true })
+  @ManyToMany(() => Customer, (customer) => customer.id, { cascade: true })
   @JoinTable({
-    name: 'member_store',
+    name: 'customer_store',
     joinColumn: { name: 'storeId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'memberId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'customerId', referencedColumnName: 'id' },
   })
-  members: Member[];
+  customers: Customer[];
 }

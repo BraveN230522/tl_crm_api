@@ -1,6 +1,5 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { BaseTable } from '../base';
-import { Gender } from '../enums';
 import { TierStatus } from '../enums/tiers';
 import { Store } from './stores.entity';
 

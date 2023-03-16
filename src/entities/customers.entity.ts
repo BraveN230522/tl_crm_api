@@ -1,13 +1,11 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { BaseTable } from '../base';
 import { Gender } from '../enums';
-import { Branch } from './branches.entity';
-import { Rule } from './rules.entity';
 import { Store } from './stores.entity';
 
 @Entity()
-export class Member extends BaseTable {
-  constructor(partial: Partial<Member>) {
+export class Customer extends BaseTable {
+  constructor(partial: Partial<Customer>) {
     super();
     Object.assign(this, partial);
   }
@@ -28,7 +26,11 @@ export class Member extends BaseTable {
   @Column()
   dob: number;
 
-  @Column()
+  @Column({
+    type: 'enum',
+    enum: Gender,
+    default: Gender.Male,
+  })
   gender: Gender;
 
   @Column()
@@ -45,8 +47,8 @@ export class Member extends BaseTable {
 
   @ManyToMany(() => Store, (store) => store.id, { cascade: true })
   @JoinTable({
-    name: 'member_store',
-    joinColumn: { name: 'memberId', referencedColumnName: 'id' },
+    name: 'customer_store',
+    joinColumn: { name: 'customerId', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'storeId', referencedColumnName: 'id' },
   })
   stores: Store[];

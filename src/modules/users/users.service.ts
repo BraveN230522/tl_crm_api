@@ -77,7 +77,7 @@ export class UsersService {
         {
           branchName,
           announcements,
-          memberUrl: `/member?${encryptSha256(username, username)}`,
+          customerUrl: `/customer?${encryptSha256(username, username)}`,
           isActiveTiers,
         },
         user,
@@ -95,7 +95,7 @@ export class UsersService {
       const mappingBranch = _.pick(branch, [
         'name',
         'announcements',
-        'memberUrl',
+        'customerUrl',
         'isActiveTiers',
         'id',
       ]);
