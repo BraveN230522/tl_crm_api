@@ -1,0 +1,6 @@
+export enum OrderStatus {
+  IS_NOT_ACCEPTED,
+  IS_NOT_DELIVERED,
+  IS_DELIVERING,
+  IS_DELIVERED,
+}

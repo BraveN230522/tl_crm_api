@@ -2,6 +2,7 @@ import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typ
 import { BaseTable } from '../base';
 import { Gender } from '../enums';
 import { Store } from './stores.entity';
+import { Tier } from './tiers.entity';
 
 @Entity()
 export class Customer extends BaseTable {
@@ -44,6 +45,9 @@ export class Customer extends BaseTable {
 
   @Column()
   rate: number;
+
+  @ManyToOne(() => Tier, (tier) => tier.customers, { onDelete: 'CASCADE' })
+  tier: Tier;
 
   @ManyToMany(() => Store, (store) => store.id, { cascade: true })
   @JoinTable({

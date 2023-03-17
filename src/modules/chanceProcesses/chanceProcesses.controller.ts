@@ -3,11 +3,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { RoleDecorator } from '../../common/decorators';
 import { RolesGuard } from '../../common/guards';
 import { Role } from '../../enums';
-import { CustomersService } from './customers.service';
+import { ChanceProcessesService } from './chanceProcesses.service';
 
-@Controller('users')
+@Controller('chance-processes')
 @UseGuards(AuthGuard(), RolesGuard)
 @RoleDecorator(Role.SUPER_ADMIN)
-export class CustomersController {
-  constructor(private customersService: CustomersService) {}
+export class ChanceProcessesController {
+  constructor(private branchesService: ChanceProcessesService) {}
 }

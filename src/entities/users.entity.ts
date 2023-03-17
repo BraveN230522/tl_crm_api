@@ -1,8 +1,9 @@
 import { Exclude } from 'class-transformer';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { BaseTable } from '../base';
 import { Role } from '../enums';
 import { Branch } from './branches.entity';
+import { Chance } from './chances.entity';
 
 // import { Admin } from '../admin/admin.entity';
 // import { Project } from '../projects/projects.entity';
@@ -68,4 +69,7 @@ export class User extends BaseTable {
     default: null,
   })
   token?: string;
+
+  @OneToMany(() => Chance, (chance) => chance.user)
+  chances: Chance[];
 }

@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { BaseTable } from '../base';
 import { TierStatus } from '../enums/tiers';
+import { Customer } from './customers.entity';
 import { Store } from './stores.entity';
 
 @Entity()
@@ -37,4 +38,7 @@ export class Tier extends BaseTable {
 
   @ManyToOne(() => Store, (store) => store.tiers, { onDelete: 'CASCADE' })
   store: Store;
+
+  @OneToMany(() => Customer, (customer) => customer.tier)
+  customers: Customer[];
 }

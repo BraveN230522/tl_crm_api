@@ -1,7 +1,9 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { BaseTable } from '../base';
 import { Branch } from './branches.entity';
+import { Campaign } from './campaigns.entity';
 import { Customer } from './customers.entity';
+import { Product } from './products.entity';
 import { Rule } from './rules.entity';
 import { Tier } from './tiers.entity';
 
@@ -36,6 +38,9 @@ export class Store extends BaseTable {
   @ManyToOne(() => Branch, (branch) => branch.stores, { onDelete: 'CASCADE' })
   branch: Branch;
 
+  @ManyToOne(() => Campaign, (campaign) => campaign.stores, { onDelete: 'CASCADE' })
+  campaign: Campaign;
+
   @OneToMany(() => Rule, (rule) => rule.store)
   rules: Rule[];
 
@@ -49,4 +54,12 @@ export class Store extends BaseTable {
     inverseJoinColumn: { name: 'customerId', referencedColumnName: 'id' },
   })
   customers: Customer[];
+
+  @ManyToMany(() => Product, (product) => product.id, { cascade: true })
+  @JoinTable({
+    name: 'product_store',
+    joinColumn: { name: 'storeId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'productId', referencedColumnName: 'id' },
+  })
+  products: Product[];
 }
