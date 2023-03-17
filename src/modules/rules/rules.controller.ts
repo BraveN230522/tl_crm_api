@@ -7,7 +7,7 @@ import { RulesService } from './rules.service';
 
 @Controller('users')
 @UseGuards(AuthGuard(), RolesGuard)
-@RoleDecorator(Role.SUPER_ADMIN)
+// @RoleDecorator(Role.SUPER_ADMIN)
 export class RulesController {
   constructor(private branchesService: RulesService) {}
 }

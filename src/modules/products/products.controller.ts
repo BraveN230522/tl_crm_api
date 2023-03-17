@@ -7,7 +7,7 @@ import { ProductsService } from './products.service';
 
 @Controller('products')
 @UseGuards(AuthGuard(), RolesGuard)
-@RoleDecorator(Role.SUPER_ADMIN)
+// @RoleDecorator(Role.SUPER_ADMIN)
 export class ProductsController {
   constructor(private branchesService: ProductsService) {}
 }

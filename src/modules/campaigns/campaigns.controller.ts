@@ -7,7 +7,7 @@ import { CampaignsService } from './campaigns.service';
 
 @Controller('campaigns')
 @UseGuards(AuthGuard(), RolesGuard)
-@RoleDecorator(Role.SUPER_ADMIN)
+// @RoleDecorator(Role.SUPER_ADMIN)
 export class CampaignsController {
   constructor(private branchesService: CampaignsService) {}
 }

@@ -69,7 +69,7 @@ export class UsersService {
         firstName,
         lastName,
         phone,
-        role: Role.USER,
+        role: Role.STAFF,
       });
 
       await this.usersRepository.save([user]);

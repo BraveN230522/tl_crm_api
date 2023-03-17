@@ -59,7 +59,7 @@ export class User extends BaseTable {
   @Exclude({ toPlainOnly: true })
   @Column({
     nullable: false,
-    default: Role.USER,
+    default: Role.STAFF,
   })
   role: Role;
 

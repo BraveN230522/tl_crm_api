@@ -7,7 +7,7 @@ import { OrdersService } from './orders.service';
 
 @Controller('orders')
 @UseGuards(AuthGuard(), RolesGuard)
-@RoleDecorator(Role.SUPER_ADMIN)
+// @RoleDecorator(Role.SUPER_ADMIN)
 export class OrdersController {
   constructor(private branchesService: OrdersService) {}
 }

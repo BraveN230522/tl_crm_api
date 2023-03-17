@@ -38,8 +38,8 @@ export class AuthService {
   // async validate({ username, role }): Promise<User | Customer> {
   async validate({ username, role }): Promise<any> {
     switch (role) {
-      case Role.USER:
-      case Role.SUPER_ADMIN:
+      case Role.ADMIN:
+        // case Role.SUPER_ADMIN:
         return await this.userService.getUserByUsername({ username });
 
       default:

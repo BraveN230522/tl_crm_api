@@ -7,7 +7,7 @@ import { ChanceProcessesService } from './chanceProcesses.service';
 
 @Controller('chance-processes')
 @UseGuards(AuthGuard(), RolesGuard)
-@RoleDecorator(Role.SUPER_ADMIN)
+// @RoleDecorator(Role.SUPER_ADMIN)
 export class ChanceProcessesController {
   constructor(private branchesService: ChanceProcessesService) {}
 }

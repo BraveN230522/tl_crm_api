@@ -7,7 +7,7 @@ import { BranchesService } from './branches.service';
 
 @Controller('users')
 @UseGuards(AuthGuard(), RolesGuard)
-@RoleDecorator(Role.SUPER_ADMIN)
+// @RoleDecorator(Role.SUPER_ADMIN)
 export class BranchesController {
   constructor(private branchesService: BranchesService) {}
 }

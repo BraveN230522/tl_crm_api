@@ -38,7 +38,7 @@ export class CreateUserDto {
   @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
   phone;
 
-  @IsEnum({ USER: Role.USER })
+  @IsEnum({ USER: Role.STAFF })
   role;
 
   @IsNotEmpty()
@@ -52,7 +52,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsBoolean()
   @Transform(({ value }) => {
-    return value.toLowerCase() === 'true' || false;
+    return value.toLowerCase() === 'true';
   })
   isActiveTiers;
 }
