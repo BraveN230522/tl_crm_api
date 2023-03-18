@@ -33,7 +33,7 @@ import { UsersModule } from './modules/users/users.module';
     // DatabaseModule,
     TypeOrmModule.forRoot({
       ...dataSourceOptions,
-      synchronize: true,
+      synchronize: false,
       autoLoadEntities: false,
       entities: [
         Branch,
