@@ -13,7 +13,7 @@ export class BranchesService {
     @InjectRepository(BranchesRepository) private branchesRepository: BranchesRepository,
   ) {}
 
-  async createBranch(createBranchDto: CreateBranchDto): Promise<any> {
+  async createBranch(createBranchDto: CreateBranchDto): Promise<Branch> {
     const { branchName, announcements, customerUrl, isActiveTiers } = createBranchDto;
     try {
       const branch = this.branchesRepository.create({

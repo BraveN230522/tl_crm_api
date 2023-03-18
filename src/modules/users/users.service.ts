@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import _ from 'lodash';
+import _, { create } from 'lodash';
 import { Branch } from '../../entities/branches.entity';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
@@ -15,6 +15,7 @@ import {
   ChangePasswordDto,
   ConfirmForgotPasswordDto,
   CreateUserAdminDto,
+  CreateUserDto,
   ForgotPasswordDto,
   ResetPasswordDto,
 } from './dto/users.dto';
@@ -51,7 +52,7 @@ export class UsersService {
     return found;
   }
 
-  async createUserAdmin(createUserAdminDto: CreateUserAdminDto): Promise<any> {
+  async createUserAdmin(createUserAdminDto: CreateUserAdminDto): Promise<User> {
     const {
       username,
       password,
@@ -94,9 +95,79 @@ export class UsersService {
         'role',
         'id',
         'branch',
-      ]);
+      ]) as User;
 
-      return { user: mappingUser };
+      return mappingUser;
+    } catch (error) {
+      console.log({ error });
+      if (error.response) ErrorHelper.ConflictException(error.response);
+
+      if (error.code === '23505') {
+        const detail = error.detail as string;
+        const uniqueArr = ['phone', 'username'];
+        uniqueArr.forEach((item) => {
+          if (matchWord(detail, item) !== null) {
+            ErrorHelper.ConflictException(`This ${item} already exists`);
+          }
+        });
+      } else ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  isValidCreate(currentUserRole: Role, createRole: Role) {
+    switch (currentUserRole) {
+      case Role.ADMIN:
+        return createRole !== Role.ADMIN;
+      case Role.B_MANAGER:
+        return createRole === Role.STAFF || createRole === Role.S_MANAGER;
+      case Role.S_MANAGER:
+        return createRole === Role.STAFF;
+      case Role.STAFF:
+        return false;
+      default:
+        return false;
+    }
+  }
+
+  async createUser(createUserDto: CreateUserDto, currentUserRole: Role): Promise<User> {
+    const {
+      username,
+      password,
+      firstName,
+      lastName,
+      phone,
+      email,
+      role = Role.STAFF,
+    } = createUserDto;
+
+    if (!this.isValidCreate(currentUserRole, role)) {
+      ErrorHelper.ForbiddenException();
+    }
+
+    const hashedPassword = await EncryptHelper.hash(password);
+    try {
+      const user = this.usersRepository.create({
+        username,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        phone,
+        email,
+        role,
+      });
+
+      await this.usersRepository.save([user]);
+
+      const mappingUser = _.pick(user, [
+        'username',
+        'firstName',
+        'lastName',
+        'phone',
+        'role',
+        'id',
+      ]) as User;
+
+      return mappingUser;
     } catch (error) {
       console.log({ error });
       if (error.response) ErrorHelper.ConflictException(error.response);

@@ -58,6 +58,39 @@ export class CreateUserAdminDto {
   })
   isActiveTiers: boolean;
 }
+export class CreateUserDto {
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(4)
+  @MaxLength(20)
+  username: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(32)
+  password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
+  phone: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsEnum(Role)
+  role: Role;
+}
 
 export class ChangePasswordDto {
   @IsNotEmpty()

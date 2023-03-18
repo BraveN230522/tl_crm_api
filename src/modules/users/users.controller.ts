@@ -8,6 +8,7 @@ import {
   ChangePasswordDto,
   ConfirmForgotPasswordDto,
   CreateUserAdminDto,
+  CreateUserDto,
   ForgotPasswordDto,
   ResetPasswordDto,
 } from './dto/users.dto';
@@ -20,8 +21,15 @@ export class UsersController {
   // @UseGuards(AuthGuard(), RolesGuard)
   // @RoleDecorator(Role.SUPER_ADMIN)
   @Post('/admin')
-  createUser(@Body() createUserAdminDto: CreateUserAdminDto): Promise<User> {
+  createUserAdmin(@Body() createUserAdminDto: CreateUserAdminDto): Promise<User> {
     return this.usersService.createUserAdmin(createUserAdminDto);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER, Role.S_MANAGER)
+  @Post()
+  createUser(@Body() createUserDto: CreateUserDto, @UserDecorator() currentUser): Promise<User> {
+    return this.usersService.createUser(createUserDto, currentUser.role);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
