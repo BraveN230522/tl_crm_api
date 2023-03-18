@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
+import { Branch } from '../../entities/branches.entity';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
 import { ErrorHelper, decryptSha256, encryptSha256 } from '../../helpers';
@@ -13,6 +14,7 @@ import { SmsService } from './../sms/sms.service';
 import {
   ChangePasswordDto,
   ConfirmForgotPasswordDto,
+  CreateUserAdminDto,
   ForgotPasswordDto,
   ResetPasswordDto,
 } from './dto/users.dto';
@@ -49,18 +51,26 @@ export class UsersService {
     return found;
   }
 
-  async createUser(createUserDto): Promise<any> {
+  async createUserAdmin(createUserAdminDto: CreateUserAdminDto): Promise<any> {
     const {
       username,
       password,
       firstName,
       lastName,
       phone,
+      email,
       branchName,
       announcements,
       isActiveTiers,
-    } = createUserDto;
+    } = createUserAdminDto;
     const hashedPassword = await EncryptHelper.hash(password);
+
+    const branch: Branch = await this.branchesService.createBranch({
+      branchName,
+      announcements,
+      customerUrl: `/customer?${encryptSha256(username, username)}`,
+      isActiveTiers,
+    });
 
     try {
       const user = this.usersRepository.create({
@@ -69,19 +79,12 @@ export class UsersService {
         firstName,
         lastName,
         phone,
-        role: Role.STAFF,
+        email,
+        role: Role.ADMIN,
+        branch,
       });
 
       await this.usersRepository.save([user]);
-      const branch = await this.branchesService.createBranch(
-        {
-          branchName,
-          announcements,
-          customerUrl: `/customer?${encryptSha256(username, username)}`,
-          isActiveTiers,
-        },
-        user,
-      );
 
       const mappingUser = _.pick(user, [
         'username',
@@ -90,17 +93,10 @@ export class UsersService {
         'phone',
         'role',
         'id',
+        'branch',
       ]);
 
-      const mappingBranch = _.pick(branch, [
-        'name',
-        'announcements',
-        'customerUrl',
-        'isActiveTiers',
-        'id',
-      ]);
-
-      return { user: mappingUser, branch: mappingBranch };
+      return { user: mappingUser };
     } catch (error) {
       console.log({ error });
       if (error.response) ErrorHelper.ConflictException(error.response);

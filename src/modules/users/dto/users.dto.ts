@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import {
   IsBoolean,
+  IsEmail,
   IsEnum,
   IsNotEmpty,
   IsString,
@@ -12,7 +13,7 @@ import { Match } from '../../../common';
 import { VIETNAM_PHONE_PATTERN } from '../../../constants';
 import { Role } from '../../../enums';
 
-export class CreateUserDto {
+export class CreateUserAdminDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(4)
@@ -27,34 +28,35 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
-  firstName;
+  firstName: string;
 
   @IsNotEmpty()
   @IsString()
-  lastName;
+  lastName: string;
 
   @IsNotEmpty()
   @IsString()
   @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
-  phone;
+  phone: string;
 
-  @IsEnum({ USER: Role.STAFF })
-  role;
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 
   @IsNotEmpty()
   @IsString()
-  branchName;
+  branchName: string;
 
   @IsNotEmpty()
   @IsString()
-  announcements;
+  announcements: string;
 
   @IsNotEmpty()
   @IsBoolean()
   @Transform(({ value }) => {
     return value.toLowerCase() === 'true';
   })
-  isActiveTiers;
+  isActiveTiers: boolean;
 }
 
 export class ChangePasswordDto {

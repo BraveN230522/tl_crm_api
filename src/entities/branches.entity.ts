@@ -32,9 +32,8 @@ export class Branch extends BaseTable {
   })
   isActiveTiers?: boolean;
 
-  @OneToOne(() => User)
-  @JoinColumn()
-  user: User;
+  @OneToMany(() => User, (user) => user.branch)
+  users: User[];
 
   @OneToMany(() => Store, (store) => store.branch)
   stores: Store[];

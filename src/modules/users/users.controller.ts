@@ -7,7 +7,7 @@ import { Role } from '../../enums';
 import {
   ChangePasswordDto,
   ConfirmForgotPasswordDto,
-  CreateUserDto,
+  CreateUserAdminDto,
   ForgotPasswordDto,
   ResetPasswordDto,
 } from './dto/users.dto';
@@ -19,9 +19,9 @@ export class UsersController {
 
   // @UseGuards(AuthGuard(), RolesGuard)
   // @RoleDecorator(Role.SUPER_ADMIN)
-  @Post()
-  createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.createUser(createUserDto);
+  @Post('/admin')
+  createUser(@Body() createUserAdminDto: CreateUserAdminDto): Promise<User> {
+    return this.usersService.createUserAdmin(createUserAdminDto);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
