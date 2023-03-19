@@ -16,7 +16,7 @@ export const myMapPick = <T>(data: T[], toPick: string[]) => {
 };
 
 export const numberInputs = (
-  input: any,
+  input: any = {},
 ): {
   [key: string]: number;
 } =>

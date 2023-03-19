@@ -124,7 +124,7 @@ export class BaseRepository<Model extends BaseTable> extends Repository<Model> {
 
   async paginationQueryBuilder(
     queryBuilder: SelectQueryBuilder<Model>,
-    pageOptions: IPageOption,
+    pageOptions?: IPageOption,
     isRaw?: boolean,
   ): Promise<IPaginationResponse<Model>> {
     const { perPage = 10, page = 1 } = numberInputs(pageOptions);

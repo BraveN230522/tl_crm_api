@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleDecorator, UserDecorator } from '../../common/decorators';
 import { RolesGuard } from '../../common/guards';
+import { PaginationDto } from '../../dtos';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
 import {
@@ -10,7 +11,9 @@ import {
   CreateUserAdminDto,
   CreateUserDto,
   ForgotPasswordDto,
+  GetUserDto,
   ResetPasswordDto,
+  UpdateUserDto,
 } from './dto/users.dto';
 import { UsersService } from './users.service';
 
@@ -30,6 +33,30 @@ export class UsersController {
   @Post()
   createUser(@Body() createUserDto: CreateUserDto, @UserDecorator() currentUser): Promise<User> {
     return this.usersService.createUser(createUserDto, currentUser.role);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER, Role.S_MANAGER)
+  @Patch('/:id')
+  updateUser(
+    @Param('id') id,
+    @Body() updateUserDto: UpdateUserDto,
+    @UserDecorator() currentUser,
+  ): Promise<string> {
+    return this.usersService.updateUser(id, updateUserDto, currentUser);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER, Role.S_MANAGER)
+  @Delete('/:id')
+  deleteUser(@Param('id') id, @UserDecorator() currentUser): Promise<string> {
+    return this.usersService.deleteUser(id, currentUser);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Get()
+  readUser(@Body() getUserDto: GetUserDto): Promise<User[]> {
+    return this.usersService.readUser(getUserDto);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)

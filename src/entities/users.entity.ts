@@ -61,7 +61,6 @@ export class User extends BaseTable {
   })
   isForgotPassword: boolean;
 
-  @Exclude({ toPlainOnly: true })
   @Column({
     nullable: false,
   })

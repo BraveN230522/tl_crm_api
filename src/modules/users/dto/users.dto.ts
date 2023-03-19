@@ -4,6 +4,7 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MaxLength,
@@ -90,6 +91,40 @@ export class CreateUserDto {
 
   @IsEnum(Role)
   role: Role;
+}
+export class UpdateUserDto {
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @IsOptional()
+  @IsString()
+  @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
+  phone?: string;
+
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
+
+  @IsOptional()
+  @IsString()
+  token?: string;
+}
+
+export class GetUserDto {
+  @IsOptional()
+  page: number;
+
+  @IsOptional()
+  perPage: number;
 }
 
 export class ChangePasswordDto {

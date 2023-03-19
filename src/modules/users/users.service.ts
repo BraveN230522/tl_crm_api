@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import _, { create } from 'lodash';
+import _ from 'lodash';
 import { Branch } from '../../entities/branches.entity';
 import { User } from '../../entities/users.entity';
-import { Role } from '../../enums';
-import { ErrorHelper, decryptSha256, encryptSha256 } from '../../helpers';
+import { ErrorHelper, encryptSha256 } from '../../helpers';
 import { ISendSMS } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey, matchWord } from '../../utilities';
 import { BranchesService } from '../branches/branches.service';
+import { Role } from './../../enums/commons';
 import { EncryptHelper } from './../../helpers/encrypt.helper';
 import { SmsService } from './../sms/sms.service';
 import {
@@ -17,7 +17,9 @@ import {
   CreateUserAdminDto,
   CreateUserDto,
   ForgotPasswordDto,
+  GetUserDto,
   ResetPasswordDto,
+  UpdateUserDto,
 } from './dto/users.dto';
 import { UsersRepository } from './users.repository';
 
@@ -114,14 +116,14 @@ export class UsersService {
     }
   }
 
-  isValidCreate(currentUserRole: Role, createRole: Role) {
+  isValidCreate(currentUserRole: Role, targetRole: Role) {
     switch (currentUserRole) {
       case Role.ADMIN:
-        return createRole !== Role.ADMIN;
+        return targetRole !== Role.ADMIN;
       case Role.B_MANAGER:
-        return createRole === Role.STAFF || createRole === Role.S_MANAGER;
+        return targetRole === Role.STAFF || targetRole === Role.S_MANAGER;
       case Role.S_MANAGER:
-        return createRole === Role.STAFF;
+        return targetRole === Role.STAFF;
       case Role.STAFF:
         return false;
       default:
@@ -174,7 +176,7 @@ export class UsersService {
 
       if (error.code === '23505') {
         const detail = error.detail as string;
-        const uniqueArr = ['phone', 'username'];
+        const uniqueArr = ['phone', 'username', 'email'];
         uniqueArr.forEach((item) => {
           if (matchWord(detail, item) !== null) {
             ErrorHelper.ConflictException(`This ${item} already exists`);
@@ -184,24 +186,57 @@ export class UsersService {
     }
   }
 
-  async updateUser(id, updateUserDto): Promise<string> {
+  async updateUser(id: number, updateUserDto: UpdateUserDto, currentUser?: User): Promise<string> {
     const user = await this.getUser(id);
+    if (
+      updateUserDto?.role &&
+      (!this.isValidCreate(currentUser?.role, updateUserDto?.role) || currentUser.id === user.id)
+    ) {
+      ErrorHelper.ForbiddenException();
+    }
     try {
       assignIfHasKey(user, updateUserDto);
-
       await this.usersRepository.save([user]);
-
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('user');
     } catch (error) {
       if (error.code === '23505') {
         const detail = error.detail as string;
-        const uniqueArr = ['phone', 'username'];
+        const uniqueArr = ['phone'];
         uniqueArr.forEach((item) => {
           if (matchWord(detail, item) !== null) {
             ErrorHelper.ConflictException(`This ${item} already exists`);
           }
         });
       } else ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async deleteUser(id: number, currentUser?: User): Promise<string> {
+    const user = await this.getUser(id);
+    if (!this.isValidCreate(currentUser?.role, user?.role) || currentUser.id === user.id) {
+      ErrorHelper.ForbiddenException();
+    }
+    try {
+      const result = await this.usersRepository.delete(id);
+
+      if (result.affected === 0) ErrorHelper.NotFoundException(`Project ${id} is not found`);
+
+      return APP_MESSAGE.UPDATED_SUCCESSFULLY('user');
+    } catch (error) {
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async readUser(getUserDto: GetUserDto): Promise<any> {
+    console.log({ getUserDto });
+    try {
+      const queryBuilderRepo = await this.usersRepository.createQueryBuilder('u');
+
+      const data = await this.usersRepository.paginationQueryBuilder(queryBuilderRepo, getUserDto);
+
+      return data;
+    } catch (error) {
+      ErrorHelper.InternalServerErrorException();
     }
   }
 
