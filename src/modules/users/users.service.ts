@@ -228,7 +228,6 @@ export class UsersService {
   }
 
   async readUser(getUserDto: GetUserDto): Promise<any> {
-    console.log({ getUserDto });
     try {
       const queryBuilderRepo = await this.usersRepository.createQueryBuilder('u');
 
