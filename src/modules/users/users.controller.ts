@@ -5,6 +5,7 @@ import { RolesGuard } from '../../common/guards';
 import { PaginationDto } from '../../dtos';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
+import { IPaginationResponse } from '../../interfaces';
 import {
   ChangePasswordDto,
   ConfirmForgotPasswordDto,
@@ -55,7 +56,7 @@ export class UsersController {
 
   @UseGuards(AuthGuard(), RolesGuard)
   @Get()
-  readUser(@Body() getUserDto: GetUserDto): Promise<User[]> {
+  readUser(@Body() getUserDto: GetUserDto): Promise<IPaginationResponse<User>> {
     return this.usersService.readUser(getUserDto);
   }
 

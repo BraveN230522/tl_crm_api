@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { Branch } from '../../entities/branches.entity';
 import { User } from '../../entities/users.entity';
 import { ErrorHelper, encryptSha256 } from '../../helpers';
-import { ISendSMS } from '../../interfaces';
+import { IPaginationResponse, ISendSMS } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey, matchWord } from '../../utilities';
 import { BranchesService } from '../branches/branches.service';
@@ -227,9 +227,20 @@ export class UsersService {
     }
   }
 
-  async readUser(getUserDto: GetUserDto): Promise<any> {
+  async readUser(getUserDto: GetUserDto): Promise<IPaginationResponse<User>> {
+    const { search, role } = getUserDto;
     try {
       const queryBuilderRepo = await this.usersRepository.createQueryBuilder('u');
+
+      if (search) {
+        queryBuilderRepo
+          .where('u.first_name LIKE :search', { search: `%${search.trim()}%` })
+          .orWhere('u.last_name LIKE :search', { search: `%${search.trim()}%` });
+      }
+
+      if (role) {
+        queryBuilderRepo.andWhere('u.role = :role', { role });
+      }
 
       const data = await this.usersRepository.paginationQueryBuilder(queryBuilderRepo, getUserDto);
 

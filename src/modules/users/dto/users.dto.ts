@@ -121,10 +121,17 @@ export class UpdateUserDto {
 
 export class GetUserDto {
   @IsOptional()
-  page: number;
+  page?: number;
 
   @IsOptional()
-  perPage: number;
+  perPage?: number;
+
+  @IsOptional()
+  search?: string;
+
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
 }
 
 export class ChangePasswordDto {
