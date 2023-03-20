@@ -38,8 +38,8 @@ export class Store extends BaseTable {
   @ManyToOne(() => Branch, (branch) => branch.stores, { onDelete: 'CASCADE' })
   branch: Branch;
 
-  @ManyToOne(() => Campaign, (campaign) => campaign.stores, { onDelete: 'CASCADE' })
-  campaign: Campaign;
+  @OneToMany(() => Campaign, (campaign) => campaign.store)
+  campaigns: Campaign[];
 
   @OneToMany(() => Rule, (rule) => rule.store)
   rules: Rule[];

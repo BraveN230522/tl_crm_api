@@ -19,6 +19,7 @@ import { BranchesModule } from './modules/branches/branches.module';
 import { CampaignsModule } from './modules/campaigns/campaigns.module';
 import { ChanceProcessesModule } from './modules/chanceProcesses/chanceProcesses.module';
 import { ChancesModule } from './modules/chances/chances.module';
+import { CloudsModule } from './modules/clouds/clouds.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { ProductsModule } from './modules/products/products.module';
@@ -64,6 +65,7 @@ import { UsersModule } from './modules/users/users.module';
     OrdersModule,
     ProductsModule,
     SmsModule,
+    CloudsModule,
   ],
 })
 export class AppModule {}

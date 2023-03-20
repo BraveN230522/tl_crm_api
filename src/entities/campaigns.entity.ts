@@ -23,6 +23,6 @@ export class Campaign extends BaseTable {
   @Column()
   desc: string;
 
-  @OneToMany(() => Store, (store) => store.campaign)
-  stores: Store[];
+  @ManyToOne(() => Store, (store) => store.campaigns, { onDelete: 'CASCADE' })
+  store: Store;
 }

@@ -23,7 +23,7 @@ export async function bootstrap() {
 
   // for parsing multipart/form-data
   app.use(express.static('public'));
-  app.use(upload.single('undefined'));
+  app.use(upload.single('image'));
 
   // global setup
   useContainer(app.select(AppModule), { fallbackOnErrors: true }); // refer: https://github.com/typestack/class-validator#using-service-container
