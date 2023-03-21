@@ -6,6 +6,7 @@ import { PaginationDto } from '../../dtos';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
 import { IPaginationResponse } from '../../interfaces';
+import { upload123 } from '../../main';
 import {
   ChangePasswordDto,
   ConfirmForgotPasswordDto,
