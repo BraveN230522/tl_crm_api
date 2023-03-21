@@ -28,6 +28,7 @@
     "m:down": "yarn typeorm migration:revert"
   },
   "dependencies": {
+    "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.0",
@@ -46,7 +47,7 @@
     "passport-jwt": "^4.0.1",
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0",
+    "rxjs": "^7.8.0",
     "slugify": "^1.6.5",
     "twilio": "^4.7.1",
     "typeorm": "^0.3.11"
