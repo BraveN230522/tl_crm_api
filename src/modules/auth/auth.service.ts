@@ -6,6 +6,7 @@ import { Customer } from '../../entities/customers.entity';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
 import { EncryptHelper, ErrorHelper } from '../../helpers';
+import { APP_MESSAGE } from '../../messages';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -33,6 +34,12 @@ export class AuthService {
       ...mappingResponse,
       token: 'Bearer ' + accessToken,
     };
+  }
+
+  async logout(currentUser: User): Promise<string> {
+    await this.userService.updateUser(currentUser.id, { token: null });
+
+    return APP_MESSAGE.LOGOUT_SUCCESSFULLY;
   }
 
   // async validate({ username, role }): Promise<User | Customer> {
