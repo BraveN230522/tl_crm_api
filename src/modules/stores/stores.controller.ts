@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleDecorator, UserDecorator } from '../../common/decorators';
 import { RolesGuard } from '../../common/guards';
@@ -23,7 +33,7 @@ export class StoresController {
   @UseGuards(AuthGuard(), RolesGuard)
   @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
   @Get()
-  readList(@Body() getStoreDto: GetStoreDto, @UserDecorator() currentUser): Promise<any> {
+  readList(@Query() getStoreDto: GetStoreDto): Promise<any> {
     return this.storesService.readList(getStoreDto);
   }
 

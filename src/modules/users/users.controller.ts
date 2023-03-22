@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleDecorator, UserDecorator } from '../../common/decorators';
 import { RolesGuard } from '../../common/guards';
@@ -55,7 +65,7 @@ export class UsersController {
 
   @UseGuards(AuthGuard(), RolesGuard)
   @Get()
-  readUser(@Body() getUserDto: GetUserDto): Promise<IPaginationResponse<User>> {
+  readUser(@Query() getUserDto: GetUserDto): Promise<IPaginationResponse<User>> {
     return this.usersService.readUser(getUserDto);
   }
 
