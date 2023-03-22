@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@n
 import { AuthGuard } from '@nestjs/passport';
 import { RoleDecorator, UserDecorator } from '../../common/decorators';
 import { RolesGuard } from '../../common/guards';
-import { PaginationDto } from '../../dtos';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
 import { IPaginationResponse } from '../../interfaces';
@@ -61,6 +60,12 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
+  @Get('/:id')
+  getUser(@Param('id') id): Promise<User> {
+    return this.usersService.getUser(id);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
   // @RoleDecorator(Role.USER)
   @Post('/change-password')
   changePassword(
@@ -85,10 +90,5 @@ export class UsersController {
   @Post('/reset-password')
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<string> {
     return this.usersService.resetPassword(resetPasswordDto);
-  }
-
-  @Get()
-  getUser(): any {
-    return 'hello Long Béo';
   }
 }

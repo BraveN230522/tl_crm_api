@@ -221,7 +221,7 @@ export class UsersService {
 
       if (result.affected === 0) ErrorHelper.NotFoundException(`Project ${id} is not found`);
 
-      return APP_MESSAGE.UPDATED_SUCCESSFULLY('user');
+      return APP_MESSAGE.DELETED_SUCCESSFULLY('user');
     } catch (error) {
       ErrorHelper.InternalServerErrorException();
     }

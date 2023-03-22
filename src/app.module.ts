@@ -5,6 +5,7 @@ import { AppConfigModule } from './configuration';
 import { dataSourceOptions } from './database/data-source';
 import { Branch } from './entities/branches.entity';
 import { Campaign } from './entities/campaigns.entity';
+import { Category } from './entities/categories.entity';
 import { ChanceProcess } from './entities/chanceProcesses.entity';
 import { Chance } from './entities/chances.entity';
 import { Customer } from './entities/customers.entity';
@@ -17,8 +18,10 @@ import { User } from './entities/users.entity';
 import { AuthModule } from './modules/auth/auth.module';
 import { BranchesModule } from './modules/branches/branches.module';
 import { CampaignsModule } from './modules/campaigns/campaigns.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 import { ChanceProcessesModule } from './modules/chanceProcesses/chanceProcesses.module';
 import { ChancesModule } from './modules/chances/chances.module';
+import { CloudsModule } from './modules/clouds/clouds.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { ProductsModule } from './modules/products/products.module';
@@ -47,6 +50,7 @@ import { UsersModule } from './modules/users/users.module';
         ChanceProcess,
         Order,
         Product,
+        Category,
       ],
     }),
     AppConfigModule,
@@ -64,6 +68,8 @@ import { UsersModule } from './modules/users/users.module';
     OrdersModule,
     ProductsModule,
     SmsModule,
+    CloudsModule,
+    CategoriesModule,
   ],
 })
 export class AppModule {}

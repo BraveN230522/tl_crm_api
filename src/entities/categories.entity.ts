@@ -4,7 +4,7 @@ import { BaseTable } from '../base';
 import { Role } from '../enums';
 import { Branch } from './branches.entity';
 import { Chance } from './chances.entity';
-import { Store } from './stores.entity';
+import { Product } from './products.entity';
 import { User } from './users.entity';
 
 // import { Admin } from '../admin/admin.entity';
@@ -12,17 +12,18 @@ import { User } from './users.entity';
 // import { Task } from '../tasks/tasks.entity';
 
 @Entity()
-export class Campaign extends BaseTable {
-  constructor(partial: Partial<Campaign>) {
+export class Category extends BaseTable {
+  constructor(partial: Partial<Category>) {
     super();
     Object.assign(this, partial);
   }
+
   @Column()
-  name: number;
+  name: string;
 
   @Column()
   desc: string;
 
-  @ManyToOne(() => Store, (store) => store.campaigns, { onDelete: 'CASCADE' })
-  store: Store;
+  @OneToMany(() => Product, (product) => product.category)
+  product: Product[];
 }

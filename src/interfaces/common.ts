@@ -22,3 +22,12 @@ export interface IPaginationResponse<T> {
   items: T[] | Record<string, any>;
   pagination: IPagination;
 }
+
+export interface IPaginationResponse<T> {
+  items: T[] | Record<string, any>;
+  pagination: IPagination;
+}
+
+export interface ILinkResponse {
+  link: string;
+}
