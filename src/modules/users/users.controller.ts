@@ -60,6 +60,12 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
+  @Get('/:id')
+  getUser(@Param('id') id): Promise<User> {
+    return this.usersService.getUser(id);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
   // @RoleDecorator(Role.USER)
   @Post('/change-password')
   changePassword(
@@ -84,10 +90,5 @@ export class UsersController {
   @Post('/reset-password')
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<string> {
     return this.usersService.resetPassword(resetPasswordDto);
-  }
-
-  @Get()
-  getUser(): any {
-    return 'hello Long Béo';
   }
 }
