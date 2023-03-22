@@ -1,6 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { BaseTable } from '../base';
 import { Branch } from './branches.entity';
+import { Category } from './categories.entity';
 import { Customer } from './customers.entity';
 import { Rule } from './rules.entity';
 import { Store } from './stores.entity';
@@ -20,9 +21,6 @@ export class Product extends BaseTable {
   desc: string;
 
   @Column()
-  category: string;
-
-  @Column()
   cost: number;
 
   @Column()
@@ -30,6 +28,9 @@ export class Product extends BaseTable {
 
   @Column()
   image: string;
+
+  @ManyToOne(() => Category, (categories) => categories.product, { onDelete: 'CASCADE' })
+  category: Category;
 
   @ManyToMany(() => Store, (store) => store.id, { cascade: true })
   @JoinTable({
