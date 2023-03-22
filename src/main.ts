@@ -14,8 +14,10 @@ export async function bootstrap() {
   const appConfigService = app.get(AppConfigService);
 
   app.enableCors({
-    origin: ['http://localhost:3001'],
+    origin: ['http://localhost:9001'],
     credentials: true,
+    // origin: true,
+    // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   });
 
   // for parsing application/json
