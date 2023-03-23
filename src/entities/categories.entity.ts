@@ -1,11 +1,6 @@
-import { Exclude } from 'class-transformer';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseTable } from '../base';
-import { Role } from '../enums';
-import { Branch } from './branches.entity';
-import { Chance } from './chances.entity';
 import { Product } from './products.entity';
-import { User } from './users.entity';
 
 // import { Admin } from '../admin/admin.entity';
 // import { Project } from '../projects/projects.entity';
