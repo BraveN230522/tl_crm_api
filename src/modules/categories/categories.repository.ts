@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BaseRepository } from '../../base';
 import { Category } from '../../entities/categories.entity';
+import { BaseRepository } from './../../base/base.repository';
 
 @Injectable()
 export class CategoriesRepository extends BaseRepository<Category> {
