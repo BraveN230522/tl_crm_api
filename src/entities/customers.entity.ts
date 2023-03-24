@@ -1,6 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { BaseTable } from '../base';
 import { Gender } from '../enums';
+import { Chance } from './chances.entity';
 import { Store } from './stores.entity';
 import { Tier } from './tiers.entity';
 
@@ -48,6 +49,9 @@ export class Customer extends BaseTable {
 
   @ManyToOne(() => Tier, (tier) => tier.customers, { onDelete: 'CASCADE' })
   tier: Tier;
+
+  @OneToMany(() => Chance, (chance) => chance.customer)
+  chances: Chance[];
 
   @ManyToMany(() => Store, (store) => store.id, { cascade: true })
   @JoinTable({

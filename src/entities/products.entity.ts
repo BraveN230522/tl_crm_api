@@ -2,6 +2,7 @@ import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typ
 import { BaseTable } from '../base';
 import { Branch } from './branches.entity';
 import { Category } from './categories.entity';
+import { Chance } from './chances.entity';
 import { Customer } from './customers.entity';
 import { Rule } from './rules.entity';
 import { Store } from './stores.entity';
@@ -39,4 +40,12 @@ export class Product extends BaseTable {
     inverseJoinColumn: { name: 'storeId', referencedColumnName: 'id' },
   })
   stores: Store[];
+
+  @ManyToMany(() => Chance, (chance) => chance.id, { cascade: true })
+  @JoinTable({
+    name: 'product_chance',
+    joinColumn: { name: 'productId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'chanceId', referencedColumnName: 'id' },
+  })
+  chances: Chance[];
 }
