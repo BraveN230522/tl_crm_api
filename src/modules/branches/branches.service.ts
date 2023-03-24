@@ -13,24 +13,21 @@ export class BranchesService {
     @InjectRepository(BranchesRepository) private branchesRepository: BranchesRepository,
   ) {}
 
-  async createBranch(createBranchDto: CreateBranchDto, user: User): Promise<Branch> {
-    const { branchName, announcements, memberUrl, isActiveTiers } = createBranchDto;
-
+  async createBranch(createBranchDto: CreateBranchDto): Promise<Branch> {
+    const { branchName, announcements, customerUrl, isActiveTiers } = createBranchDto;
     try {
       const branch = this.branchesRepository.create({
         name: branchName,
         announcements,
-        memberUrl,
+        customerUrl,
         isActiveTiers,
-        user,
       });
-
       await this.branchesRepository.save([branch]);
       return branch;
     } catch (error) {
       if (error.code === '23505') {
         const detail = error.detail as string;
-        const uniqueArr = ['name', 'memberUrl'];
+        const uniqueArr = ['name', 'customerUrl'];
         uniqueArr.forEach((item) => {
           if (matchWord(detail, item) !== null) {
             ErrorHelper.ConflictException(`This branch ${item} already exists`);

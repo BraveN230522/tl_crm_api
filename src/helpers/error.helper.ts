@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { APP_MESSAGE } from '../messages';
 
 export class ErrorHelper {
   static BadRequestException(msg?: string | string[]) {
@@ -10,7 +11,7 @@ export class ErrorHelper {
   static NotFoundException(msg?: string) {
     throw new HttpException(msg, HttpStatus.NOT_FOUND);
   }
-  static ForbiddenException(msg?: string) {
+  static ForbiddenException(msg: string = APP_MESSAGE.FORBIDDEN) {
     throw new HttpException(msg, HttpStatus.FORBIDDEN);
   }
   static ConflictException(msg?: string) {

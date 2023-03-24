@@ -1,8 +1,10 @@
 import { Transform } from 'class-transformer';
 import {
   IsBoolean,
+  IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   MaxLength,
@@ -12,6 +14,51 @@ import { Match } from '../../../common';
 import { VIETNAM_PHONE_PATTERN } from '../../../constants';
 import { Role } from '../../../enums';
 
+export class CreateUserAdminDto {
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(4)
+  @MaxLength(20)
+  username: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(32)
+  password: string;
+
+  @IsNotEmpty()
+  @IsString()
+  firstName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  lastName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
+  phone: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  branchName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  announcements: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    return value.toLowerCase() === 'true';
+  })
+  isActiveTiers: boolean;
+}
 export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
@@ -27,34 +74,64 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
-  firstName;
+  firstName: string;
 
   @IsNotEmpty()
   @IsString()
-  lastName;
+  lastName: string;
 
   @IsNotEmpty()
   @IsString()
   @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
-  phone;
-
-  @IsEnum({ USER: Role.USER })
-  role;
+  phone: string;
 
   @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsEnum(Role)
+  role: Role;
+}
+export class UpdateUserDto {
+  @IsOptional()
   @IsString()
-  branchName;
+  firstName?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  announcements;
+  lastName?: string;
 
-  @IsNotEmpty()
-  @IsBoolean()
-  @Transform(({ value }) => {
-    return value.toLowerCase() === 'true' || false;
-  })
-  isActiveTiers;
+  @IsOptional()
+  @IsString()
+  @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
+  phone?: string;
+
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
+
+  @IsOptional()
+  @IsString()
+  token?: string;
+}
+
+export class GetUserDto {
+  @IsOptional()
+  page?: number;
+
+  @IsOptional()
+  perPage?: number;
+
+  @IsOptional()
+  search?: string;
+
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
 }
 
 export class ChangePasswordDto {

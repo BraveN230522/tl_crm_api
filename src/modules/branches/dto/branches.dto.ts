@@ -12,7 +12,7 @@ export class CreateBranchDto {
 
   @IsString()
   @IsNotEmpty()
-  memberUrl;
+  customerUrl;
 
   @Transform(({ value }) => {
     return value.toLowerCase() === 'true' || false;

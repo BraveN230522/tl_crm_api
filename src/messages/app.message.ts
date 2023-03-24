@@ -5,4 +5,6 @@ export const APP_MESSAGE = {
   DELETED_SUCCESSFULLY: (fieldName) => `Delete ${fieldName} successfully`,
   SEND_OTP_SUCCESSFULLY: 'Send OTP code successfully',
   CONFIRM_OTP_SUCCESSFULLY: 'Confirm OTP code successfully',
+  LOGOUT_SUCCESSFULLY: 'Logout successfully',
+  FORBIDDEN: 'You do not have permission',
 };

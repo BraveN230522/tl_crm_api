@@ -7,7 +7,7 @@ import { TiersService } from './tiers.service';
 
 @Controller('users')
 @UseGuards(AuthGuard(), RolesGuard)
-@RoleDecorator(Role.SUPER_ADMIN)
+// @RoleDecorator(Role.SUPER_ADMIN)
 export class TiersController {
   constructor(private branchesService: TiersService) {}
 }

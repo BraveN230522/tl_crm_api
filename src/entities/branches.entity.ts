@@ -22,9 +22,9 @@ export class Branch extends BaseTable {
   announcements: string;
 
   @Column({
-    name: 'member_url',
+    name: 'customer_url',
   })
-  memberUrl: string;
+  customerUrl: string;
 
   @Column({
     name: 'is_active_tiers',
@@ -32,9 +32,8 @@ export class Branch extends BaseTable {
   })
   isActiveTiers?: boolean;
 
-  @OneToOne(() => User)
-  @JoinColumn()
-  user: User;
+  @OneToMany(() => User, (user) => user.branch)
+  users: User[];
 
   @OneToMany(() => Store, (store) => store.branch)
   stores: Store[];

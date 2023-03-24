@@ -1,3 +1,4 @@
 export * from './users';
 export * from './commons';
-export * from './members';
+export * from './customers';
+export * from './orders';

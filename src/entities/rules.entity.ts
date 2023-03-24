@@ -1,6 +1,5 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { BaseTable } from '../base';
-import { Branch } from './branches.entity';
 import { Store } from './stores.entity';
 
 @Entity()

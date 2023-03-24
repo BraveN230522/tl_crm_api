@@ -2,10 +2,11 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcrypt';
 import _ from 'lodash';
-import { Member } from '../../entities/members.entity';
+import { Customer } from '../../entities/customers.entity';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
 import { EncryptHelper, ErrorHelper } from '../../helpers';
+import { APP_MESSAGE } from '../../messages';
 import { UsersService } from '../users/users.service';
 
 @Injectable()
@@ -35,11 +36,19 @@ export class AuthService {
     };
   }
 
-  // async validate({ username, role }): Promise<User | Member> {
-  async validate({ username, role }): Promise<any> {
+  async logout(currentUser: User): Promise<string> {
+    await this.userService.updateUser(currentUser.id, { token: null });
+
+    return APP_MESSAGE.LOGOUT_SUCCESSFULLY;
+  }
+
+  // async validate({ username, role }): Promise<User | Customer> {
+  async validate({ username, role }): Promise<User> {
     switch (role) {
-      case Role.USER:
-      case Role.SUPER_ADMIN:
+      case Role.ADMIN:
+      case Role.B_MANAGER:
+      case Role.S_MANAGER:
+      case Role.STAFF:
         return await this.userService.getUserByUsername({ username });
 
       default:

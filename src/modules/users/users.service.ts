@@ -1,20 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
+import { Branch } from '../../entities/branches.entity';
 import { User } from '../../entities/users.entity';
-import { Role } from '../../enums';
-import { ErrorHelper, decryptSha256, encryptSha256 } from '../../helpers';
-import { ISendSMS } from '../../interfaces';
+import { ErrorHelper, encryptSha256 } from '../../helpers';
+import { IPaginationResponse, ISendSMS } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey, matchWord } from '../../utilities';
 import { BranchesService } from '../branches/branches.service';
+import { Role } from './../../enums/commons';
 import { EncryptHelper } from './../../helpers/encrypt.helper';
 import { SmsService } from './../sms/sms.service';
 import {
   ChangePasswordDto,
   ConfirmForgotPasswordDto,
+  CreateUserAdminDto,
+  CreateUserDto,
   ForgotPasswordDto,
+  GetUserDto,
   ResetPasswordDto,
+  UpdateUserDto,
 } from './dto/users.dto';
 import { UsersRepository } from './users.repository';
 
@@ -49,18 +54,26 @@ export class UsersService {
     return found;
   }
 
-  async createUser(createUserDto): Promise<any> {
+  async createUserAdmin(createUserAdminDto: CreateUserAdminDto): Promise<User> {
     const {
       username,
       password,
       firstName,
       lastName,
       phone,
+      email,
       branchName,
       announcements,
       isActiveTiers,
-    } = createUserDto;
+    } = createUserAdminDto;
     const hashedPassword = await EncryptHelper.hash(password);
+
+    const branch: Branch = await this.branchesService.createBranch({
+      branchName,
+      announcements,
+      customerUrl: `/customer?${encryptSha256(username, username)}`,
+      isActiveTiers,
+    });
 
     try {
       const user = this.usersRepository.create({
@@ -69,19 +82,12 @@ export class UsersService {
         firstName,
         lastName,
         phone,
-        role: Role.USER,
+        email,
+        role: Role.ADMIN,
+        branch,
       });
 
       await this.usersRepository.save([user]);
-      const branch = await this.branchesService.createBranch(
-        {
-          branchName,
-          announcements,
-          memberUrl: `/member?${encryptSha256(username, username)}`,
-          isActiveTiers,
-        },
-        user,
-      );
 
       const mappingUser = _.pick(user, [
         'username',
@@ -90,17 +96,10 @@ export class UsersService {
         'phone',
         'role',
         'id',
-      ]);
+        'branch',
+      ]) as User;
 
-      const mappingBranch = _.pick(branch, [
-        'name',
-        'announcements',
-        'memberUrl',
-        'isActiveTiers',
-        'id',
-      ]);
-
-      return { user: mappingUser, branch: mappingBranch };
+      return mappingUser;
     } catch (error) {
       console.log({ error });
       if (error.response) ErrorHelper.ConflictException(error.response);
@@ -117,24 +116,139 @@ export class UsersService {
     }
   }
 
-  async updateUser(id, updateUserDto): Promise<string> {
-    const user = await this.getUser(id);
+  isValidCreate(currentUserRole: Role, targetRole: Role) {
+    switch (currentUserRole) {
+      case Role.ADMIN:
+        return targetRole !== Role.ADMIN;
+      case Role.B_MANAGER:
+        return targetRole === Role.STAFF || targetRole === Role.S_MANAGER;
+      case Role.S_MANAGER:
+        return targetRole === Role.STAFF;
+      case Role.STAFF:
+        return false;
+      default:
+        return false;
+    }
+  }
+
+  async createUser(createUserDto: CreateUserDto, currentUserRole: Role): Promise<User> {
+    const {
+      username,
+      password,
+      firstName,
+      lastName,
+      phone,
+      email,
+      role = Role.STAFF,
+    } = createUserDto;
+
+    if (!this.isValidCreate(currentUserRole, role)) {
+      ErrorHelper.ForbiddenException();
+    }
+
+    const hashedPassword = await EncryptHelper.hash(password);
     try {
-      assignIfHasKey(user, updateUserDto);
+      const user = this.usersRepository.create({
+        username,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        phone,
+        email,
+        role,
+      });
 
       await this.usersRepository.save([user]);
 
-      return APP_MESSAGE.UPDATED_SUCCESSFULLY('user');
+      const mappingUser = _.pick(user, [
+        'username',
+        'firstName',
+        'lastName',
+        'phone',
+        'role',
+        'id',
+      ]) as User;
+
+      return mappingUser;
     } catch (error) {
+      console.log({ error });
+      if (error.response) ErrorHelper.ConflictException(error.response);
+
       if (error.code === '23505') {
         const detail = error.detail as string;
-        const uniqueArr = ['phone', 'username'];
+        const uniqueArr = ['phone', 'username', 'email'];
         uniqueArr.forEach((item) => {
           if (matchWord(detail, item) !== null) {
             ErrorHelper.ConflictException(`This ${item} already exists`);
           }
         });
       } else ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async updateUser(id: number, updateUserDto: UpdateUserDto, currentUser?: User): Promise<string> {
+    const user = await this.getUser(id);
+    // Check role update: not have role greater be updating user role or not the user himself
+    if (!this.isValidCreate(currentUser?.role, user?.role) && currentUser.id !== user.id) {
+      ErrorHelper.ForbiddenException();
+    }
+    // check permission update this user role
+    if (currentUser.id === user.id && updateUserDto?.role) {
+      ErrorHelper.ForbiddenException();
+    }
+    try {
+      assignIfHasKey(user, updateUserDto);
+      await this.usersRepository.save([user]);
+      return APP_MESSAGE.UPDATED_SUCCESSFULLY('user');
+    } catch (error) {
+      if (error.code === '23505') {
+        const detail = error.detail as string;
+        const uniqueArr = ['phone'];
+        uniqueArr.forEach((item) => {
+          if (matchWord(detail, item) !== null) {
+            ErrorHelper.ConflictException(`This ${item} already exists`);
+          }
+        });
+      } else ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async deleteUser(id: number, currentUser?: User): Promise<string> {
+    const user = await this.getUser(id);
+    if (!this.isValidCreate(currentUser?.role, user?.role) || currentUser.id === user.id) {
+      ErrorHelper.ForbiddenException();
+    }
+    try {
+      const result = await this.usersRepository.delete(id);
+
+      if (result.affected === 0) ErrorHelper.NotFoundException(`User ${id} is not found`);
+
+      return APP_MESSAGE.DELETED_SUCCESSFULLY('user');
+    } catch (error) {
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async readUser(getUserDto: GetUserDto): Promise<IPaginationResponse<User>> {
+    const { search, role } = getUserDto;
+    try {
+      const queryBuilderRepo = await this.usersRepository.createQueryBuilder('u');
+
+      if (search) {
+        queryBuilderRepo
+          .where('u.first_name LIKE :search', { search: `%${search.trim()}%` })
+          .orWhere('u.last_name LIKE :search', { search: `%${search.trim()}%` });
+      }
+
+      if (role) {
+        queryBuilderRepo.andWhere('u.role = :role', { role });
+      }
+
+      const data = await this.usersRepository.paginationQueryBuilder(queryBuilderRepo, getUserDto);
+
+      return data;
+    } catch (error) {
+      ErrorHelper.InternalServerErrorException();
     }
   }
 

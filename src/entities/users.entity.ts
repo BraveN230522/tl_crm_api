@@ -1,8 +1,9 @@
 import { Exclude } from 'class-transformer';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { BaseTable } from '../base';
 import { Role } from '../enums';
 import { Branch } from './branches.entity';
+import { Chance } from './chances.entity';
 
 // import { Admin } from '../admin/admin.entity';
 // import { Project } from '../projects/projects.entity';
@@ -43,6 +44,11 @@ export class User extends BaseTable {
 
   @Column({
     nullable: true,
+  })
+  email?: string;
+
+  @Column({
+    nullable: true,
     name: 'forgot_password_otp',
   })
   forgotPasswordOtp?: string;
@@ -55,10 +61,8 @@ export class User extends BaseTable {
   })
   isForgotPassword: boolean;
 
-  @Exclude({ toPlainOnly: true })
   @Column({
     nullable: false,
-    default: Role.USER,
   })
   role: Role;
 
@@ -68,4 +72,10 @@ export class User extends BaseTable {
     default: null,
   })
   token?: string;
+
+  @ManyToOne(() => Branch, (branch) => branch.users, { onDelete: 'CASCADE' })
+  branch: Branch;
+
+  @OneToMany(() => Chance, (chance) => chance.user)
+  chances: Chance[];
 }

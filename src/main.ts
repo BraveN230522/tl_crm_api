@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { useContainer } from 'class-validator';
 import express from 'express';
-import multer from 'multer';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common';
 import { TransformInterceptor } from './common/transformers/transform.interceptor';
@@ -11,9 +10,15 @@ import { AppConfigService } from './configuration';
 
 export async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const upload = multer();
   const configService = app.get<ConfigService>(ConfigService);
   const appConfigService = app.get(AppConfigService);
+
+  app.enableCors({
+    origin: ['http://localhost:9001'],
+    credentials: true,
+    // origin: true,
+    // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  });
 
   // for parsing application/json
   app.use(express.json());
@@ -23,7 +28,6 @@ export async function bootstrap() {
 
   // for parsing multipart/form-data
   app.use(express.static('public'));
-  app.use(upload.single('undefined'));
 
   // global setup
   useContainer(app.select(AppModule), { fallbackOnErrors: true }); // refer: https://github.com/typestack/class-validator#using-service-container

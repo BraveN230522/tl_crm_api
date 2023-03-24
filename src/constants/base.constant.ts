@@ -27,6 +27,9 @@ export const PAGE_NO_LIMIT = {
   perPage: 0,
 };
 
+//Megabyte
+export const IMAGE_MAX_SIZE = 5;
+
 export const INVESTOR_EXCEL_NAME = 'investors.xlsx';
 
 export const URL_UPLOAD_IMAGE_CK = '/api/clouds/upload-image-ckeditor';
