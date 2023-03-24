@@ -1,11 +1,20 @@
 import { Exclude } from 'class-transformer';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { BaseTable } from '../base';
 import { Role } from '../enums';
-import { Product } from '../modules/products/products.entity';
 import { Branch } from './branches.entity';
 import { ChanceProcess } from './chanceProcesses.entity';
 import { Customer } from './customers.entity';
+import { Product } from './products.entity';
 import { User } from './users.entity';
 
 // import { Admin } from '../admin/admin.entity';
