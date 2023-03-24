@@ -92,7 +92,7 @@ export class ChancesService {
       ErrorHelper.ForbiddenException();
     }
     try {
-      assignIfHasKey(chance, updateChanceDto);
+      assignIfHasKey(chance, { ...updateChanceDto, user: createChanceUser });
       await this.chanceRepository.save([chance]);
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('chance');
     } catch (error) {
