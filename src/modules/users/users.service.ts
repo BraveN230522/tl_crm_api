@@ -188,10 +188,12 @@ export class UsersService {
 
   async updateUser(id: number, updateUserDto: UpdateUserDto, currentUser?: User): Promise<string> {
     const user = await this.getUser(id);
-    if (
-      updateUserDto?.role &&
-      (!this.isValidCreate(currentUser?.role, updateUserDto?.role) || currentUser.id === user.id)
-    ) {
+    // Check role update: not have role greater be updating user role or not the user himself
+    if (!this.isValidCreate(currentUser?.role, user?.role) && currentUser.id !== user.id) {
+      ErrorHelper.ForbiddenException();
+    }
+    // check permission update this user role
+    if (currentUser.id === user.id && updateUserDto?.role) {
       ErrorHelper.ForbiddenException();
     }
     try {
@@ -219,7 +221,7 @@ export class UsersService {
     try {
       const result = await this.usersRepository.delete(id);
 
-      if (result.affected === 0) ErrorHelper.NotFoundException(`Project ${id} is not found`);
+      if (result.affected === 0) ErrorHelper.NotFoundException(`User ${id} is not found`);
 
       return APP_MESSAGE.DELETED_SUCCESSFULLY('user');
     } catch (error) {
