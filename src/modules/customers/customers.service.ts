@@ -85,7 +85,8 @@ export class CustomersService {
         queryBuilderRepo
           .where('s.first_name LIKE :search', { search: `%${search.trim()}%` })
           .orWhere('s.last_name LIKE :search', { search: `%${search.trim()}%` })
-          .orWhere('s.phone LIKE :search', { search: `%${search.trim()}%` });
+          .orWhere('s.phone LIKE :search', { search: `%${search.trim()}%` })
+          .orWhere('s.address LIKE :search', { search: `%${search.trim()}%` });
       }
 
       if (classification) {
