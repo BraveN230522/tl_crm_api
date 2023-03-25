@@ -4,11 +4,13 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 import { Match } from '../../../common';
 import { VIETNAM_PHONE_PATTERN } from '../../../constants';
@@ -91,7 +93,18 @@ export class CreateUserDto {
 
   @IsEnum(Role)
   role: Role;
+
+  @Transform((params) => {
+    return Number(params.value);
+  })
+  @IsNumber()
+  @ValidateIf((obj: CreateUserDto) => {
+    return obj.role === Role.S_MANAGER || obj.role === Role.STAFF;
+  })
+  @IsNotEmpty()
+  storeId?: string;
 }
+
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
@@ -117,6 +130,13 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   token?: string;
+
+  @Transform((params) => {
+    return Number(params.value);
+  })
+  @IsNumber()
+  @IsOptional()
+  storeId?: string;
 }
 
 export class GetUserDto {

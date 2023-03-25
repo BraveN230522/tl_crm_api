@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { Branch } from '../../entities/branches.entity';
 import { User } from '../../entities/users.entity';
+import { UserStatus } from '../../enums';
 import { ErrorHelper, encryptSha256, isValidRole } from '../../helpers';
 import { IPaginationResponse, ISendSMS } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
@@ -11,6 +12,7 @@ import { BranchesService } from '../branches/branches.service';
 import { Role } from './../../enums/commons';
 import { EncryptHelper } from './../../helpers/encrypt.helper';
 import { SmsService } from './../sms/sms.service';
+import { StoresService } from './../stores/stores.service';
 import {
   ChangePasswordDto,
   ConfirmForgotPasswordDto,
@@ -29,6 +31,7 @@ export class UsersService {
     @InjectRepository(UsersRepository) private usersRepository: UsersRepository,
     private smsService: SmsService,
     private branchesService: BranchesService,
+    private storesService: StoresService,
   ) {}
 
   async getUser(id): Promise<User> {
@@ -125,6 +128,7 @@ export class UsersService {
       phone,
       email,
       role = Role.STAFF,
+      storeId,
     } = createUserDto;
 
     if (!isValidRole(currentUserRole, role)) {
@@ -132,6 +136,9 @@ export class UsersService {
     }
 
     const hashedPassword = await EncryptHelper.hash(password);
+
+    const store = await this.storesService.readOne(storeId);
+
     try {
       const user = this.usersRepository.create({
         username,
@@ -141,6 +148,7 @@ export class UsersService {
         phone,
         email,
         role,
+        store,
       });
 
       await this.usersRepository.save([user]);
@@ -152,6 +160,7 @@ export class UsersService {
         'phone',
         'role',
         'id',
+        'store',
       ]) as User;
 
       return mappingUser;
@@ -183,6 +192,35 @@ export class UsersService {
     }
     try {
       assignIfHasKey(user, updateUserDto);
+      await this.usersRepository.save([user]);
+      return APP_MESSAGE.UPDATED_SUCCESSFULLY('user');
+    } catch (error) {
+      if (error.code === '23505') {
+        const detail = error.detail as string;
+        const uniqueArr = ['phone'];
+        uniqueArr.forEach((item) => {
+          if (matchWord(detail, item) !== null) {
+            ErrorHelper.ConflictException(`This ${item} already exists`);
+          }
+        });
+      } else ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async toggleActivateUser(id: number, currentUser?: User, status?: UserStatus): Promise<string> {
+    const user = await this.getUser(id);
+    // Check role update: not have role greater be updating user role or not the user himself
+    if (!isValidRole(currentUser?.role, user?.role) && currentUser.id !== user.id) {
+      ErrorHelper.ForbiddenException();
+    }
+    // check permission update this user role
+    if (currentUser.id === user.id) {
+      ErrorHelper.ForbiddenException();
+    }
+    try {
+      assignIfHasKey(user, {
+        status,
+      });
       await this.usersRepository.save([user]);
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('user');
     } catch (error) {

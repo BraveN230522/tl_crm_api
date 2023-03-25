@@ -6,6 +6,7 @@ import { Customer } from './customers.entity';
 import { Product } from './products.entity';
 import { Rule } from './rules.entity';
 import { Tier } from './tiers.entity';
+import { User } from './users.entity';
 
 @Entity()
 export class Store extends BaseTable {
@@ -46,6 +47,9 @@ export class Store extends BaseTable {
 
   @OneToMany(() => Tier, (tier) => tier.store)
   tiers: Tier[];
+
+  @OneToMany(() => User, (user) => user.store)
+  users: User[];
 
   @ManyToMany(() => Customer, (customer) => customer.id, { cascade: true })
   @JoinTable({

@@ -1,9 +1,10 @@
 import { Exclude } from 'class-transformer';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { BaseTable } from '../base';
-import { Role } from '../enums';
+import { Role, UserStatus } from '../enums';
 import { Branch } from './branches.entity';
 import { Chance } from './chances.entity';
+import { Store } from './stores.entity';
 
 // import { Admin } from '../admin/admin.entity';
 // import { Project } from '../projects/projects.entity';
@@ -62,9 +63,20 @@ export class User extends BaseTable {
   isForgotPassword: boolean;
 
   @Column({
+    type: 'enum',
+    enum: Role,
     nullable: false,
+    default: Role.STAFF,
   })
   role: Role;
+
+  @Column({
+    type: 'enum',
+    enum: UserStatus,
+    nullable: false,
+    default: UserStatus.Active,
+  })
+  status: UserStatus;
 
   @Exclude({ toPlainOnly: true })
   @Column({
@@ -75,6 +87,9 @@ export class User extends BaseTable {
 
   @ManyToOne(() => Branch, (branch) => branch.users, { onDelete: 'CASCADE' })
   branch: Branch;
+
+  @ManyToOne(() => Store, (store) => store.users, { onDelete: 'CASCADE' })
+  store: Store;
 
   @OneToMany(() => Chance, (chance) => chance.user)
   chances: Chance[];

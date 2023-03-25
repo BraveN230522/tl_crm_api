@@ -7,6 +7,8 @@ import { BranchesModule } from '../branches/branches.module';
 import { BranchesRepository } from '../branches/branches.repository';
 import { BranchesService } from '../branches/branches.service';
 import { SmsService } from '../sms/sms.service';
+import { StoresRepository } from '../stores/stores.repository';
+import { StoresService } from '../stores/stores.service';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { SmsModule } from './../sms/sms.module';
@@ -38,6 +40,8 @@ import { AuthService } from './auth.service';
     SmsService,
     BranchesService,
     BranchesRepository,
+    StoresService,
+    StoresRepository,
   ],
   controllers: [AuthController],
 })

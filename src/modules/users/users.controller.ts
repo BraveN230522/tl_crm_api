@@ -13,7 +13,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RoleDecorator, UserDecorator } from '../../common/decorators';
 import { RolesGuard } from '../../common/guards';
 import { User } from '../../entities/users.entity';
-import { Role } from '../../enums';
+import { Role, UserStatus } from '../../enums';
 import { IPaginationResponse } from '../../interfaces';
 import {
   ChangePasswordDto,
@@ -73,6 +73,18 @@ export class UsersController {
   @Get('/:id')
   getUser(@Param('id') id): Promise<User> {
     return this.usersService.getUser(id);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Patch('/active/:id')
+  activateUser(@Param('id') id, @UserDecorator() currentUser): Promise<string> {
+    return this.usersService.toggleActivateUser(id, currentUser, UserStatus.Active);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Patch('/inactive/:id')
+  inactivateUser(@Param('id') id, @UserDecorator() currentUser): Promise<string> {
+    return this.usersService.toggleActivateUser(id, currentUser, UserStatus.Inactive);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
