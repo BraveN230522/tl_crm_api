@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { Chance } from '../../entities/chances.entity';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
-import { ErrorHelper } from '../../helpers';
+import { ErrorHelper, isValidRole } from '../../helpers';
 import { IPaginationResponse } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey } from '../../utilities';
@@ -18,21 +18,6 @@ export class ChancesService {
     @InjectRepository(ChancesRepository) private chanceRepository: ChancesRepository,
     private userService: UsersService,
   ) {}
-
-  isValidRole(currentUserRole: Role, targetRole: Role) {
-    switch (currentUserRole) {
-      case Role.ADMIN:
-        return targetRole !== Role.ADMIN;
-      case Role.B_MANAGER:
-        return targetRole === Role.STAFF || targetRole === Role.S_MANAGER;
-      case Role.S_MANAGER:
-        return targetRole === Role.STAFF;
-      case Role.STAFF:
-        return false;
-      default:
-        return false;
-    }
-  }
 
   async getChance(id): Promise<Chance> {
     const found = await this.chanceRepository.findOneBy({ id });
@@ -82,7 +67,7 @@ export class ChancesService {
     const chance = await this.getChance(id);
     const createChanceUser: User = await this.userService.getUser(chance.user); // nhan vien tao chance
     if (
-      !this.isValidRole(currentUser?.role, createChanceUser?.role) &&
+      !isValidRole(currentUser?.role, createChanceUser?.role) &&
       currentUser.id !== chance?.user?.id
     ) {
       ErrorHelper.ForbiddenException();
@@ -103,7 +88,7 @@ export class ChancesService {
   async deleteChance(id: number, currentUser?: User): Promise<string> {
     const chance = await this.getChance(id);
     const createChanceUser: User = await this.userService.getUser(chance.user); // nhan vien tao chance
-    if (!this.isValidRole(currentUser?.role, createChanceUser?.role)) {
+    if (!isValidRole(currentUser?.role, createChanceUser?.role)) {
       ErrorHelper.ForbiddenException();
     }
     try {

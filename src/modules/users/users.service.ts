@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { Branch } from '../../entities/branches.entity';
 import { User } from '../../entities/users.entity';
-import { ErrorHelper, encryptSha256 } from '../../helpers';
+import { ErrorHelper, encryptSha256, isValidRole } from '../../helpers';
 import { IPaginationResponse, ISendSMS } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey, matchWord } from '../../utilities';
@@ -116,21 +116,6 @@ export class UsersService {
     }
   }
 
-  isValidCreate(currentUserRole: Role, targetRole: Role) {
-    switch (currentUserRole) {
-      case Role.ADMIN:
-        return targetRole !== Role.ADMIN;
-      case Role.B_MANAGER:
-        return targetRole === Role.STAFF || targetRole === Role.S_MANAGER;
-      case Role.S_MANAGER:
-        return targetRole === Role.STAFF;
-      case Role.STAFF:
-        return false;
-      default:
-        return false;
-    }
-  }
-
   async createUser(createUserDto: CreateUserDto, currentUserRole: Role): Promise<User> {
     const {
       username,
@@ -142,7 +127,7 @@ export class UsersService {
       role = Role.STAFF,
     } = createUserDto;
 
-    if (!this.isValidCreate(currentUserRole, role)) {
+    if (!isValidRole(currentUserRole, role)) {
       ErrorHelper.ForbiddenException();
     }
 
@@ -189,7 +174,7 @@ export class UsersService {
   async updateUser(id: number, updateUserDto: UpdateUserDto, currentUser?: User): Promise<string> {
     const user = await this.getUser(id);
     // Check role update: not have role greater be updating user role or not the user himself
-    if (!this.isValidCreate(currentUser?.role, user?.role) && currentUser.id !== user.id) {
+    if (!isValidRole(currentUser?.role, user?.role) && currentUser.id !== user.id) {
       ErrorHelper.ForbiddenException();
     }
     // check permission update this user role
@@ -215,7 +200,7 @@ export class UsersService {
 
   async deleteUser(id: number, currentUser?: User): Promise<string> {
     const user = await this.getUser(id);
-    if (!this.isValidCreate(currentUser?.role, user?.role) || currentUser.id === user.id) {
+    if (!isValidRole(currentUser?.role, user?.role) || currentUser.id === user.id) {
       ErrorHelper.ForbiddenException();
     }
     try {
