@@ -255,11 +255,13 @@ export class UsersService {
   async readUser(getUserDto: GetUserDto): Promise<IPaginationResponse<User>> {
     const { search, role } = getUserDto;
     try {
-      const queryBuilderRepo = await this.usersRepository.createQueryBuilder('u');
+      const queryBuilderRepo = await this.usersRepository
+        .createQueryBuilder('u')
+        .where('u.role != :role', { role: Role.ADMIN });
 
       if (search) {
         queryBuilderRepo
-          .where('u.first_name LIKE :search', { search: `%${search.trim()}%` })
+          .andWhere('u.first_name LIKE :search', { search: `%${search.trim()}%` })
           .orWhere('u.last_name LIKE :search', { search: `%${search.trim()}%` });
       }
 
