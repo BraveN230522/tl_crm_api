@@ -8,6 +8,7 @@ import { Campaign } from './entities/campaigns.entity';
 import { Category } from './entities/categories.entity';
 import { ChanceProcess } from './entities/chanceProcesses.entity';
 import { Chance } from './entities/chances.entity';
+import { Classification } from './entities/classifications.entity';
 import { Customer } from './entities/customers.entity';
 import { Order } from './entities/orders.entity';
 import { Product } from './entities/products.entity';
@@ -21,6 +22,7 @@ import { CampaignsModule } from './modules/campaigns/campaigns.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { ChanceProcessesModule } from './modules/chanceProcesses/chanceProcesses.module';
 import { ChancesModule } from './modules/chances/chances.module';
+import { ClassificationsModule } from './modules/classifications/classifications.module';
 import { CloudsModule } from './modules/clouds/clouds.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { OrdersModule } from './modules/orders/orders.module';
@@ -51,6 +53,7 @@ import { UsersModule } from './modules/users/users.module';
         Order,
         Product,
         Category,
+        Classification,
       ],
     }),
     AppConfigModule,
@@ -70,6 +73,7 @@ import { UsersModule } from './modules/users/users.module';
     SmsModule,
     CloudsModule,
     CategoriesModule,
+    ClassificationsModule,
   ],
 })
 export class AppModule {}

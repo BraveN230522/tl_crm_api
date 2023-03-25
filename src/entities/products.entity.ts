@@ -30,7 +30,7 @@ export class Product extends BaseTable {
   @Column()
   image: string;
 
-  @ManyToOne(() => Category, (categories) => categories.product, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Category, (categories) => categories.products, { onDelete: 'CASCADE' })
   category: Category;
 
   @ManyToMany(() => Store, (store) => store.id, { cascade: true })

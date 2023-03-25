@@ -2,6 +2,7 @@ import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typ
 import { BaseTable } from '../base';
 import { Gender } from '../enums';
 import { Chance } from './chances.entity';
+import { Classification } from './classifications.entity';
 import { Store } from './stores.entity';
 import { Tier } from './tiers.entity';
 
@@ -25,7 +26,7 @@ export class Customer extends BaseTable {
   })
   lastName: string;
 
-  @Column()
+  @Column({ type: 'bigint' })
   dob: number;
 
   @Column({
@@ -49,6 +50,11 @@ export class Customer extends BaseTable {
 
   @ManyToOne(() => Tier, (tier) => tier.customers, { onDelete: 'CASCADE' })
   tier: Tier;
+
+  @ManyToOne(() => Classification, (classification) => classification.customers, {
+    onDelete: 'CASCADE',
+  })
+  classification: Classification;
 
   @OneToMany(() => Chance, (chance) => chance.customer)
   chances: Chance[];
