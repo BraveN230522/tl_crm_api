@@ -112,6 +112,13 @@ export class UpdateCustomerDto {
   @IsNumber()
   @IsOptional()
   rate: number;
+
+  @Transform((params) => {
+    return Number(params.value);
+  })
+  @IsNumber()
+  @IsOptional()
+  classificationId: number;
 }
 
 export class GetCustomerDto {

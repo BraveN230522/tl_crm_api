@@ -109,10 +109,12 @@ export class CustomersService {
     updateCustomerDto: UpdateCustomerDto,
     currentUser: User,
   ): Promise<string> {
+    const { classificationId } = updateCustomerDto;
     const customer = await this.readOne(id);
+    const classification = await this.classificationsService.readOne(classificationId);
 
     try {
-      assignIfHasKey(customer, updateCustomerDto);
+      assignIfHasKey(customer, { ...updateCustomerDto, classification });
       await this.customersRepository.save([customer]);
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('customer');
     } catch (error) {

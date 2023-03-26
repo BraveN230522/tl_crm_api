@@ -180,16 +180,22 @@ export class UsersService {
     }
   }
 
-  async updateUser(id: number, updateUserDto: UpdateUserDto, currentUser?: User): Promise<string> {
+  async updateUser(
+    id: number,
+    updateUserDto: UpdateUserDto,
+    currentUser?: User,
+    isLogin?: boolean,
+  ): Promise<string> {
     const user = await this.getUser(id);
     // Check role update: not have role greater be updating user role or not the user himself
-    if (!isValidRole(currentUser?.role, user?.role) && currentUser.id !== user.id) {
+    if (!isValidRole(currentUser?.role, user?.role) && currentUser?.id !== user.id && !isLogin) {
       ErrorHelper.ForbiddenException();
     }
     // check permission update this user role
-    if (currentUser.id === user.id && updateUserDto?.role) {
+    if (currentUser?.id === user.id && updateUserDto?.role && !isLogin) {
       ErrorHelper.ForbiddenException();
     }
+
     try {
       assignIfHasKey(user, updateUserDto);
       await this.usersRepository.save([user]);

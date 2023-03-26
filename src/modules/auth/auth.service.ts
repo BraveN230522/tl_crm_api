@@ -28,7 +28,9 @@ export class AuthService {
 
     const mappingResponse = _.omit(found, ['password']) as User;
 
-    await this.userService.updateUser(found.id, { token: accessToken });
+    const isLogin = true;
+
+    await this.userService.updateUser(found.id, { token: accessToken }, null, isLogin);
 
     return {
       ...mappingResponse,
