@@ -260,7 +260,7 @@ export class UsersService {
 
   async readUser(getUserDto: GetUserDto): Promise<IPaginationResponse<User>> {
     const { search, role } = getUserDto;
-    console.log(search.toLowerCase().trim());
+
     try {
       const queryBuilderRepo = await this.usersRepository
         .createQueryBuilder('u')
