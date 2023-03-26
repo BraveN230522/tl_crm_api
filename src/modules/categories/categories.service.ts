@@ -17,7 +17,9 @@ export class CategoriesService {
     const { search } = filter;
     const query = this.categoriesRepository.createQueryBuilder('categories');
     if (search) {
-      query.andWhere('categories.name LIKE LOWER(:search)', { search: `%${search}%` });
+      query.andWhere('LOWER(categories.name) LIKE LOWER(:search)', {
+        search: `%${search.trim()}%`,
+      });
     }
     const categories = this.categoriesRepository.paginationQueryBuilder(query, filter);
     return categories;

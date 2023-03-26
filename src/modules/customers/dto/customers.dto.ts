@@ -65,6 +65,13 @@ export class CreateCustomerDto {
   @IsNumber()
   @IsNotEmpty()
   classificationId: number;
+
+  @Transform((params) => {
+    return Number(params.value);
+  })
+  @IsNumber()
+  @IsOptional()
+  storeId?: string;
 }
 
 export class UpdateCustomerDto {
@@ -119,6 +126,13 @@ export class UpdateCustomerDto {
   @IsNumber()
   @IsOptional()
   classificationId: number;
+
+  @Transform((params) => {
+    return Number(params.value);
+  })
+  @IsNumber()
+  @IsOptional()
+  storeId?: string;
 }
 
 export class GetCustomerDto {

@@ -107,7 +107,9 @@ export class ChancesService {
       const queryBuilderRepo = await this.chanceRepository.createQueryBuilder('chance');
 
       if (search) {
-        queryBuilderRepo.where('chance.name LIKE :search', { search: `%${search.trim()}%` });
+        queryBuilderRepo.where('LOWER(chance.name) LIKE LOWER(:search)', {
+          search: `%${search.trim()}%`,
+        });
       }
 
       const data = await this.chanceRepository.paginationQueryBuilder(

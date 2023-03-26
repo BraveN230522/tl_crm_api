@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import _ from 'lodash';
 import { Customer } from '../../entities/customers.entity';
 import { User } from '../../entities/users.entity';
+import { Role } from '../../enums';
 import { ErrorHelper } from '../../helpers';
 import { IPaginationResponse } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey, matchWord } from '../../utilities';
 import { ClassificationsService } from '../classifications/classifications.service';
+import { StoresService } from '../stores/stores.service';
 import { CustomersRepository } from './customers.repository';
 import { CreateCustomerDto, GetCustomerDto, UpdateCustomerDto } from './dto/customers.dto';
 
@@ -15,6 +18,7 @@ export class CustomersService {
   constructor(
     @InjectRepository(CustomersRepository) private customersRepository: CustomersRepository,
     private classificationsService: ClassificationsService,
+    private storesService: StoresService,
   ) {}
 
   async create(createCustomerDto: CreateCustomerDto, currentUser: User): Promise<Customer> {
@@ -29,9 +33,15 @@ export class CustomersService {
       cashback,
       rate,
       classificationId,
+      storeId = currentUser?.store?.id,
     } = createCustomerDto;
 
+    if (!storeId) {
+      ErrorHelper.BadRequestException('storeId should not be empty');
+    }
+
     const classification = await this.classificationsService.readOne(classificationId);
+    const store = await this.storesService.readOne(storeId);
 
     try {
       const customer = this.customersRepository.create({
@@ -45,6 +55,7 @@ export class CustomersService {
         cashback,
         rate,
         classification,
+        stores: [store],
       });
 
       await this.customersRepository.save([customer]);
@@ -67,7 +78,10 @@ export class CustomersService {
   }
 
   async readOne(id): Promise<Customer> {
-    const found = await this.customersRepository.findOne({ id }, { relations: ['classification'] });
+    const found = await this.customersRepository.findOne(
+      { id },
+      { relations: ['classification', 'stores'] },
+    );
 
     if (!found) ErrorHelper.NotFoundException(`Customer is not found`);
 
@@ -79,14 +93,15 @@ export class CustomersService {
     try {
       const queryBuilderRepo = await this.customersRepository
         .createQueryBuilder('s')
-        .leftJoinAndSelect('s.classification', 'sc');
+        .leftJoinAndSelect('s.classification', 'sc')
+        .leftJoinAndSelect('s.stores', 'ss');
 
       if (search) {
         queryBuilderRepo
-          .where('s.first_name LIKE :search', { search: `%${search.trim()}%` })
-          .orWhere('s.last_name LIKE :search', { search: `%${search.trim()}%` })
-          .orWhere('s.phone LIKE :search', { search: `%${search.trim()}%` })
-          .orWhere('s.address LIKE :search', { search: `%${search.trim()}%` });
+          .where('LOWER(s.first_name) LIKE LOWER(:search)', { search: `%${search.trim()}%` })
+          .orWhere('LOWER(s.last_name) LIKE LOWER(:search)', { search: `%${search.trim()}%` })
+          .orWhere('LOWER(s.phone) LIKE LOWER(:search)', { search: `%${search.trim()}%` })
+          .orWhere('LOWER(s.address) LIKE LOWER(:search)', { search: `%${search.trim()}%` });
       }
 
       if (classification) {
@@ -109,12 +124,19 @@ export class CustomersService {
     updateCustomerDto: UpdateCustomerDto,
     currentUser: User,
   ): Promise<string> {
-    const { classificationId } = updateCustomerDto;
+    const { classificationId, storeId = currentUser?.store?.id } = updateCustomerDto;
+
     const customer = await this.readOne(id);
     const classification = await this.classificationsService.readOne(classificationId);
+    const store = await this.storesService.readOne(storeId);
+    const addedStores = _.differenceBy([store], customer.stores, 'id');
 
     try {
-      assignIfHasKey(customer, { ...updateCustomerDto, classification });
+      assignIfHasKey(customer, {
+        ...updateCustomerDto,
+        classification,
+        stores: [...customer.stores, ...addedStores],
+      });
       await this.customersRepository.save([customer]);
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('customer');
     } catch (error) {

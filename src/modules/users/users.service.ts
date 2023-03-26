@@ -44,7 +44,7 @@ export class UsersService {
   }
 
   async getUserByUsername({ username }): Promise<User> {
-    const found = await this.usersRepository.findOneByRaw({ username });
+    const found = await this.usersRepository.findOneRaw({ username }, { relations: ['store'] });
 
     return found;
   }
@@ -260,6 +260,7 @@ export class UsersService {
 
   async readUser(getUserDto: GetUserDto): Promise<IPaginationResponse<User>> {
     const { search, role } = getUserDto;
+    console.log(search.toLowerCase().trim());
     try {
       const queryBuilderRepo = await this.usersRepository
         .createQueryBuilder('u')
@@ -267,8 +268,12 @@ export class UsersService {
 
       if (search) {
         queryBuilderRepo
-          .andWhere('u.first_name LIKE :search', { search: `%${search.trim()}%` })
-          .orWhere('u.last_name LIKE :search', { search: `%${search.trim()}%` });
+          .andWhere('LOWER(u.first_name) LIKE LOWER(:search)', {
+            search: `%${search}%`,
+          })
+          .orWhere('LOWER(u.last_name) LIKE LOWER(:search)', {
+            search: `%${search}%`,
+          });
       }
 
       if (role) {

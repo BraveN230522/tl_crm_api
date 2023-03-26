@@ -33,7 +33,7 @@ export class ClassificationsService {
     const { search } = filter;
     const query = this.classificationsRepository.createQueryBuilder('classifications');
     if (search) {
-      query.andWhere('classifications.name LIKE LOWER(:search)', { search: `%${search}%` });
+      query.andWhere('LOWER(classifications.name) LIKE LOWER(:search)', { search: `%${search}%` });
     }
     const classifications = this.classificationsRepository.paginationQueryBuilder(query, filter);
     return classifications;
