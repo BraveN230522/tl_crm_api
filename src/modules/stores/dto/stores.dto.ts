@@ -4,26 +4,42 @@ import { VIETNAM_PHONE_PATTERN } from '../../../constants';
 export class CreateStoreDto {
   @IsNotEmpty()
   @IsEmail()
-  email: string;
+  name: string;
 
   @IsNotEmpty()
+  @IsEmail()
+  address: string;
+
+  @IsOptional()
+  @IsEmail()
+  email: string;
+
+  @IsOptional()
   @IsString()
   @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
   phone: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   businessType: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   storeImage: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   privacyPolicy: string;
 }
 export class UpdateStoreDto {
+  @IsOptional()
+  @IsEmail()
+  name: string;
+
+  @IsOptional()
+  @IsEmail()
+  address: string;
+
   @IsOptional()
   @IsEmail()
   email: string;

@@ -15,6 +15,17 @@ export class Store extends BaseTable {
     Object.assign(this, partial);
   }
 
+  @Column({
+    nullable: false,
+  })
+  name: string;
+
+  @Column({
+    nullable: false,
+    unique: true,
+  })
+  address: string;
+
   @Column()
   email: string;
 

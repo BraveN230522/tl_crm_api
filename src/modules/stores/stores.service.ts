@@ -14,10 +14,12 @@ export class StoresService {
   constructor(@InjectRepository(StoresRepository) private storesRepository: StoresRepository) {}
 
   async create(createStoreDto: CreateStoreDto, currentUser: User): Promise<any> {
-    const { email, phone, businessType, storeImage, privacyPolicy } = createStoreDto;
+    const { name, address, email, phone, businessType, storeImage, privacyPolicy } = createStoreDto;
 
     try {
       const store = this.storesRepository.create({
+        name,
+        address,
         email,
         phone,
         businessType,
@@ -77,7 +79,7 @@ export class StoresService {
     } catch (error) {
       if (error.code === '23505') {
         const detail = error.detail as string;
-        const uniqueArr = ['email', 'phone'];
+        const uniqueArr = ['address'];
         uniqueArr.forEach((item) => {
           if (matchWord(detail, item) !== null) {
             ErrorHelper.ConflictException(`This ${item} already exists`);
