@@ -59,6 +59,18 @@ export class CreateCustomerDto {
   @IsOptional()
   rate: number;
 
+  @IsString()
+  @IsOptional()
+  taxCode: string;
+
+  @IsString()
+  @IsOptional()
+  image: string;
+
+  @IsEmail()
+  @IsOptional()
+  email: string;
+
   @IsInt({ each: true })
   @IsOptional()
   classificationIds: number[];
@@ -116,6 +128,18 @@ export class UpdateCustomerDto {
   @IsNumber()
   @IsOptional()
   rate: number;
+
+  @IsString()
+  @IsOptional()
+  taxCode: string;
+
+  @IsString()
+  @IsOptional()
+  image: string;
+
+  @IsEmail()
+  @IsOptional()
+  email: string;
 
   @IsInt({ each: true })
   @IsOptional()

@@ -3,11 +3,11 @@ import { VIETNAM_PHONE_PATTERN } from '../../../constants';
 
 export class CreateStoreDto {
   @IsNotEmpty()
-  @IsEmail()
+  @IsString()
   name: string;
 
   @IsNotEmpty()
-  @IsEmail()
+  @IsString()
   address: string;
 
   @IsOptional()

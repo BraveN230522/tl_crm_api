@@ -32,6 +32,9 @@ export class CustomersService {
       point,
       cashback,
       rate,
+      taxCode,
+      image,
+      email,
       classificationIds,
       storeId = currentUser?.store?.id,
     } = createCustomerDto;
@@ -57,6 +60,9 @@ export class CustomersService {
         point,
         cashback,
         rate,
+        taxCode,
+        image,
+        email,
         classifications: classifications,
         stores: [store],
       });

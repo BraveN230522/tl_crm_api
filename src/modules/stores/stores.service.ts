@@ -36,7 +36,7 @@ export class StoresService {
 
       if (error.code === '23505') {
         const detail = error.detail as string;
-        const uniqueArr = ['phone', 'email'];
+        const uniqueArr = ['address'];
         uniqueArr.forEach((item) => {
           if (matchWord(detail, item) !== null) {
             ErrorHelper.ConflictException(`This ${item} already exists`);
