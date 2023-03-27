@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { BaseTable } from '../base';
 import { Customer } from './customers.entity';
 
@@ -19,6 +19,11 @@ export class Classification extends BaseTable {
   @Column()
   desc: string;
 
-  @OneToMany(() => Customer, (customer) => customer.classification)
+  @ManyToMany(() => Customer, (customer) => customer.id, { cascade: true })
+  @JoinTable({
+    name: 'customer_classification',
+    joinColumn: { name: 'classificationId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'customerId', referencedColumnName: 'id' },
+  })
   customers: Customer[];
 }

@@ -48,13 +48,25 @@ export class Customer extends BaseTable {
   @Column()
   rate: number;
 
+  @Column({
+    nullable: true,
+    default: null,
+    name: 'tax_code',
+  })
+  taxCode: string;
+
+  @Column({
+    nullable: true,
+  })
+  email: string;
+
+  @Column({
+    nullable: true,
+  })
+  image: string;
+
   @ManyToOne(() => Tier, (tier) => tier.customers, { onDelete: 'CASCADE' })
   tier: Tier;
-
-  @ManyToOne(() => Classification, (classification) => classification.customers, {
-    onDelete: 'CASCADE',
-  })
-  classification: Classification;
 
   @OneToMany(() => Chance, (chance) => chance.customer)
   chances: Chance[];
@@ -66,4 +78,12 @@ export class Customer extends BaseTable {
     inverseJoinColumn: { name: 'storeId', referencedColumnName: 'id' },
   })
   stores: Store[];
+
+  @ManyToMany(() => Classification, (classification) => classification.id, { cascade: true })
+  @JoinTable({
+    name: 'customer_classification',
+    joinColumn: { name: 'customerId', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'classificationId', referencedColumnName: 'id' },
+  })
+  classifications: Classification[];
 }

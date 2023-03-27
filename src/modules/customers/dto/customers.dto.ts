@@ -20,18 +20,18 @@ export class CreateCustomerDto {
   phone: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   firstName: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   lastName: string;
 
   @IsOptional()
   dob: number;
 
   @IsEnum(Gender)
-  @IsNotEmpty()
+  @IsOptional()
   gender: Gender;
 
   @IsString()
@@ -42,29 +42,26 @@ export class CreateCustomerDto {
     return Number(params.value);
   })
   @IsInt()
-  @IsNotEmpty()
+  @IsOptional()
   point: number;
 
   @Transform((params) => {
     return Number(params.value);
   })
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   cashback: number;
 
   @Transform((params) => {
     return Number(params.value);
   })
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   rate: number;
 
-  @Transform((params) => {
-    return Number(params.value);
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  classificationId: number;
+  @IsInt({ each: true })
+  @IsOptional()
+  classificationIds: number[];
 
   @Transform((params) => {
     return Number(params.value);
@@ -120,12 +117,9 @@ export class UpdateCustomerDto {
   @IsOptional()
   rate: number;
 
-  @Transform((params) => {
-    return Number(params.value);
-  })
-  @IsNumber()
+  @IsInt({ each: true })
   @IsOptional()
-  classificationId: number;
+  classificationIds: number[];
 
   @Transform((params) => {
     return Number(params.value);

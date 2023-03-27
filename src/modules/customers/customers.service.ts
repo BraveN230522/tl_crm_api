@@ -32,7 +32,7 @@ export class CustomersService {
       point,
       cashback,
       rate,
-      classificationId,
+      classificationIds,
       storeId = currentUser?.store?.id,
     } = createCustomerDto;
 
@@ -40,7 +40,10 @@ export class CustomersService {
       ErrorHelper.BadRequestException('storeId should not be empty');
     }
 
-    const classification = await this.classificationsService.readOne(classificationId);
+    const classifications = await Promise.all(
+      _.map(classificationIds, (tempId) => this.classificationsService.readOne(tempId)),
+    );
+
     const store = await this.storesService.readOne(storeId);
 
     try {
@@ -54,7 +57,7 @@ export class CustomersService {
         point,
         cashback,
         rate,
-        classification,
+        classifications: classifications,
         stores: [store],
       });
 
@@ -124,17 +127,19 @@ export class CustomersService {
     updateCustomerDto: UpdateCustomerDto,
     currentUser: User,
   ): Promise<string> {
-    const { classificationId, storeId = currentUser?.store?.id } = updateCustomerDto;
+    const { classificationIds, storeId = currentUser?.store?.id } = updateCustomerDto;
 
     const customer = await this.readOne(id);
-    const classification = await this.classificationsService.readOne(classificationId);
+    const classifications = await Promise.all(
+      _.map(classificationIds, (tempId) => this.classificationsService.readOne(tempId)),
+    );
     const store = await this.storesService.readOne(storeId);
     const addedStores = _.differenceBy([store], customer.stores, 'id');
 
     try {
       assignIfHasKey(customer, {
         ...updateCustomerDto,
-        classification,
+        classifications,
         stores: [...customer.stores, ...addedStores],
       });
       await this.customersRepository.save([customer]);
