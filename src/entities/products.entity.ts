@@ -18,7 +18,9 @@ export class Product extends BaseTable {
   @Column()
   name: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   desc: string;
 
   @Column()
@@ -27,7 +29,9 @@ export class Product extends BaseTable {
   @Column()
   quantity: number;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   image: string;
 
   @ManyToOne(() => Category, (categories) => categories.products, { onDelete: 'CASCADE' })
