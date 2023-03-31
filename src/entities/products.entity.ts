@@ -1,12 +1,8 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 import { BaseTable } from '../base';
-import { Branch } from './branches.entity';
 import { Category } from './categories.entity';
 import { Chance } from './chances.entity';
-import { Customer } from './customers.entity';
-import { Rule } from './rules.entity';
 import { Store } from './stores.entity';
-import { Tier } from './tiers.entity';
 
 @Entity()
 export class Product extends BaseTable {

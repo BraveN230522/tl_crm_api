@@ -18,6 +18,11 @@ export class CategoriesController {
     return this.categoriesService.getCategories(getFilterCategories);
   }
 
+  @Get('/:id')
+  getCategory(@Param('id') id: number): Promise<Category> {
+    return this.categoriesService.getCategoryById(id);
+  }
+
   @Post()
   createCategory(@Body() createCategoryDto: CreateCategoryDto): Promise<string> {
     return this.categoriesService.createCategory(createCategoryDto);
