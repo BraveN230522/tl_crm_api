@@ -25,6 +25,16 @@ export class CategoriesService {
     return categories;
   }
 
+  async getCategoryById(id: number): Promise<Category> {
+    const found = this.categoriesRepository.findOneBy({ id });
+
+    if (!found) {
+      ErrorHelper.NotFoundException(`This category with ${id} is not found`);
+    }
+
+    return found;
+  }
+
   async createCategory({ name, desc }: CreateCategoryDto): Promise<string> {
     const category = this.categoriesRepository.create({
       name,
