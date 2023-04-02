@@ -89,7 +89,7 @@ export class CustomersService {
   async readOne(id): Promise<Customer> {
     const found = await this.customersRepository.findOne(
       { id },
-      { relations: ['classification', 'stores'] },
+      { relations: ['classifications', 'stores'] },
     );
 
     if (!found) ErrorHelper.NotFoundException(`Customer is not found`);
@@ -102,9 +102,8 @@ export class CustomersService {
     try {
       const queryBuilderRepo = await this.customersRepository
         .createQueryBuilder('s')
-        .leftJoinAndSelect('s.classification', 'sc')
+        .leftJoinAndSelect('s.classifications', 'sc')
         .leftJoinAndSelect('s.stores', 'ss');
-
       if (search) {
         queryBuilderRepo
           .where('LOWER(s.first_name) LIKE LOWER(:search)', { search: `%${search.trim()}%` })
@@ -112,11 +111,9 @@ export class CustomersService {
           .orWhere('LOWER(s.phone) LIKE LOWER(:search)', { search: `%${search.trim()}%` })
           .orWhere('LOWER(s.address) LIKE LOWER(:search)', { search: `%${search.trim()}%` });
       }
-
       if (classification) {
         queryBuilderRepo.andWhere('sc.id = :classification', { classification });
       }
-
       const data = await this.customersRepository.paginationQueryBuilder(
         queryBuilderRepo,
         getCustomerDto,
