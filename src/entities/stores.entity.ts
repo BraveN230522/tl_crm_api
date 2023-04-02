@@ -23,6 +23,7 @@ export class Store extends BaseTable {
 
   @Column({
     nullable: false,
+    default: 'None',
   })
   address: string;
 
