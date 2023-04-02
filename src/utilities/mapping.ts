@@ -11,7 +11,7 @@ export const myMapOmit = <T>(data: T[] | any, toOmit: string[]) => {
   return _.compact(_.map(data, (item) => (item ? _.omit(item, toOmit) : null)));
 };
 
-export const myMapPick = <T>(data: T[], toPick: string[]) => {
+export const myMapPick = <T>(data: T[], toPick: string[]): any => {
   return _.compact(_.map(data, (item) => (item ? _.pick(item, toPick) : null)));
 };
 

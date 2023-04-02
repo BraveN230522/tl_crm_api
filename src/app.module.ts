@@ -11,6 +11,7 @@ import { Chance } from './entities/chances.entity';
 import { Classification } from './entities/classifications.entity';
 import { Customer } from './entities/customers.entity';
 import { Order } from './entities/orders.entity';
+import { Order_Product } from './entities/orders_products.entity';
 import { Product } from './entities/products.entity';
 import { Rule } from './entities/rules.entity';
 import { Store } from './entities/stores.entity';
@@ -26,6 +27,7 @@ import { ClassificationsModule } from './modules/classifications/classifications
 import { CloudsModule } from './modules/clouds/clouds.module';
 import { CustomersModule } from './modules/customers/customers.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { OrdersProductsModule } from './modules/orders_products/orders_products.module';
 import { ProductsModule } from './modules/products/products.module';
 import { RulesModule } from './modules/rules/rules.module';
 import { SmsModule } from './modules/sms/sms.module';
@@ -54,6 +56,7 @@ import { UsersModule } from './modules/users/users.module';
         Product,
         Category,
         Classification,
+        Order_Product,
       ],
     }),
     AppConfigModule,
@@ -74,6 +77,7 @@ import { UsersModule } from './modules/users/users.module';
     CloudsModule,
     CategoriesModule,
     ClassificationsModule,
+    OrdersProductsModule,
   ],
 })
 export class AppModule {}

@@ -7,4 +7,6 @@ export const APP_MESSAGE = {
   CONFIRM_OTP_SUCCESSFULLY: 'Confirm OTP code successfully',
   LOGOUT_SUCCESSFULLY: 'Logout successfully',
   FORBIDDEN: 'You do not have permission',
+  OUT_OF_STOCK: (name) => `${name} is out of stock`,
+  QUANTITY_ALLOWED: (quantity, name) => `Only ${quantity} or less quantities of ${name} allowed`,
 };

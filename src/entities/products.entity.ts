@@ -1,7 +1,8 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { BaseTable } from '../base';
 import { Category } from './categories.entity';
 import { Chance } from './chances.entity';
+import { Order_Product } from './orders_products.entity';
 import { Store } from './stores.entity';
 
 @Entity()
@@ -48,4 +49,7 @@ export class Product extends BaseTable {
     inverseJoinColumn: { name: 'chanceId', referencedColumnName: 'id' },
   })
   chances: Chance[];
+
+  @OneToMany(() => Order_Product, (order_product) => order_product.product)
+  orderProducts: Order_Product[];
 }

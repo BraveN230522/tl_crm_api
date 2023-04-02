@@ -12,6 +12,7 @@ import { BaseTable } from '../base';
 import { OrderStatus } from '../enums';
 import { Branch } from './branches.entity';
 import { Customer } from './customers.entity';
+import { Order_Product } from './orders_products.entity';
 import { Product } from './products.entity';
 import { Rule } from './rules.entity';
 import { Store } from './stores.entity';
@@ -38,13 +39,8 @@ export class Order extends BaseTable {
   @Column()
   total: string;
 
-  @ManyToMany(() => Product, (product) => product.id, { cascade: true })
-  @JoinTable({
-    name: 'product_order',
-    joinColumn: { name: 'orderId', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'productId', referencedColumnName: 'id' },
-  })
-  products: Product[];
+  @OneToMany(() => Order_Product, (order_product) => order_product.order)
+  orderProducts: Order_Product[];
 
   @OneToOne(() => User)
   @JoinColumn()

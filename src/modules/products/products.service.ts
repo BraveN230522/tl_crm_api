@@ -64,6 +64,14 @@ export class ProductsService {
     return found;
   }
 
+  async getProductByIds(ids: number[]): Promise<Product[]> {
+    const found = this.productsRepository.findByIds(ids);
+
+    if (!found) ErrorHelper.NotFoundException(`This product with was not found`);
+
+    return found;
+  }
+
   async deleteProductById(id: number): Promise<string> {
     const result = await this.productsRepository.delete(id);
 
