@@ -4,9 +4,8 @@ export class AddNameAddressToStore1679931651915 implements MigrationInterface {
     name = 'AddNameAddressToStore1679931651915'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "store" ADD "name" character varying NOT NULL`);
-        await queryRunner.query(`ALTER TABLE "store" ADD "address" character varying NOT NULL`);
-        await queryRunner.query(`ALTER TABLE "store" ADD CONSTRAINT "UQ_78a18178ef547bb377e5d49e6fe" UNIQUE ("address")`);
+        await queryRunner.query(`ALTER TABLE "store" ADD "name" character varying NOT NULL DEFAULT 'None'`);
+        await queryRunner.query(`ALTER TABLE "store" ADD "address" character varying NOT NULL DEFAULT 'None'`);
         await queryRunner.query(`ALTER TABLE "chance_process" ALTER COLUMN "created_at" SET DEFAULT '1679931653187'`);
         await queryRunner.query(`ALTER TABLE "chance_process" ALTER COLUMN "updated_at" SET DEFAULT '1679931653187'`);
         await queryRunner.query(`ALTER TABLE "classification" ALTER COLUMN "created_at" SET DEFAULT '1679931653187'`);

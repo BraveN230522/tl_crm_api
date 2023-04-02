@@ -17,12 +17,12 @@ export class Store extends BaseTable {
 
   @Column({
     nullable: false,
+    default: 'None',
   })
   name: string;
 
   @Column({
     nullable: false,
-    unique: true,
   })
   address: string;
 
