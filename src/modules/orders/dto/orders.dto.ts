@@ -11,7 +11,6 @@ import {
 } from 'class-validator';
 import { Product } from '../../../entities/products.entity';
 import { OrderStatus } from '../../../enums';
-import { IProductOrder } from './../../../interfaces/order';
 
 export class CreateOrderDto {
   @IsString()
@@ -20,19 +19,11 @@ export class CreateOrderDto {
 
   @IsEnum(OrderStatus)
   @IsNotEmpty()
-  status: string;
+  status: OrderStatus;
 
   @IsInt()
   @IsNotEmpty()
   customerId: string;
-
-  @IsInt()
-  @IsNotEmpty()
-  importer_id: string;
-
-  @IsOptional()
-  @IsInt()
-  exporter_id: string;
 
   @Type(() => Product)
   @ValidateNested({
@@ -41,5 +32,28 @@ export class CreateOrderDto {
   @IsObject({ each: true })
   @IsArray()
   @IsNotEmpty()
+  orderProducts: Product[];
+}
+
+export class UpdateOrderDto {
+  @IsString()
+  @IsOptional()
+  name: string;
+
+  @IsEnum(OrderStatus)
+  @IsOptional()
+  status: OrderStatus;
+
+  @IsInt()
+  @IsOptional()
+  customerId: string;
+
+  @Type(() => Product)
+  @ValidateNested({
+    each: true,
+  })
+  @IsObject({ each: true })
+  @IsArray()
+  @IsOptional()
   orderProducts: Product[];
 }

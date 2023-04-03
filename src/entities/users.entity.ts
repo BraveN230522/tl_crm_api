@@ -4,6 +4,7 @@ import { BaseTable } from '../base';
 import { Role, UserStatus } from '../enums';
 import { Branch } from './branches.entity';
 import { Chance } from './chances.entity';
+import { Order } from './orders.entity';
 import { Store } from './stores.entity';
 
 // import { Admin } from '../admin/admin.entity';
@@ -93,4 +94,10 @@ export class User extends BaseTable {
 
   @OneToMany(() => Chance, (chance) => chance.user)
   chances: Chance[];
+
+  @OneToMany(() => Order, (chance) => chance.importer)
+  importerOrders: Order[];
+
+  @OneToMany(() => Order, (chance) => chance.exporter)
+  exporterOrders: Order[];
 }

@@ -15,6 +15,7 @@ import { RolesGuard } from '../../common/guards';
 import { Order } from '../../entities/orders.entity';
 import { Role } from '../../enums';
 import { IPaginationResponse } from '../../interfaces';
+import { UserDecorator } from './../../common/decorators/user.decorator';
 import { CreateOrderDto } from './dto/orders.dto';
 import { OrdersService } from './orders.service';
 
@@ -24,9 +25,20 @@ import { OrdersService } from './orders.service';
 export class OrdersController {
   constructor(private ordersService: OrdersService) {}
 
+  @UseGuards(AuthGuard(), RolesGuard)
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto): Promise<Order> {
-    return this.ordersService.create(createOrderDto);
+  create(@Body() createOrderDto: CreateOrderDto, @UserDecorator() currentUser): Promise<Order> {
+    return this.ordersService.create(createOrderDto, currentUser);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Patch('/:id')
+  update(
+    @Param('id') id,
+    @Body() createOrderDto: CreateOrderDto,
+    @UserDecorator() currentUser,
+  ): Promise<string> {
+    return this.ordersService.update(id, createOrderDto, currentUser);
   }
 
   // @Get()

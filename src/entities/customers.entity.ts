@@ -3,6 +3,7 @@ import { BaseTable } from '../base';
 import { Gender } from '../enums';
 import { Chance } from './chances.entity';
 import { Classification } from './classifications.entity';
+import { Order } from './orders.entity';
 import { Store } from './stores.entity';
 import { Tier } from './tiers.entity';
 
@@ -70,6 +71,9 @@ export class Customer extends BaseTable {
 
   @OneToMany(() => Chance, (chance) => chance.customer)
   chances: Chance[];
+
+  @OneToMany(() => Order, (order) => order.customer)
+  order: Order[];
 
   @ManyToMany(() => Store, (store) => store.id, { cascade: true })
   @JoinTable({

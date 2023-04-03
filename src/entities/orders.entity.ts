@@ -36,17 +36,21 @@ export class Order extends BaseTable {
   })
   status: OrderStatus;
 
-  @Column()
-  total: string;
+  @Column({
+    nullable: false,
+    default: 0,
+  })
+  total: number;
 
   @OneToMany(() => Order_Product, (order_product) => order_product.order)
   orderProducts: Order_Product[];
 
-  @OneToOne(() => User)
-  @JoinColumn()
+  @ManyToOne(() => Customer, (customer) => customer.order, { onDelete: 'CASCADE' })
+  customer: Customer;
+
+  @ManyToOne(() => User, (user) => user.importerOrders, { onDelete: 'CASCADE' })
   importer: User;
 
-  @OneToOne(() => User)
-  @JoinColumn()
+  @ManyToOne(() => User, (user) => user.exporterOrders, { onDelete: 'CASCADE' })
   exporter: User;
 }

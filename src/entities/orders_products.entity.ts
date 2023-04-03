@@ -10,15 +10,15 @@ export class Order_Product extends BaseTable {
     Object.assign(this, partial);
   }
 
-  @ManyToOne(() => Product, (product) => product.orderProducts, { onDelete: 'CASCADE' })
-  product: Product;
-
-  @ManyToOne(() => Order, (order) => order.orderProducts, { onDelete: 'CASCADE' })
-  order: Order;
-
   @Column({
     nullable: true,
     default: 0,
   })
   quantity: number;
+
+  @ManyToOne(() => Product, (product) => product.orderProducts, { onDelete: 'CASCADE' })
+  product: Product;
+
+  @ManyToOne(() => Order, (order) => order.orderProducts, { onDelete: 'CASCADE' })
+  order: Order;
 }

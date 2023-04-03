@@ -11,7 +11,6 @@ import {
 } from 'class-validator';
 import { Product } from '../../../entities/products.entity';
 import { OrderStatus } from '../../../enums';
-import { IProductOrder } from './../../../interfaces/order';
 
 export class CreateOrderDto {
   @IsString()
