@@ -30,7 +30,6 @@ export class UpdateOrderProductTable1680450464573 implements MigrationInterface 
         await queryRunner.query(`ALTER TABLE "store" ALTER COLUMN "created_at" SET DEFAULT '1680450465716'`);
         await queryRunner.query(`ALTER TABLE "store" ALTER COLUMN "updated_at" SET DEFAULT '1680450465716'`);
         await queryRunner.query(`ALTER TABLE "store" ALTER COLUMN "name" SET DEFAULT 'None'`);
-        await queryRunner.query(`ALTER TABLE "store" DROP CONSTRAINT "UQ_78a18178ef547bb377e5d49e6fe"`);
         await queryRunner.query(`ALTER TABLE "store" ALTER COLUMN "address" SET DEFAULT 'None'`);
         await queryRunner.query(`ALTER TABLE "campaign" ALTER COLUMN "created_at" SET DEFAULT '1680450465716'`);
         await queryRunner.query(`ALTER TABLE "campaign" ALTER COLUMN "updated_at" SET DEFAULT '1680450465716'`);
@@ -44,7 +43,6 @@ export class UpdateOrderProductTable1680450464573 implements MigrationInterface 
         await queryRunner.query(`ALTER TABLE "campaign" ALTER COLUMN "updated_at" SET DEFAULT '1680428368673'`);
         await queryRunner.query(`ALTER TABLE "campaign" ALTER COLUMN "created_at" SET DEFAULT '1680428368672'`);
         await queryRunner.query(`ALTER TABLE "store" ALTER COLUMN "address" DROP DEFAULT`);
-        await queryRunner.query(`ALTER TABLE "store" ADD CONSTRAINT "UQ_78a18178ef547bb377e5d49e6fe" UNIQUE ("address")`);
         await queryRunner.query(`ALTER TABLE "store" ALTER COLUMN "name" DROP DEFAULT`);
         await queryRunner.query(`ALTER TABLE "store" ALTER COLUMN "updated_at" SET DEFAULT '1680428368673'`);
         await queryRunner.query(`ALTER TABLE "store" ALTER COLUMN "created_at" SET DEFAULT '1680428368672'`);
