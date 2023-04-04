@@ -61,7 +61,6 @@ export class AddNameAddressToStore1679931651915 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "classification" ALTER COLUMN "created_at" SET DEFAULT '1679930801868'`);
         await queryRunner.query(`ALTER TABLE "chance_process" ALTER COLUMN "updated_at" SET DEFAULT '1679930801868'`);
         await queryRunner.query(`ALTER TABLE "chance_process" ALTER COLUMN "created_at" SET DEFAULT '1679930801868'`);
-        await queryRunner.query(`ALTER TABLE "store" DROP CONSTRAINT "UQ_78a18178ef547bb377e5d49e6fe"`);
         await queryRunner.query(`ALTER TABLE "store" DROP COLUMN "address"`);
         await queryRunner.query(`ALTER TABLE "store" DROP COLUMN "name"`);
     }
