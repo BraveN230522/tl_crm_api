@@ -69,6 +69,6 @@ export class GetStoreDto {
   @IsOptional()
   perPage?: number;
 
-  // @IsOptional()
-  // search?: string;
+  @IsOptional()
+  search?: string;
 }
