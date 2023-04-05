@@ -33,11 +33,11 @@ export class CreateStoreDto {
 }
 export class UpdateStoreDto {
   @IsOptional()
-  @IsEmail()
+  @IsString()
   name: string;
 
   @IsOptional()
-  @IsEmail()
+  @IsString()
   address: string;
 
   @IsOptional()
@@ -69,6 +69,6 @@ export class GetStoreDto {
   @IsOptional()
   perPage?: number;
 
-  // @IsOptional()
-  // search?: string;
+  @IsOptional()
+  search?: string;
 }
