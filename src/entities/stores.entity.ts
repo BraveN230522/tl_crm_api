@@ -27,24 +27,31 @@ export class Store extends BaseTable {
   })
   address: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   email: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   phone: string;
 
   @Column({
     name: 'business_type',
+    nullable: true,
   })
   businessType: string;
 
   @Column({
     name: 'store_image',
+    nullable: true,
   })
   storeImage: string;
 
   @Column({
     name: 'privacy_policy',
+    nullable: true,
   })
   privacyPolicy: string;
 
