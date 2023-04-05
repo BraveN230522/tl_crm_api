@@ -4,12 +4,14 @@ import _ from 'lodash';
 import { Order } from '../../entities/orders.entity';
 import { Product } from '../../entities/products.entity';
 import { ErrorHelper } from '../../helpers';
-import { IOrderResponse } from '../../interfaces';
+import { IOrderResponse, IPaginationResponse } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
+import { assignIfHasKey } from '../../utilities';
 import { CustomersService } from '../customers/customers.service';
 import { OrdersProductsService } from '../orders_products/orders_products.service';
 import { ProductsService } from '../products/products.service';
-import { CreateOrderDto, UpdateOrderDto } from './dto/orders.dto';
+import { UsersService } from '../users/users.service';
+import { CreateOrderDto, GetOrderDto, UpdateOrderDto } from './dto/orders.dto';
 import { OrdersRepository } from './orders.repository';
 
 @Injectable()
@@ -20,6 +22,7 @@ export class OrdersService {
     private productsService: ProductsService,
     private ordersProductsService: OrdersProductsService,
     private customersService: CustomersService,
+    private usersService: UsersService,
   ) {}
 
   async create(
@@ -80,68 +83,149 @@ export class OrdersService {
 
   async update(
     id: number,
-    { name, status, customerId, orderProducts }: UpdateOrderDto,
+    { name, status, customerId, orderProducts, importerId, exporterId }: UpdateOrderDto,
     currentUser,
   ): Promise<string> {
-    // const found = this.readOne(id)
+    const order = await this.readOne(id);
+    const customer = await this.customersService.readOne(customerId);
 
-    // const products = await this.productsService.getProductByIds(
-    //   _.map(orderProducts, (orderProduct) => orderProduct.id),
-    // );
+    let total;
+    let exporter;
+    let importer;
 
-    // const customer = await this.customersService.readOne(customerId);
+    if (importerId) {
+      importer = await this.usersService.getUser(importerId);
+    }
 
-    // const mappingOrderProducts: Product[] = _.map(products, (product, index) => {
-    //   if (product.quantity <= 0)
-    //     ErrorHelper.ConflictException(APP_MESSAGE.OUT_OF_STOCK(product.name));
+    if (exporterId) {
+      exporter = await this.usersService.getUser(exporterId);
+    }
 
-    //   const quantity = product.quantity - orderProducts[index]?.quantity;
+    if (orderProducts) {
+      const products = await this.productsService.getProductByIds(
+        _.map(orderProducts, (orderProduct) => orderProduct.id),
+      );
 
-    //   if (quantity < 0)
-    //     ErrorHelper.ConflictException(APP_MESSAGE.QUANTITY_ALLOWED(product.quantity, product.name));
+      const mappingOrderProducts: Product[] = _.map(products, (product, index) => {
+        if (product.quantity <= 0)
+          ErrorHelper.ConflictException(APP_MESSAGE.OUT_OF_STOCK(product.name));
 
-    //   return {
-    //     ...product,
-    //     ...orderProducts?.[index],
-    //   };
-    // });
+        const quantity = product.quantity - orderProducts[index]?.quantity;
 
-    // const total = _.reduce(
-    //   mappingOrderProducts,
-    //   (acc, cur) => {
-    //     return acc + cur.cost * cur.quantity;
-    //   },
-    //   0,
-    // );
+        if (quantity < 0)
+          ErrorHelper.ConflictException(
+            APP_MESSAGE.QUANTITY_ALLOWED(product.quantity, product.name),
+          );
 
-    // const order = this.ordersRepository.create({
-    //   name,
-    //   status,
-    //   total: total,
-    //   importer: currentUser,
-    //   customer: _.omit(customer, ['stores', 'classifications']),
-    // });
+        return {
+          ...product,
+          ...orderProducts?.[index],
+        };
+      });
 
-    // const savedOrder = await this.ordersRepository.save([order]);
+      total = _.reduce(
+        mappingOrderProducts,
+        (acc, cur) => {
+          return acc + cur.cost * cur.quantity;
+        },
+        0,
+      );
 
-    // await Promise.all(
-    //   _.map(mappingOrderProducts, (orderProduct) => {
-    //     return this.ordersProductsService.create({
-    //       order: savedOrder[0],
-    //       product: orderProduct,
-    //       quantity: orderProduct.quantity,
-    //     });
-    //   }),
-    // );
+      await Promise.all(
+        _.map(mappingOrderProducts, (orderProduct) => {
+          return this.ordersProductsService.create({
+            order: order,
+            product: orderProduct,
+            quantity: orderProduct.quantity,
+          });
+        }),
+      );
+    }
 
-    return '';
+    assignIfHasKey(order, {
+      name,
+      status,
+      total,
+      importer,
+      exporter,
+      customer: _.omit(customer, ['stores', 'classifications']),
+    });
+
+    await this.ordersRepository.save([order]);
+
+    return APP_MESSAGE.UPDATED_SUCCESSFULLY('order');
+  }
+
+  async readList(getOrderDto: GetOrderDto): Promise<IPaginationResponse<Order>> {
+    const { search, customerId, fromDate, toDate, productId, status } = getOrderDto;
+    try {
+      const queryBuilderRepo = await this.ordersRepository
+        .createQueryBuilder('o')
+        .leftJoinAndSelect('o.orderProducts', 'oo')
+        .leftJoinAndSelect('oo.product', 'oop')
+        .leftJoinAndSelect('o.customer', 'oc')
+        .leftJoinAndSelect('o.importer', 'oi')
+        .leftJoinAndSelect('o.exporter', 'oe');
+
+      if (search) {
+        queryBuilderRepo.where('LOWER(o.name) LIKE LOWER(:search)', {
+          search: `%${search.trim()}%`,
+        });
+      }
+
+      if (customerId) {
+        queryBuilderRepo.andWhere('oc.id = :customerId', { customerId });
+      }
+
+      if (fromDate) {
+        queryBuilderRepo.andWhere('o.createdAt >= :fromDate', { fromDate });
+      }
+
+      if (toDate) {
+        queryBuilderRepo.andWhere('o.createdAt <= :toDate', { toDate });
+      }
+
+      if (productId) {
+        queryBuilderRepo.andWhere('oop.id = :productId', { productId });
+      }
+
+      if (status) {
+        queryBuilderRepo.andWhere('o.status = :status', { status });
+      }
+
+      const data = await this.ordersRepository.paginationQueryBuilder(
+        queryBuilderRepo,
+        getOrderDto,
+      );
+
+      return data;
+    } catch (error) {
+      ErrorHelper.InternalServerErrorException();
+    }
   }
 
   async readOne(id): Promise<Order> {
-    const found = await this.ordersRepository.findOne({ id }, { relations: [] });
+    const found = await this.ordersRepository.findOne(
+      { id },
+      { relations: ['orderProducts', 'orderProducts.product', 'customer', 'importer', 'exporter'] },
+    );
 
     if (!found) ErrorHelper.NotFoundException(`Order is not found`);
 
     return found;
+  }
+
+  async delete(id: string): Promise<string> {
+    await this.readOne(id);
+
+    try {
+      const result = await this.ordersRepository.delete(id);
+
+      if (result.affected === 0) ErrorHelper.NotFoundException(`Order ${id} is not found`);
+
+      return APP_MESSAGE.DELETED_SUCCESSFULLY('order');
+    } catch (error) {
+      ErrorHelper.InternalServerErrorException();
+    }
   }
 }

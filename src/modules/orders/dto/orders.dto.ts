@@ -1,9 +1,10 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -48,6 +49,14 @@ export class UpdateOrderDto {
   @IsOptional()
   customerId: string;
 
+  @IsInt()
+  @IsOptional()
+  importerId: string;
+
+  @IsInt()
+  @IsOptional()
+  exporterId: string;
+
   @Type(() => Product)
   @ValidateNested({
     each: true,
@@ -56,4 +65,47 @@ export class UpdateOrderDto {
   @IsArray()
   @IsOptional()
   orderProducts: Product[];
+}
+
+export class GetOrderDto {
+  @IsOptional()
+  page?: number;
+
+  @IsOptional()
+  perPage?: number;
+
+  @IsOptional()
+  search?: string;
+
+  @Transform((params) => {
+    return Number(params.value);
+  })
+  @IsNumber()
+  @IsOptional()
+  customerId?: number;
+
+  @Transform((params) => {
+    return Number(params.value);
+  })
+  @IsNumber()
+  @IsOptional()
+  fromDate?: number;
+
+  @Transform((params) => {
+    return Number(params.value);
+  })
+  @IsNumber()
+  @IsOptional()
+  toDate?: number;
+
+  @Transform((params) => {
+    return Number(params.value);
+  })
+  @IsNumber()
+  @IsOptional()
+  productId?: number;
+
+  @IsEnum(OrderStatus)
+  @IsOptional()
+  status?: OrderStatus;
 }
