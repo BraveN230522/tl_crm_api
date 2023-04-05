@@ -33,11 +33,11 @@ export class CreateStoreDto {
 }
 export class UpdateStoreDto {
   @IsOptional()
-  @IsEmail()
+  @IsString()
   name: string;
 
   @IsOptional()
-  @IsEmail()
+  @IsString()
   address: string;
 
   @IsOptional()
