@@ -16,7 +16,7 @@ import { Order } from '../../entities/orders.entity';
 import { Role } from '../../enums';
 import { IPaginationResponse } from '../../interfaces';
 import { UserDecorator } from './../../common/decorators/user.decorator';
-import { CreateOrderDto } from './dto/orders.dto';
+import { CreateOrderDto, GetOrderDto, UpdateOrderDto } from './dto/orders.dto';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
@@ -35,24 +35,22 @@ export class OrdersController {
   @Patch('/:id')
   update(
     @Param('id') id,
-    @Body() createOrderDto: CreateOrderDto,
+    @Body() updateOrderDto: UpdateOrderDto,
     @UserDecorator() currentUser,
   ): Promise<string> {
-    return this.ordersService.update(id, createOrderDto, currentUser);
+    return this.ordersService.update(id, updateOrderDto, currentUser);
   }
 
-  // @Get()
-  // readList(
-  //   @Query() getFilterClassifications: GetFilterClassificationsDto,
-  // ): Promise<IPaginationResponse<any[]>> {
-  //   return this.ordersService.readList(getFilterClassifications);
-  // }
+  @Get()
+  readList(@Query() getOrderDto: GetOrderDto): Promise<IPaginationResponse<Order>> {
+    return this.ordersService.readList(getOrderDto);
+  }
 
-  // @UseGuards(AuthGuard(), RolesGuard)
-  // @Get('/:id')
-  // readOne(@Param('id') id): Promise<Classification> {
-  //   return this.ordersService.readOne(id);
-  // }
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Get('/:id')
+  readOne(@Param('id') id): Promise<Order> {
+    return this.ordersService.readOne(id);
+  }
 
   // @Patch('/:id')
   // update(
