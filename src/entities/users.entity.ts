@@ -29,6 +29,7 @@ export class User extends BaseTable {
   password?: string;
 
   @Column({
+    nullable: true,
     name: 'first_name',
   })
   firstName?: string;
