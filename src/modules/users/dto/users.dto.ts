@@ -74,15 +74,12 @@ export class CreateUserDto {
   @MaxLength(32)
   password: string;
 
-  @IsNotEmpty()
-  @IsString()
   firstName: string;
 
   @IsNotEmpty()
   @IsString()
   lastName: string;
 
-  @IsNotEmpty()
   @IsString()
   @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
   phone: string;
@@ -97,11 +94,9 @@ export class CreateUserDto {
   @Transform((params) => {
     return Number(params.value);
   })
-  @IsNumber()
   @ValidateIf((obj: CreateUserDto) => {
     return obj.role === Role.S_MANAGER || obj.role === Role.STAFF;
   })
-  @IsNotEmpty()
   storeId?: string;
 }
 
