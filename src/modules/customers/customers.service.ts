@@ -103,7 +103,8 @@ export class CustomersService {
       const queryBuilderRepo = await this.customersRepository
         .createQueryBuilder('s')
         .leftJoinAndSelect('s.classifications', 'sc')
-        .leftJoinAndSelect('s.stores', 'ss');
+        .leftJoinAndSelect('s.stores', 'ss')
+        .orderBy('id', 'DESC');
       if (search) {
         queryBuilderRepo
           .where('LOWER(s.first_name) LIKE LOWER(:search)', { search: `%${search.trim()}%` })

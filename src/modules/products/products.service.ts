@@ -45,7 +45,7 @@ export class ProductsService {
     getFilterProducts: GetFilterCategoriesDto,
   ): Promise<IPaginationResponse<Product[]>> {
     const { search } = getFilterProducts;
-    const query = this.productsRepository.createQueryBuilder('products');
+    const query = this.productsRepository.createQueryBuilder('products').orderBy('id', 'DESC');
 
     if (search) {
       query.andWhere('LOWER(products.name) LIKE LOWER(:search)', { search: `%${search}%` });

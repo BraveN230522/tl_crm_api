@@ -61,6 +61,41 @@ export class CreateUserAdminDto {
   })
   isActiveTiers: boolean;
 }
+
+export class UpdateUserAdminDto {
+  @IsString()
+  @IsOptional()
+  firstName: string;
+
+  @IsString()
+  @IsOptional()
+  lastName: string;
+
+  @IsString()
+  @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
+  @IsOptional()
+  phone: string;
+
+  @IsEmail()
+  @IsOptional()
+  email: string;
+
+  @IsString()
+  @IsOptional()
+  branchName: string;
+
+  @IsString()
+  @IsOptional()
+  announcements: string;
+
+  @IsBoolean()
+  @Transform(({ value }) => {
+    return value.toLowerCase() === 'true';
+  })
+  @IsOptional()
+  isActiveTiers: boolean;
+}
+
 export class CreateUserDto {
   @IsNotEmpty()
   @IsString()

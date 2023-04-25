@@ -57,7 +57,9 @@ export class StoresService {
   async readList(getStoreDto: GetStoreDto): Promise<IPaginationResponse<Store>> {
     const { search } = getStoreDto;
     try {
-      const queryBuilderRepo = await this.storesRepository.createQueryBuilder('s');
+      const queryBuilderRepo = await this.storesRepository
+        .createQueryBuilder('s')
+        .orderBy('id', 'DESC');
 
       if (search) {
         queryBuilderRepo.where('LOWER(s.name) LIKE LOWER(:search)', {

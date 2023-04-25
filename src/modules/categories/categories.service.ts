@@ -15,7 +15,7 @@ export class CategoriesService {
 
   async getCategories(filter: GetFilterCategoriesDto): Promise<IPaginationResponse<Category[]>> {
     const { search } = filter;
-    const query = this.categoriesRepository.createQueryBuilder('categories');
+    const query = this.categoriesRepository.createQueryBuilder('categories').orderBy('id', 'DESC');
     if (search) {
       query.andWhere('LOWER(categories.name) LIKE LOWER(:search)', {
         search: `%${search.trim()}%`,

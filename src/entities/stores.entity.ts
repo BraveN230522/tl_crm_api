@@ -3,6 +3,7 @@ import { BaseTable } from '../base';
 import { Branch } from './branches.entity';
 import { Campaign } from './campaigns.entity';
 import { Customer } from './customers.entity';
+import { Order } from './orders.entity';
 import { Product } from './products.entity';
 import { Rule } from './rules.entity';
 import { Tier } from './tiers.entity';
@@ -57,6 +58,9 @@ export class Store extends BaseTable {
 
   @ManyToOne(() => Branch, (branch) => branch.stores, { onDelete: 'CASCADE' })
   branch: Branch;
+
+  @OneToMany(() => Order, (order) => order.store)
+  orders: Order[];
 
   @OneToMany(() => Campaign, (campaign) => campaign.store)
   campaigns: Campaign[];

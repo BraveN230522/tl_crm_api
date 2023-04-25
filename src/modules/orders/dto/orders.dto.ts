@@ -26,6 +26,26 @@ export class CreateOrderDto {
   @IsNotEmpty()
   customerId: string;
 
+  @IsString()
+  @IsOptional()
+  note: string;
+
+  @IsString()
+  @IsOptional()
+  shippingAddress: string;
+
+  @IsString()
+  @IsOptional()
+  billingAddress: string;
+
+  @IsNumber()
+  @IsOptional()
+  paymentDate: number;
+
+  @IsNumber()
+  @IsOptional()
+  deliveryDate: number;
+
   @Type(() => Product)
   @ValidateNested({
     each: true,
@@ -44,6 +64,26 @@ export class UpdateOrderDto {
   @IsEnum(OrderStatus)
   @IsOptional()
   status: OrderStatus;
+
+  @IsString()
+  @IsOptional()
+  note: string;
+
+  @IsString()
+  @IsOptional()
+  shippingAddress: string;
+
+  @IsString()
+  @IsOptional()
+  billingAddress: string;
+
+  @IsNumber()
+  @IsOptional()
+  paymentDate: number;
+
+  @IsNumber()
+  @IsOptional()
+  deliveryDate: number;
 
   @IsInt()
   @IsOptional()
