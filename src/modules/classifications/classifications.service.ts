@@ -31,7 +31,9 @@ export class ClassificationsService {
     filter: GetFilterClassificationsDto,
   ): Promise<IPaginationResponse<Classification[]>> {
     const { search } = filter;
-    const query = this.classificationsRepository.createQueryBuilder('classifications');
+    const query = this.classificationsRepository
+      .createQueryBuilder('classifications')
+      .orderBy('id', 'DESC');
     if (search) {
       query.andWhere('LOWER(classifications.name) LIKE LOWER(:search)', { search: `%${search}%` });
     }

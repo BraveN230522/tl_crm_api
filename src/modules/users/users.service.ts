@@ -21,6 +21,7 @@ import {
   ForgotPasswordDto,
   GetUserDto,
   ResetPasswordDto,
+  UpdateUserAdminDto,
   UpdateUserDto,
 } from './dto/users.dto';
 import { UsersRepository } from './users.repository';
@@ -44,7 +45,10 @@ export class UsersService {
   }
 
   async getUserByUsername({ username }): Promise<User> {
-    const found = await this.usersRepository.findOneRaw({ username }, { relations: ['store'] });
+    const found = await this.usersRepository.findOneRaw(
+      { username },
+      { relations: ['store', 'branch'] },
+    );
 
     return found;
   }
@@ -110,6 +114,32 @@ export class UsersService {
       if (error.code === '23505') {
         const detail = error.detail as string;
         const uniqueArr = ['phone', 'username'];
+        uniqueArr.forEach((item) => {
+          if (matchWord(detail, item) !== null) {
+            ErrorHelper.ConflictException(`This ${item} already exists`);
+          }
+        });
+      } else ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async updateUserAdmin(
+    updateUserAdminDto: UpdateUserAdminDto,
+    currentUser?: User,
+  ): Promise<string> {
+    try {
+      assignIfHasKey(currentUser, updateUserAdminDto);
+
+      await Promise.all([
+        this.usersRepository.save([currentUser]),
+        this.branchesService.updateBranch(updateUserAdminDto, currentUser),
+      ]);
+
+      return APP_MESSAGE.UPDATED_SUCCESSFULLY('admin');
+    } catch (error) {
+      if (error.code === '23505') {
+        const detail = error.detail as string;
+        const uniqueArr = ['phone'];
         uniqueArr.forEach((item) => {
           if (matchWord(detail, item) !== null) {
             ErrorHelper.ConflictException(`This ${item} already exists`);
@@ -264,7 +294,8 @@ export class UsersService {
     try {
       const queryBuilderRepo = await this.usersRepository
         .createQueryBuilder('u')
-        .where('u.role != :role', { role: Role.ADMIN });
+        .where('u.role != :role', { role: Role.ADMIN })
+        .orderBy('id', 'DESC');
 
       if (search) {
         queryBuilderRepo

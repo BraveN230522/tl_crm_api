@@ -104,7 +104,9 @@ export class ChancesService {
   async getChanceList(getChancesDto: GetChancesDto): Promise<IPaginationResponse<Chance>> {
     const { search } = getChancesDto;
     try {
-      const queryBuilderRepo = await this.chanceRepository.createQueryBuilder('chance');
+      const queryBuilderRepo = await this.chanceRepository
+        .createQueryBuilder('chance')
+        .orderBy('id', 'DESC');
 
       if (search) {
         queryBuilderRepo.where('LOWER(chance.name) LIKE LOWER(:search)', {

@@ -42,6 +42,48 @@ export class Order extends BaseTable {
   })
   total: number;
 
+  @Column({
+    nullable: true,
+    default: '',
+  })
+  note: string;
+
+  @Column({
+    name: 'shipping_address',
+    nullable: true,
+    default: '',
+  })
+  shippingAddress: string;
+
+  @Column({
+    name: 'billing_address',
+    nullable: true,
+    default: '',
+  })
+  billingAddress: string;
+
+  @Column({
+    name: 'payment_date',
+    type: 'bigint',
+    default: new Date().getTime(),
+    transformer: {
+      to: (value) => value,
+      from: (value) => parseInt(value),
+    },
+  })
+  paymentDate: number;
+
+  @Column({
+    name: 'delivery_date',
+    type: 'bigint',
+    default: new Date().getTime(),
+    transformer: {
+      to: (value) => value,
+      from: (value) => parseInt(value),
+    },
+  })
+  deliveryDate: number;
+
   @OneToMany(() => Order_Product, (order_product) => order_product.order)
   orderProducts: Order_Product[];
 
@@ -53,4 +95,7 @@ export class Order extends BaseTable {
 
   @ManyToOne(() => User, (user) => user.exporterOrders, { onDelete: 'CASCADE' })
   exporter: User;
+
+  @ManyToOne(() => Store, (store) => store.orders, { onDelete: 'CASCADE' })
+  store: Store;
 }

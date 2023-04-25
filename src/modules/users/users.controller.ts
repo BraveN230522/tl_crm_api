@@ -23,6 +23,7 @@ import {
   ForgotPasswordDto,
   GetUserDto,
   ResetPasswordDto,
+  UpdateUserAdminDto,
   UpdateUserDto,
 } from './dto/users.dto';
 import { UsersService } from './users.service';
@@ -36,6 +37,16 @@ export class UsersController {
   @Post('/admin')
   createUserAdmin(@Body() createUserAdminDto: CreateUserAdminDto): Promise<User> {
     return this.usersService.createUserAdmin(createUserAdminDto);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN)
+  @Patch('/admin')
+  updateUserAdmin(
+    @Body() updateUserAdminDto: UpdateUserAdminDto,
+    @UserDecorator() currentUser,
+  ): Promise<string> {
+    return this.usersService.updateUserAdmin(updateUserAdminDto, currentUser);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)

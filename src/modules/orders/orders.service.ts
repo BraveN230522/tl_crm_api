@@ -26,7 +26,17 @@ export class OrdersService {
   ) {}
 
   async create(
-    { name, status, customerId, orderProducts }: CreateOrderDto,
+    {
+      name,
+      status,
+      customerId,
+      orderProducts,
+      note,
+      shippingAddress,
+      billingAddress,
+      paymentDate,
+      deliveryDate,
+    }: CreateOrderDto,
     currentUser,
   ): Promise<IOrderResponse> {
     const products = await this.productsService.getProductByIds(
@@ -61,7 +71,12 @@ export class OrdersService {
     const order = this.ordersRepository.create({
       name,
       status,
-      total: total,
+      total,
+      note,
+      shippingAddress,
+      billingAddress,
+      paymentDate,
+      deliveryDate,
       importer: currentUser,
       customer: _.omit(customer, ['stores', 'classifications']),
     });
@@ -83,7 +98,19 @@ export class OrdersService {
 
   async update(
     id: number,
-    { name, status, customerId, orderProducts, importerId, exporterId }: UpdateOrderDto,
+    {
+      name,
+      status,
+      note,
+      shippingAddress,
+      billingAddress,
+      paymentDate,
+      deliveryDate,
+      customerId,
+      orderProducts,
+      importerId,
+      exporterId,
+    }: UpdateOrderDto,
     currentUser,
   ): Promise<string> {
     const order = await this.readOne(id);
@@ -146,6 +173,11 @@ export class OrdersService {
       name,
       status,
       total,
+      note,
+      shippingAddress,
+      billingAddress,
+      paymentDate,
+      deliveryDate,
       importer,
       exporter,
       customer: _.omit(customer, ['stores', 'classifications']),
@@ -165,7 +197,8 @@ export class OrdersService {
         .leftJoinAndSelect('oo.product', 'oop')
         .leftJoinAndSelect('o.customer', 'oc')
         .leftJoinAndSelect('o.importer', 'oi')
-        .leftJoinAndSelect('o.exporter', 'oe');
+        .leftJoinAndSelect('o.exporter', 'oe')
+        .orderBy('id', 'DESC');
 
       if (search) {
         queryBuilderRepo.where('LOWER(o.name) LIKE LOWER(:search)', {
