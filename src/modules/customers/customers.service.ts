@@ -104,7 +104,7 @@ export class CustomersService {
         .createQueryBuilder('s')
         .leftJoinAndSelect('s.classifications', 'sc')
         .leftJoinAndSelect('s.stores', 'ss')
-        .orderBy('id', 'DESC');
+        .orderBy('s.id', 'DESC');
       if (search) {
         queryBuilderRepo
           .where('LOWER(s.first_name) LIKE LOWER(:search)', { search: `%${search.trim()}%` })
@@ -122,6 +122,7 @@ export class CustomersService {
 
       return data;
     } catch (error) {
+      console.log(error);
       ErrorHelper.InternalServerErrorException();
     }
   }
