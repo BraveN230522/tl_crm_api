@@ -198,7 +198,7 @@ export class OrdersService {
         .leftJoinAndSelect('o.customer', 'oc')
         .leftJoinAndSelect('o.importer', 'oi')
         .leftJoinAndSelect('o.exporter', 'oe')
-        .orderBy('id', 'DESC');
+        .orderBy('o.id', 'DESC');
 
       if (search) {
         queryBuilderRepo.where('LOWER(o.name) LIKE LOWER(:search)', {
@@ -233,6 +233,7 @@ export class OrdersService {
 
       return data;
     } catch (error) {
+      console.log(error);
       ErrorHelper.InternalServerErrorException();
     }
   }
