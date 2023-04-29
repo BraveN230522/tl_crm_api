@@ -45,7 +45,10 @@ export class ProductsService {
     getFilterProducts: GetFilterCategoriesDto,
   ): Promise<IPaginationResponse<Product[]>> {
     const { search } = getFilterProducts;
-    const query = this.productsRepository.createQueryBuilder('products').orderBy('id', 'DESC');
+    const query = this.productsRepository
+      .createQueryBuilder('products')
+      .leftJoinAndSelect('products.category', 'productsCategory')
+      .orderBy('products.id', 'DESC');
 
     if (search) {
       query.andWhere('LOWER(products.name) LIKE LOWER(:search)', { search: `%${search}%` });
@@ -57,7 +60,7 @@ export class ProductsService {
   }
 
   async getProductById(id: number): Promise<Product> {
-    const found = this.productsRepository.findOneBy({ id });
+    const found = this.productsRepository.findOne({ id }, { relations: ['category'] });
 
     if (!found) ErrorHelper.NotFoundException(`This product with ${id} was not found`);
 
@@ -84,7 +87,6 @@ export class ProductsService {
 
   async updateProduct(id: number, updateProductDto: UpdateProductDto): Promise<string> {
     const product = await this.getProductById(id);
-
     try {
       assignIfHasKey(product, updateProductDto);
       await this.productsRepository.save([product]);
