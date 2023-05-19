@@ -81,6 +81,14 @@ export class CreateCustomerDto {
   @IsNumber()
   @IsOptional()
   storeId?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  desc?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  portalCode?: string;
 }
 
 export class UpdateCustomerDto {
@@ -151,6 +159,14 @@ export class UpdateCustomerDto {
   @IsNumber()
   @IsOptional()
   storeId?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  desc?: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  portalCode?: string;
 }
 
 export class GetCustomerDto {

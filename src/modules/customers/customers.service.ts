@@ -36,12 +36,14 @@ export class CustomersService {
       image,
       email,
       classificationIds,
+      portalCode,
+      desc,
       storeId = currentUser?.store?.id,
     } = createCustomerDto;
 
-    if (!storeId) {
-      ErrorHelper.BadRequestException('storeId should not be empty');
-    }
+    // if (!storeId) {
+      // ErrorHelper.BadRequestException('storeId should not be empty');
+    // }
 
     const classifications = await Promise.all(
       _.map(classificationIds, (tempId) => this.classificationsService.readOne(tempId)),
@@ -64,6 +66,8 @@ export class CustomersService {
         image,
         email,
         classifications: classifications,
+        portalCode,
+        desc,
         stores: [store],
       });
 

@@ -4,16 +4,18 @@ export class CreateClassificationDto {
   @IsNotEmpty()
   name: string;
 
+  @IsOptional()
   @IsNotEmpty()
-  desc: string;
+  desc?: string;
 }
 
 export class UpdateClassificationDto {
   @IsNotEmpty()
   name: string;
 
+  @IsOptional()
   @IsNotEmpty()
-  desc: string;
+  desc?: string;
 }
 
 export class GetFilterClassificationsDto {

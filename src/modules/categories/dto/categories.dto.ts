@@ -4,8 +4,9 @@ export class CreateCategoryDto {
   @IsNotEmpty()
   name: string;
 
+  @IsOptional()
   @IsNotEmpty()
-  desc: string;
+  desc?: string;
 }
 
 export class GetFilterCategoriesDto {

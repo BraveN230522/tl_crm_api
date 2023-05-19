@@ -58,6 +58,19 @@ export class Customer extends BaseTable {
 
   @Column({
     nullable: true,
+    default: null,
+    name: 'portal_code',
+  })
+  portalCode: string;
+
+  @Column({
+    nullable: true,
+    default: null,
+  })
+  desc: string;
+
+  @Column({
+    nullable: true,
   })
   email: string;
 
