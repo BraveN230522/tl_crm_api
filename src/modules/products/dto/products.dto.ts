@@ -58,6 +58,10 @@ export class UpdateProductDto {
 
   @IsOptional()
   image?: string;
+
+  @IsNumber()
+  @IsOptional()
+  categoryId?: number;
 }
 
 export class GetFilterProductDto {
