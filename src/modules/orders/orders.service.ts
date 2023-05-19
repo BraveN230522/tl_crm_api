@@ -200,7 +200,7 @@ export class OrdersService {
   }
 
   async readList(getOrderDto: GetOrderDto): Promise<IPaginationResponse<Order>> {
-    const { search, customerId, fromDate, toDate, productId, status } = getOrderDto;
+    const { search, customerId, fromDate, toDate, productId, status, isPaid } = getOrderDto;
     try {
       const queryBuilderRepo = await this.ordersRepository
         .createQueryBuilder('o')
@@ -216,6 +216,10 @@ export class OrdersService {
         queryBuilderRepo.where('LOWER(o.name) LIKE LOWER(:search)', {
           search: `%${search.trim()}%`,
         });
+      }
+
+      if(isPaid) {
+        queryBuilderRepo.andWhere('o.paymentDate > 0', { isPaid });
       }
 
       if (customerId) {
@@ -237,6 +241,7 @@ export class OrdersService {
       if (status) {
         queryBuilderRepo.andWhere('o.status = :status', { status });
       }
+
 
       const data = await this.ordersRepository.paginationQueryBuilder(
         queryBuilderRepo,
