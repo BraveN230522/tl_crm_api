@@ -86,9 +86,12 @@ export class ProductsService {
   }
 
   async updateProduct(id: number, updateProductDto: UpdateProductDto): Promise<string> {
+    const { categoryId } = updateProductDto;
     const product = await this.getProductById(id);
+    const category =
+      categoryId && (await this.categoriesService.getCategoryById(updateProductDto?.categoryId));
     try {
-      assignIfHasKey(product, updateProductDto);
+      assignIfHasKey(product, { ...updateProductDto, category });
       await this.productsRepository.save([product]);
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('product');
     } catch (error) {
