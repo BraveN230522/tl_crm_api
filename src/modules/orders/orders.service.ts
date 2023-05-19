@@ -64,8 +64,6 @@ export class OrdersService {
       };
     });
 
-    console.log({ mappingOrderProducts });
-
     const total = _.reduce(
       mappingOrderProducts,
       (acc, cur) => {
@@ -92,7 +90,6 @@ export class OrdersService {
 
     await Promise.all(
       _.map(mappingOrderProducts, (orderProduct) => {
-        console.log({ orderProduct });
         return this.ordersProductsService.create({
           order: savedOrder[0],
           product: orderProduct,
@@ -273,7 +270,6 @@ export class OrdersService {
         ],
       },
     );
-    console.log({ found });
 
     if (!found) ErrorHelper.NotFoundException(`Order is not found`);
 
