@@ -10,10 +10,10 @@ import { assignIfHasKey } from '../../utilities';
 import { CustomersService } from '../customers/customers.service';
 import { OrdersProductsService } from '../orders_products/orders_products.service';
 import { ProductsService } from '../products/products.service';
+import { StoresService } from '../stores/stores.service';
 import { UsersService } from '../users/users.service';
 import { CreateOrderDto, GetOrderDto, UpdateOrderDto } from './dto/orders.dto';
 import { OrdersRepository } from './orders.repository';
-import { StoresService } from '../stores/stores.service';
 
 @Injectable()
 export class OrdersService {
@@ -64,6 +64,8 @@ export class OrdersService {
       };
     });
 
+    console.log({ mappingOrderProducts });
+
     const total = _.reduce(
       mappingOrderProducts,
       (acc, cur) => {
@@ -90,6 +92,7 @@ export class OrdersService {
 
     await Promise.all(
       _.map(mappingOrderProducts, (orderProduct) => {
+        console.log({ orderProduct });
         return this.ordersProductsService.create({
           order: savedOrder[0],
           product: orderProduct,
@@ -240,6 +243,10 @@ export class OrdersService {
         getOrderDto,
       );
 
+      // const orders = _.map(data, (order) => {
+      //   return _.omit(order, ['orderProducts']);
+      // });
+
       return data;
     } catch (error) {
       console.log(error);
@@ -247,15 +254,29 @@ export class OrdersService {
     }
   }
 
-  async readOne(id): Promise<Order> {
+  async readOne(id: string | number): Promise<any> {
     const found = await this.ordersRepository.findOne(
       { id },
-      { relations: ['orderProducts', 'orderProducts.product', 'customer', 'store', 'importer', 'exporter'] },
+      {
+        relations: [
+          'orderProducts',
+          'orderProducts.product',
+          'customer',
+          'store',
+          'importer',
+          'exporter',
+        ],
+      },
     );
+    console.log({ found });
 
     if (!found) ErrorHelper.NotFoundException(`Order is not found`);
 
-    return found;
+    const orderProducts = _.map(found?.orderProducts, (item) => {
+      return { ...item?.product, quantity: item?.quantity };
+    });
+
+    return { ...found, orderProducts };
   }
 
   async delete(id: string): Promise<string> {
