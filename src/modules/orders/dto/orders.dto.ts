@@ -26,6 +26,10 @@ export class CreateOrderDto {
   @IsNotEmpty()
   customerId: string;
 
+  @IsInt()
+  @IsOptional()
+  storeId?: string;
+
   @IsString()
   @IsOptional()
   note: string;
@@ -88,6 +92,10 @@ export class UpdateOrderDto {
   @IsInt()
   @IsOptional()
   customerId: string;
+
+  @IsInt()
+  @IsOptional()
+  storeId?: string;
 
   @IsInt()
   @IsOptional()

@@ -13,6 +13,7 @@ import { ProductsService } from '../products/products.service';
 import { UsersService } from '../users/users.service';
 import { CreateOrderDto, GetOrderDto, UpdateOrderDto } from './dto/orders.dto';
 import { OrdersRepository } from './orders.repository';
+import { StoresService } from '../stores/stores.service';
 
 @Injectable()
 export class OrdersService {
@@ -23,6 +24,7 @@ export class OrdersService {
     private ordersProductsService: OrdersProductsService,
     private customersService: CustomersService,
     private usersService: UsersService,
+    private storesService: StoresService,
   ) {}
 
   async create(
@@ -30,6 +32,7 @@ export class OrdersService {
       name,
       status,
       customerId,
+      storeId,
       orderProducts,
       note,
       shippingAddress,
@@ -44,6 +47,7 @@ export class OrdersService {
     );
 
     const customer = await this.customersService.readOne(customerId);
+    const store = await this.storesService.readOne(storeId);
 
     const mappingOrderProducts: Product[] = _.map(products, (product, index) => {
       if (product.quantity <= 0)
@@ -79,6 +83,7 @@ export class OrdersService {
       deliveryDate,
       importer: currentUser,
       customer: _.omit(customer, ['stores', 'classifications']),
+      store,
     });
 
     const savedOrder = await this.ordersRepository.save([order]);
@@ -107,6 +112,7 @@ export class OrdersService {
       paymentDate,
       deliveryDate,
       customerId,
+      storeId,
       orderProducts,
       importerId,
       exporterId,
@@ -115,6 +121,7 @@ export class OrdersService {
   ): Promise<string> {
     const order = await this.readOne(id);
     const customer = await this.customersService.readOne(customerId);
+    const store = await this.storesService.readOne(storeId);
 
     let total;
     let exporter;
@@ -181,6 +188,7 @@ export class OrdersService {
       importer,
       exporter,
       customer: _.omit(customer, ['stores', 'classifications']),
+      store,
     });
 
     await this.ordersRepository.save([order]);
@@ -196,6 +204,7 @@ export class OrdersService {
         .leftJoinAndSelect('o.orderProducts', 'oo')
         .leftJoinAndSelect('oo.product', 'oop')
         .leftJoinAndSelect('o.customer', 'oc')
+        .leftJoinAndSelect('o.store', 'os')
         .leftJoinAndSelect('o.importer', 'oi')
         .leftJoinAndSelect('o.exporter', 'oe')
         .orderBy('o.id', 'DESC');
@@ -241,7 +250,7 @@ export class OrdersService {
   async readOne(id): Promise<Order> {
     const found = await this.ordersRepository.findOne(
       { id },
-      { relations: ['orderProducts', 'orderProducts.product', 'customer', 'importer', 'exporter'] },
+      { relations: ['orderProducts', 'orderProducts.product', 'customer', 'store', 'importer', 'exporter'] },
     );
 
     if (!found) ErrorHelper.NotFoundException(`Order is not found`);

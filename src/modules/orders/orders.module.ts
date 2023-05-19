@@ -67,6 +67,8 @@ import { OrdersService } from './orders.service';
     SmsService,
     BranchesService,
     BranchesRepository,
+    StoresService,
+    StoresRepository,
   ],
 })
 export class OrdersModule {}
