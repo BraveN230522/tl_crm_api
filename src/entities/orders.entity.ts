@@ -18,6 +18,7 @@ import { Rule } from './rules.entity';
 import { Store } from './stores.entity';
 import { Tier } from './tiers.entity';
 import { User } from './users.entity';
+import { Voucher } from './vouchers.entity';
 
 @Entity()
 export class Order extends BaseTable {
@@ -98,4 +99,7 @@ export class Order extends BaseTable {
 
   @ManyToOne(() => Store, (store) => store.orders, { onDelete: 'CASCADE' })
   store: Store;
+
+  @ManyToOne(() => Voucher, (voucher) => voucher.orders, { onDelete: 'CASCADE' })
+  voucher: Voucher;
 }

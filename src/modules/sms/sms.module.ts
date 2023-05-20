@@ -8,5 +8,6 @@ import { SmsService } from './sms.service';
 @Module({
   imports: [PassportModule],
   providers: [SmsService],
+  exports: [SmsService],
 })
 export class SmsModule {}

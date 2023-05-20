@@ -10,6 +10,6 @@ import { BranchesService } from './branches.service';
   imports: [TypeOrmModule.forFeature([Branch]), PassportModule],
   controllers: [BranchesController],
   providers: [BranchesService, BranchesRepository],
-  exports: [BranchesRepository, TypeOrmModule.forFeature([Branch])],
+  exports: [BranchesRepository, BranchesService, TypeOrmModule.forFeature([Branch])],
 })
 export class BranchesModule {}

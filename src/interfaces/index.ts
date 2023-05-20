@@ -4,3 +4,4 @@ export * from './common';
 export * from './sms';
 export * from './imgur';
 export * from './order';
+export * from './campaign';

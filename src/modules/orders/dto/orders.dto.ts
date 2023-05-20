@@ -1,6 +1,7 @@
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -25,6 +26,10 @@ export class CreateOrderDto {
   @IsInt()
   @IsNotEmpty()
   customerId: string;
+
+  @IsInt()
+  @IsOptional()
+  storeId?: string;
 
   @IsString()
   @IsOptional()
@@ -91,6 +96,10 @@ export class UpdateOrderDto {
 
   @IsInt()
   @IsOptional()
+  storeId?: string;
+
+  @IsInt()
+  @IsOptional()
   importerId: string;
 
   @IsInt()
@@ -148,4 +157,7 @@ export class GetOrderDto {
   @IsEnum(OrderStatus)
   @IsOptional()
   status?: OrderStatus;
+
+  @IsOptional()
+  isPaid?: boolean;
 }
