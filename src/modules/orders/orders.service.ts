@@ -165,8 +165,11 @@ export class OrdersService {
         0,
       );
 
+      await this.ordersProductsService.clearByOrder(order);
+
       await Promise.all(
         _.map(mappingOrderProducts, (orderProduct) => {
+          // console.log('check2', orderProduct);
           return this.ordersProductsService.create({
             order: order,
             product: orderProduct,
@@ -193,7 +196,8 @@ export class OrdersService {
 
     await this.ordersRepository.save([order]);
 
-    return APP_MESSAGE.UPDATED_SUCCESSFULLY('order');
+    // return APP_MESSAGE.UPDATED_SUCCESSFULLY('order');
+    return order;
   }
 
   async readList(getOrderDto: GetOrderDto): Promise<IPaginationResponse<Order>> {
@@ -266,6 +270,7 @@ export class OrdersService {
           'store',
           'importer',
           'exporter',
+          'voucher',
         ],
       },
     );
@@ -289,6 +294,7 @@ export class OrdersService {
 
       return APP_MESSAGE.DELETED_SUCCESSFULLY('order');
     } catch (error) {
+      console.log(error);
       ErrorHelper.InternalServerErrorException();
     }
   }
