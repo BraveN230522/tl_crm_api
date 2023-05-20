@@ -3,7 +3,7 @@ import { VoucherStatus, VoucherType } from '../../../enums/vouchers';
 
 export class CreateVoucherDto {
   @IsNotEmpty()
-  name: number;
+  name: string;
 
   @IsOptional()
   desc?: string;
@@ -44,8 +44,8 @@ export class CreateVoucherDto {
 }
 
 export class UpdateVoucherDto {
-  @IsNotEmpty()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @IsOptional()
   desc?: string;
@@ -77,11 +77,11 @@ export class UpdateVoucherDto {
   numOfUsed?: string;
 
   @IsEnum(VoucherStatus)
-  @IsNotEmpty()
+  @IsOptional()
   status: VoucherStatus;
 
   @IsEnum(VoucherType)
-  @IsNotEmpty()
+  @IsOptional()
   type: VoucherType;
 }
 

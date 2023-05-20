@@ -9,8 +9,8 @@ export class CreateDepartmentDto {
 }
 
 export class UpdateDepartmentDto {
-  @IsNotEmpty()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @IsOptional()
   desc?: string;

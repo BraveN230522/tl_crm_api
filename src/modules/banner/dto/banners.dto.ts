@@ -18,8 +18,8 @@ export class CreateBannerDto {
 }
 
 export class UpdateBannerDto {
-  @IsNotEmpty()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @IsOptional()
   desc?: string;

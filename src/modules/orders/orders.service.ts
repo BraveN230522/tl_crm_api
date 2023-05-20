@@ -215,7 +215,7 @@ export class OrdersService {
         });
       }
 
-      if(isPaid) {
+      if (isPaid) {
         queryBuilderRepo.andWhere('o.paymentDate > 0', { isPaid });
       }
 
@@ -238,7 +238,6 @@ export class OrdersService {
       if (status) {
         queryBuilderRepo.andWhere('o.status = :status', { status });
       }
-
 
       const data = await this.ordersRepository.paginationQueryBuilder(
         queryBuilderRepo,

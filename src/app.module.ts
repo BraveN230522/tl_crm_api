@@ -39,6 +39,7 @@ import { Voucher } from './entities/vouchers.entity';
 import { Banner } from './entities/banners.entity';
 import { BannersModule } from './modules/banner/banners.module';
 import { DepartmentsModule } from './modules/departments/departments.module';
+import { VouchersModule } from './modules/vouchers/vouchers.module';
 
 @Module({
   imports: [
@@ -88,6 +89,7 @@ import { DepartmentsModule } from './modules/departments/departments.module';
     OrdersProductsModule,
     DepartmentsModule,
     BannersModule,
+    VouchersModule,
   ],
 })
 export class AppModule {}

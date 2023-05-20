@@ -17,7 +17,7 @@ export class Voucher extends BaseTable {
     Object.assign(this, partial);
   }
   @Column()
-  name: number;
+  name: string;
 
   @Column({
     nullable: true,

@@ -33,6 +33,27 @@ export class Chance extends BaseTable {
 
   @Column({
     nullable: true,
+  })
+  desc: string;
+
+  @Column({
+    nullable: true,
+  })
+  note: string;
+
+  @Column({
+    nullable: true,
+  })
+  failedNote: string;
+
+  @Column({
+    name: 'success_rate',
+    nullable: true,
+  })
+  successRate: string;
+
+  @Column({
+    nullable: true,
     name: 'current_process',
   })
   currentProcess?: number;
