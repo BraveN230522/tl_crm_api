@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Order_Product } from '../../entities/orders_products.entity';
 import { IOrderProduct } from '../../interfaces';
 import { OrdersProductsRepository } from './orders_products.repository';
 
@@ -18,5 +19,14 @@ export class OrdersProductsService {
     });
 
     this.ordersProductsRepository.save([orderProduct]);
+  }
+
+  async clearByOrder({ order }: IOrderProduct): Promise<void> {
+    await this.ordersProductsRepository
+      .createQueryBuilder('orderProducts')
+      .delete()
+      .from(Order_Product)
+      .where('orderId = :id', { id: order?.id })
+      .execute();
   }
 }

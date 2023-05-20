@@ -1,3 +1,4 @@
+import { RoleDecorator } from './../../common/decorators/role.decorator';
 import {
   Body,
   Controller,
@@ -16,6 +17,7 @@ import { IPaginationResponse } from '../../interfaces';
 import { UserDecorator } from './../../common/decorators/user.decorator';
 import { CreateOrderDto, GetOrderDto, UpdateOrderDto } from './dto/orders.dto';
 import { OrdersService } from './orders.service';
+import { Role } from '../../enums';
 
 @Controller('orders')
 @UseGuards(AuthGuard(), RolesGuard)
@@ -48,6 +50,13 @@ export class OrdersController {
   @Get('/:id')
   readOne(@Param('id') id): Promise<Order> {
     return this.ordersService.readOne(id);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
+  @Delete('/:id')
+  delete(@Param('id') id: string): Promise<string> {
+    return this.ordersService.delete(id);
   }
 
   // @Patch('/:id')
