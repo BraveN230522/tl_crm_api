@@ -6,6 +6,8 @@ import { Branch } from './branches.entity';
 import { Chance } from './chances.entity';
 import { Order } from './orders.entity';
 import { Store } from './stores.entity';
+import { Department } from './departments.entity';
+import { Campaign } from './campaigns.entity';
 
 // import { Admin } from '../admin/admin.entity';
 // import { Project } from '../projects/projects.entity';
@@ -87,8 +89,14 @@ export class User extends BaseTable {
   })
   token?: string;
 
+  @ManyToOne(() => Department, (department) => department.users, { onDelete: 'CASCADE' })
+  department: Department;
+
   @ManyToOne(() => Branch, (branch) => branch.users, { onDelete: 'CASCADE' })
   branch: Branch;
+
+  
+  // is relate
 
   @ManyToOne(() => Store, (store) => store.users, { onDelete: 'CASCADE' })
   store: Store;
@@ -96,9 +104,16 @@ export class User extends BaseTable {
   @OneToMany(() => Chance, (chance) => chance.user)
   chances: Chance[];
 
-  @OneToMany(() => Order, (chance) => chance.importer)
+  @OneToMany(() => Order, (order) => order.importer)
   importerOrders: Order[];
 
-  @OneToMany(() => Order, (chance) => chance.exporter)
+  @OneToMany(() => Order, (order) => order.exporter)
   exporterOrders: Order[];
+
+  @OneToMany(() => Campaign, (campaign) => campaign.importer)
+  importerCampaigns: Campaign[];
+
+  @OneToMany(() => Campaign, (campaign) => campaign.exporter)
+  exporterCampaigns: Campaign[];
+  
 }

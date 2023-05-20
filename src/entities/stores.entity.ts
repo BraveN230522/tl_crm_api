@@ -8,6 +8,7 @@ import { Product } from './products.entity';
 import { Rule } from './rules.entity';
 import { Tier } from './tiers.entity';
 import { User } from './users.entity';
+import { Voucher } from './vouchers.entity';
 
 @Entity()
 export class Store extends BaseTable {
@@ -62,9 +63,6 @@ export class Store extends BaseTable {
   @OneToMany(() => Order, (order) => order.store)
   orders: Order[];
 
-  @OneToMany(() => Campaign, (campaign) => campaign.store)
-  campaigns: Campaign[];
-
   @OneToMany(() => Rule, (rule) => rule.store)
   rules: Rule[];
 
@@ -89,4 +87,11 @@ export class Store extends BaseTable {
     inverseJoinColumn: { name: 'productId', referencedColumnName: 'id' },
   })
   products: Product[];
+
+  // is relate
+  @OneToMany(() => Campaign, (campaign) => campaign.store)
+  campaigns: Campaign[];
+
+  @OneToMany(() => Voucher, (campaign) => campaign.store)
+  vouchers: Voucher[];
 }

@@ -14,10 +14,12 @@ import { BranchesModule } from './../branches/branches.module';
 import { UsersController } from './users.controller';
 import { UsersRepository } from './users.repository';
 import { UsersService } from './users.service';
+import { Order } from '../../entities/orders.entity';
+import { Department } from '../../entities/departments.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Branch, Store]),
+    TypeOrmModule.forFeature([User, Branch, Store, Order, Department]),
     PassportModule,
     SmsModule,
     BranchesModule,
@@ -32,6 +34,6 @@ import { UsersService } from './users.service';
     StoresService,
     StoresRepository,
   ],
-  exports: [UsersRepository, TypeOrmModule.forFeature([User])],
+  exports: [UsersService, UsersRepository, TypeOrmModule.forFeature([User])],
 })
 export class UsersModule {}

@@ -34,6 +34,11 @@ import { SmsModule } from './modules/sms/sms.module';
 import { StoresModule } from './modules/stores/stores.module';
 import { TiersModule } from './modules/tiers/tiers.module';
 import { UsersModule } from './modules/users/users.module';
+import { Department } from './entities/departments.entity';
+import { Voucher } from './entities/vouchers.entity';
+import { Banner } from './entities/banners.entity';
+import { BannersModule } from './modules/banner/banners.module';
+import { DepartmentsModule } from './modules/departments/departments.module';
 
 @Module({
   imports: [
@@ -56,6 +61,9 @@ import { UsersModule } from './modules/users/users.module';
         Product,
         Category,
         Classification,
+        Department,
+        Voucher,
+        Banner,
         Order_Product,
       ],
     }),
@@ -78,6 +86,8 @@ import { UsersModule } from './modules/users/users.module';
     CategoriesModule,
     ClassificationsModule,
     OrdersProductsModule,
+    DepartmentsModule,
+    BannersModule,
   ],
 })
 export class AppModule {}

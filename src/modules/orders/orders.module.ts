@@ -70,5 +70,6 @@ import { OrdersService } from './orders.service';
     StoresService,
     StoresRepository,
   ],
+  exports: [OrdersService, OrdersRepository, TypeOrmModule.forFeature([Order])],
 })
 export class OrdersModule {}

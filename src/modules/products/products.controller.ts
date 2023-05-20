@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../../common/guards';
 import { Product } from '../../entities/products.entity';
@@ -31,6 +31,11 @@ export class ProductsController {
 
   @Put('/:id')
   updateProduct(@Param('id') id: number, @Body() updateProduct: UpdateProductDto): Promise<string> {
+    return this.productService.updateProduct(id, updateProduct);
+  }
+
+  @Patch('/:id')
+  editProduct(@Param('id') id: number, @Body() updateProduct: UpdateProductDto): Promise<string> {
     return this.productService.updateProduct(id, updateProduct);
   }
 

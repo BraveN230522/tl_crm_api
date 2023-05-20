@@ -16,6 +16,7 @@ import { ChanceProcess } from './chanceProcesses.entity';
 import { Customer } from './customers.entity';
 import { Product } from './products.entity';
 import { User } from './users.entity';
+import { Campaign } from './campaigns.entity';
 
 // import { Admin } from '../admin/admin.entity';
 // import { Project } from '../projects/projects.entity';
@@ -41,6 +42,9 @@ export class Chance extends BaseTable {
 
   @ManyToOne(() => Customer, (custom) => custom.chances, { onDelete: 'CASCADE' })
   customer: Customer;
+
+  @ManyToOne(() => Campaign, (campaign) => campaign.chances, { onDelete: 'CASCADE' })
+  campaign: Campaign;
 
   @OneToMany(() => ChanceProcess, (chanceProcesses) => chanceProcesses.chance)
   chanceProcesses: ChanceProcess[];

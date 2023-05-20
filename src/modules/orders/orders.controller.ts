@@ -10,10 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { RoleDecorator } from '../../common/decorators';
 import { RolesGuard } from '../../common/guards';
 import { Order } from '../../entities/orders.entity';
-import { Role } from '../../enums';
 import { IPaginationResponse } from '../../interfaces';
 import { UserDecorator } from './../../common/decorators/user.decorator';
 import { CreateOrderDto, GetOrderDto, UpdateOrderDto } from './dto/orders.dto';
