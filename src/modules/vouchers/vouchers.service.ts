@@ -19,6 +19,7 @@ export class VouchersService {
   async create({
     name,
     desc,
+    note,
     startDate,
     endDate,
     discountPercent,
@@ -35,6 +36,7 @@ export class VouchersService {
     const voucher = this.vouchersRepository.create({
       name,
       desc,
+      note,
       startDate,
       endDate,
       discountPercent,

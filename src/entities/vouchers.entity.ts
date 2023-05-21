@@ -25,6 +25,11 @@ export class Voucher extends BaseTable {
   desc: string;
 
   @Column({
+    nullable: true,
+  })
+  note: string;
+
+  @Column({
     name: 'start_date',
     type: 'bigint',
     default: new Date().getTime(),

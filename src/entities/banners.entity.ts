@@ -17,12 +17,17 @@ export class Banner extends BaseTable {
     Object.assign(this, partial);
   }
   @Column()
-  name: number;
+  name: string;
 
   @Column({
     nullable: true,
   })
   desc: string;
+
+  @Column({
+    nullable: true,
+  })
+  note: string;
 
   @Column({
     nullable: true,

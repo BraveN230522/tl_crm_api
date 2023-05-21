@@ -2,10 +2,13 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateBannerDto {
   @IsNotEmpty()
-  name: number;
+  name: string;
 
   @IsOptional()
   desc?: string;
+
+  @IsOptional()
+  note?: string;
 
   @IsOptional()
   image?: string;
@@ -23,6 +26,9 @@ export class UpdateBannerDto {
 
   @IsOptional()
   desc?: string;
+
+  @IsOptional()
+  note?: string;
 
   @IsOptional()
   image?: string;
