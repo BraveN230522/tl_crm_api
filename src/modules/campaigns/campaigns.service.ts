@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { Campaign } from '../../entities/campaigns.entity';
 import { ErrorHelper } from '../../helpers';
-import { IPaginationResponse } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey } from '../../utilities';
 import { CampaignsRepository } from './campaigns.repository';
@@ -16,7 +15,7 @@ export class CampaignsService {
   ) {}
 
   async create(
-    { name, desc, startDate, endDate, status }: CreateCampaignDto,
+    { name, desc, startDate, endDate, status, note }: CreateCampaignDto,
     currentUser,
   ): Promise<any> {
     try {
@@ -26,6 +25,7 @@ export class CampaignsService {
         startDate,
         endDate,
         status,
+        note,
         importer: currentUser,
       });
 
