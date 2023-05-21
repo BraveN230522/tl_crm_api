@@ -16,12 +16,13 @@ export class BannersService {
     private campaignsService: CampaignsService,
   ) {}
 
-  async create({ name, desc, image, redirectLink, campaignId }: CreateBannerDto): Promise<string> {
+  async create({ name, desc, note, image, redirectLink, campaignId }: CreateBannerDto): Promise<string> {
     const campaign = await this.campaignsService.readOne(Number(campaignId));
 
     const banner = this.bannersRepository.create({
       name,
       desc,
+      note,
       image,
       redirectLink,
       campaign,

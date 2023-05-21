@@ -20,12 +20,17 @@ export class Campaign extends BaseTable {
     Object.assign(this, partial);
   }
   @Column()
-  name: number;
+  name: string;
 
   @Column({
     nullable: true,
   })
   desc: string;
+
+  @Column({
+    nullable: true,
+  })
+  note: string;
 
   @Column({
     name: 'start_date',

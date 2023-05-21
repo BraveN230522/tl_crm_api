@@ -8,6 +8,9 @@ export class CreateVoucherDto {
   @IsOptional()
   desc?: string;
 
+  @IsOptional()
+  note?: string;
+
   @IsNumber()
   @IsOptional()
   startDate: number;
@@ -49,6 +52,9 @@ export class UpdateVoucherDto {
 
   @IsOptional()
   desc?: string;
+
+  @IsOptional()
+  note?: string;
 
   @IsNumber()
   @IsOptional()

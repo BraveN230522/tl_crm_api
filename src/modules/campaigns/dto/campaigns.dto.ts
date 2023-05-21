@@ -4,7 +4,7 @@ import { CampaignStatus } from '../../../enums';
 
 export class CreateCampaignDto {
   @IsNotEmpty()
-  name: number;
+  name: string;
 
   @IsOptional()
   desc?: string;
@@ -20,6 +20,9 @@ export class CreateCampaignDto {
   @IsEnum(CampaignStatus)
   @IsOptional()
   status: CampaignStatus;
+
+  @IsOptional()
+  note?: string;
 }
 
 export class UpdateCampaignDto {
@@ -40,6 +43,9 @@ export class UpdateCampaignDto {
   @IsEnum(CampaignStatus)
   @IsOptional()
   status: CampaignStatus;
+
+  @IsOptional()
+  note?: string;
 }
 
 export class GetCampaignDto {
