@@ -9,6 +9,7 @@ import { Product } from './../../entities/products.entity';
 import { assignIfHasKey } from './../../utilities/mapping';
 import { CreateProductDto, UpdateProductDto } from './dto/products.dto';
 import { ProductsRepository } from './products.repository';
+import _ from 'lodash';
 
 @Injectable()
 export class ProductsService {
