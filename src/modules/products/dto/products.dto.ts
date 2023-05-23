@@ -47,7 +47,7 @@ export class UpdateProductDto {
   })
   @IsOptional()
   @IsNumber()
-  cost: number;
+  cost?: number;
 
   @Transform((params) => {
     return Number(params.value);

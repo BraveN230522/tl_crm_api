@@ -58,6 +58,8 @@ export class OrdersService {
       if (quantity < 0)
         ErrorHelper.ConflictException(APP_MESSAGE.QUANTITY_ALLOWED(product.quantity, product.name));
 
+      this.productsService.updateProduct(product.id, { quantity });
+
       return {
         ...product,
         ...orderProducts?.[index],
@@ -139,17 +141,22 @@ export class OrdersService {
       const products = await this.productsService.getProductByIds(
         _.map(orderProducts, (orderProduct) => orderProduct.id),
       );
-
       const mappingOrderProducts: Product[] = _.map(products, (product, index) => {
-        if (product.quantity <= 0)
-          ErrorHelper.ConflictException(APP_MESSAGE.OUT_OF_STOCK(product.name));
+        let quantity = product.quantity - orderProducts[index]?.quantity;
+        const prevProduct = _.find(order.orderProducts, (op) => op?.product?.id === product?.id);
 
-        const quantity = product.quantity - orderProducts[index]?.quantity;
+        if (prevProduct) {
+          quantity = prevProduct.quantity - orderProducts[index]?.quantity + product?.quantity;
+        }
+        // if (product.quantity <= 0)
+        //   ErrorHelper.ConflictException(APP_MESSAGE.OUT_OF_STOCK(product.name));
 
         if (quantity < 0)
           ErrorHelper.ConflictException(
-            APP_MESSAGE.QUANTITY_ALLOWED(product.quantity, product.name),
+            APP_MESSAGE.QUANTITY_ALLOWED(orderProducts[index]?.quantity + quantity, product.name),
           );
+
+        this.productsService.updateProduct(product.id, { quantity });
 
         return {
           ...product,
@@ -165,16 +172,23 @@ export class OrdersService {
         0,
       );
 
-      await this.ordersProductsService.clearByOrder(order);
-
       await Promise.all(
         _.map(mappingOrderProducts, (orderProduct) => {
           // console.log('check2', orderProduct);
-          return this.ordersProductsService.create({
-            order: order,
-            product: orderProduct,
-            quantity: orderProduct.quantity,
-          });
+          const found = order.orderProducts.find((prod) => prod.product.id === orderProduct.id);
+          console.log({ found });
+          if (!found)
+            return this.ordersProductsService.create({
+              order: order,
+              product: orderProduct,
+              quantity: orderProduct.quantity,
+            });
+          else
+            return this.ordersProductsService.update({
+              order: order,
+              product: orderProduct,
+              quantity: orderProduct.quantity,
+            });
         }),
       );
     }
@@ -194,10 +208,11 @@ export class OrdersService {
       store,
     });
 
+    delete order.orderProducts;
+
     await this.ordersRepository.save([order]);
 
-    // return APP_MESSAGE.UPDATED_SUCCESSFULLY('order');
-    return order;
+    return APP_MESSAGE.UPDATED_SUCCESSFULLY('order');
   }
 
   async readList(getOrderDto: GetOrderDto): Promise<IPaginationResponse<Order>> {
@@ -259,7 +274,7 @@ export class OrdersService {
     }
   }
 
-  async readOne(id: string | number): Promise<any> {
+  async readOne(id: string | number): Promise<Order> {
     const found = await this.ordersRepository.findOne(
       { id },
       {
@@ -277,11 +292,7 @@ export class OrdersService {
 
     if (!found) ErrorHelper.NotFoundException(`Order is not found`);
 
-    const orderProducts = _.map(found?.orderProducts, (item) => {
-      return { ...item?.product, quantity: item?.quantity };
-    });
-
-    return { ...found, orderProducts };
+    return found;
   }
 
   async delete(id: string): Promise<string> {
