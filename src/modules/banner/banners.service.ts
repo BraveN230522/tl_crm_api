@@ -43,7 +43,7 @@ export class BannersService {
       .orderBy('banner.id', 'DESC');
 
     if (search) {
-      query.andWhere('LOWER(banners.name) LIKE LOWER(:search)', { search: `%${search}%` });
+      query.andWhere('LOWER(banner.name) LIKE LOWER(:search)', { search: `%${search}%` });
     }
 
     const banners = this.bannersRepository.paginationQueryBuilder(query, getFilterBanners);
