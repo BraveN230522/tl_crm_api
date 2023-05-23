@@ -16,6 +16,8 @@ import { UsersRepository } from './users.repository';
 import { UsersService } from './users.service';
 import { Order } from '../../entities/orders.entity';
 import { Department } from '../../entities/departments.entity';
+import { DepartmentsService } from '../departments/departments.service';
+import { DepartmentsRepository } from '../departments/departments.repository';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { Department } from '../../entities/departments.entity';
     BranchesRepository,
     StoresService,
     StoresRepository,
+    DepartmentsService,
+    DepartmentsRepository,
   ],
   exports: [UsersService, UsersRepository, TypeOrmModule.forFeature([User])],
 })

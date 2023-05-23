@@ -9,6 +9,7 @@ import { IPaginationResponse, ISendSMS } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey, matchWord } from '../../utilities';
 import { BranchesService } from '../branches/branches.service';
+import { DepartmentsService } from '../departments/departments.service';
 import { Role } from './../../enums/commons';
 import { EncryptHelper } from './../../helpers/encrypt.helper';
 import { SmsService } from './../sms/sms.service';
@@ -33,11 +34,12 @@ export class UsersService {
     private smsService: SmsService,
     private branchesService: BranchesService,
     private storesService: StoresService,
+    private departmentsService: DepartmentsService,
   ) {}
 
   async getUser(id): Promise<User> {
     // if (UUID_PATTERN.test(id)) found = await this.usersRepository.findOneBy({ inviteId: id });
-    const found = await this.usersRepository.findOneBy({ id });
+    const found = await this.usersRepository.findOne({ id }, { relations: ['department']});
 
     if (!found) ErrorHelper.NotFoundException(`User is not found`);
 
@@ -159,6 +161,7 @@ export class UsersService {
       email,
       role = Role.STAFF,
       storeId,
+      departmentId,
     } = createUserDto;
 
     if (!isValidRole(currentUserRole, role)) {
@@ -167,6 +170,7 @@ export class UsersService {
 
     const hashedPassword = await EncryptHelper.hash(password);
 
+    const department = await this.departmentsService.readOne(departmentId);
     const store = await this.storesService.readOne(storeId);
 
     try {
@@ -179,6 +183,7 @@ export class UsersService {
         email,
         role,
         store,
+        department,
       });
 
       await this.usersRepository.save([user]);
@@ -191,6 +196,7 @@ export class UsersService {
         'role',
         'id',
         'store',
+        'department',
       ]) as User;
 
       return mappingUser;
@@ -216,6 +222,7 @@ export class UsersService {
     currentUser?: User,
     isLogin?: boolean,
   ): Promise<string> {
+    const { departmentId } = updateUserDto;
     const user = await this.getUser(id);
     // Check role update: not have role greater be updating user role or not the user himself
     if (!isValidRole(currentUser?.role, user?.role) && currentUser?.id !== user.id && !isLogin) {
@@ -226,8 +233,11 @@ export class UsersService {
       ErrorHelper.ForbiddenException();
     }
 
+    const department =
+      departmentId && (await this.departmentsService.readOne(Number(departmentId)));
+
     try {
-      assignIfHasKey(user, updateUserDto);
+      assignIfHasKey(user, { ...updateUserDto, department });
       await this.usersRepository.save([user]);
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('user');
     } catch (error) {
@@ -295,7 +305,8 @@ export class UsersService {
       const queryBuilderRepo = await this.usersRepository
         .createQueryBuilder('u')
         .where('u.role != :role', { role: Role.ADMIN })
-        .orderBy('id', 'DESC');
+        .leftJoinAndSelect('u.department', 'userDepartment')
+        .orderBy('u.id', 'DESC');
 
       if (search) {
         queryBuilderRepo

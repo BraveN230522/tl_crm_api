@@ -30,6 +30,9 @@ import { UsersService } from '../users/users.service';
 import { OrdersController } from './orders.controller';
 import { OrdersRepository } from './orders.repository';
 import { OrdersService } from './orders.service';
+import { DepartmentsService } from '../departments/departments.service';
+import { DepartmentsRepository } from '../departments/departments.repository';
+import { Department } from '../../entities/departments.entity';
 
 @Module({
   imports: [
@@ -43,6 +46,7 @@ import { OrdersService } from './orders.service';
       Store,
       User,
       Branch,
+      Department,
     ]),
     PassportModule,
   ],
@@ -69,6 +73,8 @@ import { OrdersService } from './orders.service';
     BranchesRepository,
     StoresService,
     StoresRepository,
+    DepartmentsService,
+    DepartmentsRepository,
   ],
   exports: [OrdersService, OrdersRepository, TypeOrmModule.forFeature([Order])],
 })
