@@ -1,5 +1,6 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { VoucherStatus, VoucherType } from '../../../enums/vouchers';
+import { Transform } from 'class-transformer';
 
 export class CreateVoucherDto {
   @IsNotEmpty()
@@ -95,6 +96,20 @@ export class GetFilterVoucherDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @Transform((params) => {
+    return Number(params.value);
+  })
+  @IsNumber()
+  @IsOptional()
+  fromDate?: number;
+
+  @Transform((params) => {
+    return Number(params.value);
+  })
+  @IsNumber()
+  @IsOptional()
+  toDate?: number;
 
   @IsOptional()
   page?: number;

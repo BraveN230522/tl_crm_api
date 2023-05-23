@@ -8,6 +8,7 @@ import { assignIfHasKey } from '../../utilities/mapping';
 import { CampaignsService } from '../campaigns/campaigns.service';
 import { CreateVoucherDto, GetFilterVoucherDto, UpdateVoucherDto } from './dto/vouchers.dto';
 import { VouchersRepository } from './vouchers.repository';
+import _ from 'lodash';
 
 @Injectable()
 export class VouchersService {
@@ -55,14 +56,22 @@ export class VouchersService {
   }
 
   async readList(getFilterVouchers: GetFilterVoucherDto): Promise<IPaginationResponse<Voucher[]>> {
-    const { search } = getFilterVouchers;
+    const { search, fromDate, toDate } = getFilterVouchers;
     const query = this.vouchersRepository
       .createQueryBuilder('voucher')
       .leftJoinAndSelect('voucher.campaign', 'voucherCampaign')
       .orderBy('voucher.id', 'DESC');
 
     if (search) {
-      query.andWhere('LOWER(vouchers.name) LIKE LOWER(:search)', { search: `%${search}%` });
+      query.andWhere('LOWER(voucher.name) LIKE LOWER(:search)', { search: `%${search}%` });
+    }
+
+    if (fromDate) {
+      query.andWhere('voucher.startDate >= :fromDate', { fromDate });
+    }
+
+    if (toDate) {
+      query.andWhere('voucher.endDate <= :toDate', { toDate });
     }
 
     const vouchers = this.vouchersRepository.paginationQueryBuilder(query, getFilterVouchers);
@@ -101,8 +110,9 @@ export class VouchersService {
     const voucher = await this.readOne(id);
     const campaign =
       campaignId && (await this.campaignsService.readOne(Number(updateVoucherDto?.campaignId)));
+    const updateData = _.omit(updateVoucherDto, 'campaignId');
     try {
-      assignIfHasKey(voucher, { ...updateVoucherDto, campaign });
+      assignIfHasKey(voucher, { ...updateData, campaign });
       await this.vouchersRepository.save([voucher]);
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('voucher');
     } catch (error) {
