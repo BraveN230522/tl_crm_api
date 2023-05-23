@@ -8,6 +8,7 @@ import { assignIfHasKey } from '../../utilities/mapping';
 import { CampaignsService } from '../campaigns/campaigns.service';
 import { CreateVoucherDto, GetFilterVoucherDto, UpdateVoucherDto } from './dto/vouchers.dto';
 import { VouchersRepository } from './vouchers.repository';
+import _ from 'lodash';
 
 @Injectable()
 export class VouchersService {
@@ -109,8 +110,9 @@ export class VouchersService {
     const voucher = await this.readOne(id);
     const campaign =
       campaignId && (await this.campaignsService.readOne(Number(updateVoucherDto?.campaignId)));
+    const updateData = _.omit(updateVoucherDto, 'campaignId');
     try {
-      assignIfHasKey(voucher, { ...updateVoucherDto, campaign });
+      assignIfHasKey(voucher, { ...updateData, campaign });
       await this.vouchersRepository.save([voucher]);
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('voucher');
     } catch (error) {

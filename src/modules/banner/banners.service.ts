@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import _ from 'lodash';
 import { Banner } from '../../entities/banners.entity';
 import { ErrorHelper } from '../../helpers';
 import { IPaginationResponse } from '../../interfaces';
@@ -16,7 +17,14 @@ export class BannersService {
     private campaignsService: CampaignsService,
   ) {}
 
-  async create({ name, desc, note, image, redirectLink, campaignId }: CreateBannerDto): Promise<string> {
+  async create({
+    name,
+    desc,
+    note,
+    image,
+    redirectLink,
+    campaignId,
+  }: CreateBannerDto): Promise<string> {
     const campaign = await this.campaignsService.readOne(Number(campaignId));
 
     const banner = this.bannersRepository.create({
@@ -33,9 +41,7 @@ export class BannersService {
     return APP_MESSAGE.ADDED_SUCCESSFULLY('Create banner successfully');
   }
 
-  async readList(
-    getFilterBanners: GetFilterBannersDto,
-  ): Promise<IPaginationResponse<Banner[]>> {
+  async readList(getFilterBanners: GetFilterBannersDto): Promise<IPaginationResponse<Banner[]>> {
     const { search } = getFilterBanners;
     const query = this.bannersRepository
       .createQueryBuilder('banner')
@@ -80,9 +86,11 @@ export class BannersService {
   async update(id: number, updateBannerDto: UpdateBannerDto): Promise<string> {
     const { campaignId } = updateBannerDto;
     const banner = await this.readOne(id);
-    const campaign = campaignId && (await this.campaignsService.readOne(Number(updateBannerDto?.campaignId)));
+    const campaign =
+      campaignId && (await this.campaignsService.readOne(Number(updateBannerDto?.campaignId)));
+    const updateData = _.omit(updateBannerDto, 'campaignId');
     try {
-      assignIfHasKey(banner, { ...updateBannerDto, campaign });
+      assignIfHasKey(banner, { ...updateData, campaign });
       await this.bannersRepository.save([banner]);
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('banner');
     } catch (error) {

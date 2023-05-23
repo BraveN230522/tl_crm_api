@@ -90,8 +90,9 @@ export class ProductsService {
     const product = await this.getProductById(id);
     const category =
       categoryId && (await this.categoriesService.getCategoryById(updateProductDto?.categoryId));
+    const updateData = _.omit(updateProductDto, 'categoryId');
     try {
-      assignIfHasKey(product, { ...updateProductDto, category });
+      assignIfHasKey(product, { ...updateData, category });
       await this.productsRepository.save([product]);
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('product');
     } catch (error) {
