@@ -51,7 +51,7 @@ export class VouchersService {
 
     await this.vouchersRepository.save([voucher]);
 
-    return APP_MESSAGE.ADDED_SUCCESSFULLY('Create banner successfully');
+    return APP_MESSAGE.ADDED_SUCCESSFULLY('voucher');
   }
 
   async readList(getFilterVouchers: GetFilterVoucherDto): Promise<IPaginationResponse<Voucher[]>> {
@@ -92,7 +92,7 @@ export class VouchersService {
     if (result.affected === 0) {
       ErrorHelper.NotFoundException(`This voucher with ID: \'${id}'\ was not found`);
     } else {
-      return APP_MESSAGE.DELETED_SUCCESSFULLY('Delete voucher successfully');
+      return APP_MESSAGE.DELETED_SUCCESSFULLY('voucher');
     }
   }
 
