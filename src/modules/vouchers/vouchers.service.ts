@@ -55,14 +55,22 @@ export class VouchersService {
   }
 
   async readList(getFilterVouchers: GetFilterVoucherDto): Promise<IPaginationResponse<Voucher[]>> {
-    const { search } = getFilterVouchers;
+    const { search, fromDate, toDate } = getFilterVouchers;
     const query = this.vouchersRepository
       .createQueryBuilder('voucher')
       .leftJoinAndSelect('voucher.campaign', 'voucherCampaign')
       .orderBy('voucher.id', 'DESC');
 
     if (search) {
-      query.andWhere('LOWER(vouchers.name) LIKE LOWER(:search)', { search: `%${search}%` });
+      query.andWhere('LOWER(voucher.name) LIKE LOWER(:search)', { search: `%${search}%` });
+    }
+
+    if (fromDate) {
+      query.andWhere('voucher.startDate >= :fromDate', { fromDate });
+    }
+
+    if (toDate) {
+      query.andWhere('voucher.endDate <= :toDate', { toDate });
     }
 
     const vouchers = this.vouchersRepository.paginationQueryBuilder(query, getFilterVouchers);

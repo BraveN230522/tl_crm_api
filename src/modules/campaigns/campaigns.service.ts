@@ -58,11 +58,11 @@ export class CampaignsService {
       }
 
       if (fromDate) {
-        queryBuilderRepo.andWhere('campaign.createdAt >= :fromDate', { fromDate });
+        queryBuilderRepo.andWhere('campaign.startDate >= :fromDate', { fromDate });
       }
 
       if (toDate) {
-        queryBuilderRepo.andWhere('campaign.createdAt <= :toDate', { toDate });
+        queryBuilderRepo.andWhere('campaign.endDate <= :toDate', { toDate });
       }
 
       if (status) {
