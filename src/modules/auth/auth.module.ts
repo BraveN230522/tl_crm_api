@@ -14,6 +14,8 @@ import { UsersService } from '../users/users.service';
 import { SmsModule } from './../sms/sms.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { DepartmentsService } from '../departments/departments.service';
+import { DepartmentsRepository } from '../departments/departments.repository';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { AuthService } from './auth.service';
     BranchesRepository,
     StoresService,
     StoresRepository,
+    DepartmentsService,
+    DepartmentsRepository,
   ],
   controllers: [AuthController],
 })

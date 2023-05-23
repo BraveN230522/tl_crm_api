@@ -35,6 +35,9 @@ import { BranchesService } from '../branches/branches.service';
 import { BranchesRepository } from '../branches/branches.repository';
 import { Order } from '../../entities/orders.entity';
 import { Customer } from '../../entities/customers.entity';
+import { Department } from '../../entities/departments.entity';
+import { DepartmentsService } from '../departments/departments.service';
+import { DepartmentsRepository } from '../departments/departments.repository';
 
 @Module({
   imports: [
@@ -50,6 +53,7 @@ import { Customer } from '../../entities/customers.entity';
       Branch,
       Classification,
       Customer,
+      Department,
       // Order,
     ]),
     PassportModule,
@@ -77,6 +81,8 @@ import { Customer } from '../../entities/customers.entity';
     BranchesRepository,
     StoresService,
     StoresRepository,
+    DepartmentsService,
+    DepartmentsRepository,
   ],
   exports: [CampaignsService, CampaignsRepository, TypeOrmModule.forFeature([Campaign])],
 })

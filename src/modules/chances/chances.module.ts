@@ -15,6 +15,8 @@ import { UsersService } from '../users/users.service';
 import { ChancesController } from './chances.controller';
 import { ChancesRepository } from './chances.repository';
 import { ChancesService } from './chances.service';
+import { DepartmentsService } from '../departments/departments.service';
+import { DepartmentsRepository } from '../departments/departments.repository';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { ChancesService } from './chances.service';
     BranchesService,
     StoresService,
     StoresRepository,
+    DepartmentsService,
+    DepartmentsRepository,
   ],
   exports: [TypeOrmModule.forFeature([Chance])],
 })

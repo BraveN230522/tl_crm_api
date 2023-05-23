@@ -126,6 +126,9 @@ export class CreateUserDto {
   @IsEnum(Role)
   role: Role;
 
+  @IsOptional()
+  departmentId?: string;
+
   @Transform((params) => {
     return Number(params.value);
   })
@@ -152,6 +155,9 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEmail()
   email?: string;
+
+  @IsOptional()
+  departmentId?: string;
 
   @IsOptional()
   @IsEnum(Role)
