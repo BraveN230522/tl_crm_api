@@ -295,6 +295,31 @@ export class OrdersService {
     return found;
   }
 
+  async getOne(id: string | number): Promise<any> {
+    const found = await this.ordersRepository.findOne(
+      { id },
+      {
+        relations: [
+          'orderProducts',
+          'orderProducts.product',
+          'customer',
+          'store',
+          'importer',
+          'exporter',
+          'voucher',
+        ],
+      },
+    );
+
+    if (!found) ErrorHelper.NotFoundException(`Order is not found`);
+
+    const orderProducts = _.map(found?.orderProducts, (item) => {
+      return { ...item?.product, quantity: item?.quantity };
+    });
+
+    return { ...found, orderProducts };
+  }
+
   async delete(id: string): Promise<string> {
     await this.readOne(id);
 

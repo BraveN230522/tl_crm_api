@@ -12,7 +12,7 @@ import {
 import { Product } from '../../../entities/products.entity';
 import { OrderStatus } from '../../../enums';
 
-export class CreateOrderDto {
+export class CreateOrderProductDto {
   @IsString()
   @IsNotEmpty()
   name: string;

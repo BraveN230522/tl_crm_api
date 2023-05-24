@@ -41,4 +41,13 @@ export class OrdersProductsService {
       quantity,
     });
   }
+
+  async clearByOrder({ order }: IOrderProduct): Promise<void> {
+    await this.ordersProductsRepository
+      .createQueryBuilder('orderProducts')
+      .delete()
+      .from(Order_Product)
+      .where('orderId = :id', { id: order?.id })
+      .execute();
+  }
 }

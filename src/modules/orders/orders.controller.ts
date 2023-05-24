@@ -49,7 +49,7 @@ export class OrdersController {
   @UseGuards(AuthGuard(), RolesGuard)
   @Get('/:id')
   readOne(@Param('id') id): Promise<Order> {
-    return this.ordersService.readOne(id);
+    return this.ordersService.getOne(id);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)

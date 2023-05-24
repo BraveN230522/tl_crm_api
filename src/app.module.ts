@@ -40,6 +40,8 @@ import { Banner } from './entities/banners.entity';
 import { BannersModule } from './modules/banner/banners.module';
 import { DepartmentsModule } from './modules/departments/departments.module';
 import { VouchersModule } from './modules/vouchers/vouchers.module';
+import { Chance_Product } from './entities/chances_products.entity';
+import { ChancesProductsModule } from './modules/chances_products/chances_products.module';
 
 @Module({
   imports: [
@@ -66,6 +68,7 @@ import { VouchersModule } from './modules/vouchers/vouchers.module';
         Voucher,
         Banner,
         Order_Product,
+        Chance_Product,
       ],
     }),
     AppConfigModule,
@@ -87,6 +90,7 @@ import { VouchersModule } from './modules/vouchers/vouchers.module';
     CategoriesModule,
     ClassificationsModule,
     OrdersProductsModule,
+    ChancesProductsModule,
     DepartmentsModule,
     BannersModule,
     VouchersModule,

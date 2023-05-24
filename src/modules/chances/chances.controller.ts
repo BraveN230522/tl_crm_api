@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleDecorator, UserDecorator } from '../../common';
 import { RolesGuard } from '../../common/guards';
@@ -16,8 +26,8 @@ export class ChancesController {
 
   @UseGuards(AuthGuard(), RolesGuard)
   @Get()
-  getChanceList(@Query() getChancesDto: GetChancesDto): Promise<IPaginationResponse<Chance>> {
-    return this.chanceService.getChanceList(getChancesDto);
+  getChanceList(@Query() getChancesDto: GetChancesDto): Promise<IPaginationResponse<any>> {
+    return this.chanceService.readList(getChancesDto);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
@@ -25,18 +35,31 @@ export class ChancesController {
   createChance(
     @Body() createChanceDto: CreateChancesDto,
     @UserDecorator() currentUser,
-  ): Promise<Chance> {
-    return this.chanceService.createChance(createChanceDto, currentUser);
+  ): Promise<any> {
+    return this.chanceService.create(createChanceDto, currentUser);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Get('/:id')
+  readOne(@Param('id') id): Promise<any> {
+    return this.chanceService.getOne(id);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
   @RoleDecorator(Role.ADMIN, Role.B_MANAGER, Role.S_MANAGER)
   @Patch('/:id')
-  updateChance(
+  update(
     @Param('id') id,
     @Body() updateChanceDto: UpdateChanceDto,
     @UserDecorator() currentUser,
   ): Promise<string> {
-    return this.chanceService.updateChance(id, updateChanceDto, currentUser);
+    return this.chanceService.update(id, updateChanceDto, currentUser);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
+  @Delete('/:id')
+  delete(@Param('id') id: string): Promise<string> {
+    return this.chanceService.delete(id);
   }
 }

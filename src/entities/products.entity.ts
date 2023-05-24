@@ -4,6 +4,7 @@ import { Category } from './categories.entity';
 import { Chance } from './chances.entity';
 import { Order_Product } from './orders_products.entity';
 import { Store } from './stores.entity';
+import { Chance_Product } from './chances_products.entity';
 
 @Entity()
 export class Product extends BaseTable {
@@ -52,4 +53,7 @@ export class Product extends BaseTable {
 
   @OneToMany(() => Order_Product, (order_product) => order_product.product)
   orderProducts: Order_Product[];
+
+  @OneToMany(() => Chance_Product, (chance_product) => chance_product.product)
+  chanceProducts: Chance_Product[];
 }
