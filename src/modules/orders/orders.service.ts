@@ -222,6 +222,7 @@ export class OrdersService {
         .createQueryBuilder('o')
         .leftJoinAndSelect('o.orderProducts', 'oo')
         .leftJoinAndSelect('oo.product', 'oop')
+        .leftJoinAndSelect('oop.category', 'oopc')
         .leftJoinAndSelect('o.customer', 'oc')
         .leftJoinAndSelect('o.store', 'os')
         .leftJoinAndSelect('o.importer', 'oi')
@@ -281,6 +282,7 @@ export class OrdersService {
         relations: [
           'orderProducts',
           'orderProducts.product',
+          'orderProducts.product.category',
           'customer',
           'store',
           'importer',
