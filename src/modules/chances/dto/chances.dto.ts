@@ -163,5 +163,4 @@ export class GetChancesDto {
   @IsEnum(ChanceStatus)
   @IsOptional()
   status?: ChanceStatus;
-
 }

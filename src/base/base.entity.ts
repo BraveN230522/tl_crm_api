@@ -13,7 +13,7 @@ export abstract class BaseTable {
   @Column({
     name: 'created_at',
     type: 'bigint',
-    default: new Date().getTime(),
+    default: () => new Date().getTime(),
     transformer: {
       to: (value) => value,
       from: (value) => parseInt(value),
@@ -25,7 +25,7 @@ export abstract class BaseTable {
   @Column({
     name: 'updated_at',
     type: 'bigint',
-    default: new Date().getTime(),
+    default: () => new Date().getTime(),
     transformer: {
       to: (value) => value,
       from: (value) => parseInt(value),

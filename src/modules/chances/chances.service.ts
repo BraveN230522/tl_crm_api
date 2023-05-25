@@ -172,21 +172,21 @@ export class ChancesService {
       );
 
       await Promise.all(
-        _.map(mappingChanceProducts, (chanceProducr) => {
-          // console.log('check2', chanceProducr);
-          const found = chance.chanceProducts.find((prod) => prod.product.id === chanceProducr.id);
+        _.map(mappingChanceProducts, (chanceProduct) => {
+          // console.log('check2', chanceProduct);
+          const found = chance.chanceProducts.find((prod) => prod.product.id === chanceProduct.id);
           console.log({ found });
           if (!found)
             return this.chancesProductsService.create({
               chance: chance,
-              product: chanceProducr,
-              quantity: chanceProducr.quantity,
+              product: chanceProduct,
+              quantity: chanceProduct.quantity,
             });
           else
             return this.chancesProductsService.update({
               chance: chance,
-              product: chanceProducr,
-              quantity: chanceProducr.quantity,
+              product: chanceProduct,
+              quantity: chanceProduct.quantity,
             });
         }),
       );
@@ -275,8 +275,8 @@ export class ChancesService {
       { id },
       {
         relations: [
-          'chancesProducts',
-          'chancesProducts.product',
+          'chanceProducts',
+          'chanceProducts.product',
           'customer',
           'campaign',
           'user',
@@ -294,8 +294,8 @@ export class ChancesService {
       { id },
       {
         relations: [
-          'chancesProducts',
-          'chancesProducts.product',
+          'chanceProducts',
+          'chanceProducts.product',
           'customer',
           'campaign',
           'user',
@@ -305,11 +305,11 @@ export class ChancesService {
 
     if (!found) ErrorHelper.NotFoundException(`Chance is not found`);
 
-    const chancesProducts = _.map(found?.chanceProducts, (item) => {
+    const chanceProducts = _.map(found?.chanceProducts, (item) => {
       return { ...item?.product, quantity: item?.quantity };
     });
 
-    return { ...found, chancesProducts };
+    return { ...found, chanceProducts };
   }
 
   async delete(id: string): Promise<string> {
