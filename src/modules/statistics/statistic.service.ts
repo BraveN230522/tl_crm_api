@@ -52,8 +52,7 @@ export class StatisticService {
         .where('order.createdAt <= :endOfMonth', { endOfMonth })
         .andWhere('order.status = :paidStatus', { paidStatus })
         .select('SUM(order.total)', 'total')
-        .groupBy('order.id')
-        .getRawMany();
+        .getRawOne();
       console.log({ ordersRevenue });
       const prevOrdersRevenue = await this.ordersRepository
         .createQueryBuilder('order')
@@ -61,8 +60,7 @@ export class StatisticService {
         .where('order.createdAt <= :endOfLastMonth', { endOfLastMonth })
         .andWhere('order.status = :paidStatus', { paidStatus })
         .select('sum(order.total)', 'total')
-        .groupBy('order.id')
-        .getRawMany();
+        .getRawOne();
       console.log({ prevOrdersRevenue });
 
       //campaigns
@@ -89,7 +87,6 @@ export class StatisticService {
         .andWhere('orders.createdAt >= :startOfMonth', { startOfMonth })
         .andWhere('orders.createdAt <= :endOfMonth', { endOfMonth })
         .andWhere('orders.status = :paidStatus', { paidStatus })
-        .groupBy('orders.id')
         .select('SUM(orderProducts.quantity)', 'total')
         .getRawOne();
       console.log({ soldProducts });
@@ -100,7 +97,6 @@ export class StatisticService {
         .andWhere('orders.createdAt >= :startOfLastMonth', { startOfLastMonth })
         .andWhere('orders.createdAt <= :endOfLastMonth', { endOfLastMonth })
         .andWhere('orders.status = :paidStatus', { paidStatus })
-        .groupBy('orders.id')
         .select('SUM(orderProducts.quantity)', 'total')
         .getRawOne();
       console.log({ prevSoldProducts });
@@ -110,8 +106,8 @@ export class StatisticService {
           rate: getMonthlyRate(createdCustomers?.total, prevCreatedCustomers?.total),
         },
         revenue: {
-          // total: ordersRevenue?.total,
-          // rate: getMonthlyRate(ordersRevenue?.total, prevOrdersRevenue?.total),
+          total: ordersRevenue?.total,
+          rate: getMonthlyRate(ordersRevenue?.total, prevOrdersRevenue?.total),
         },
         campaigns: {
           total: createdCampaigns?.total,
