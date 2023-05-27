@@ -49,7 +49,7 @@ export class CustomersService {
       _.map(classificationIds, (tempId) => this.classificationsService.readOne(tempId)),
     );
 
-    const store = await this.storesService.readOne(storeId);
+    const store = storeId ? await this.storesService.readOne(storeId) : undefined;
 
     try {
       const customer = this.customersRepository.create({

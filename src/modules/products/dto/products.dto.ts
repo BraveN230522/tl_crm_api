@@ -28,9 +28,9 @@ export class CreateProductDto {
   @Transform((params) => {
     return Number(params.value);
   })
+  @IsOptional()
   @IsInt()
-  @IsNotEmpty()
-  categoryId: number;
+  categoryId?: number;
 }
 
 export class UpdateProductDto {

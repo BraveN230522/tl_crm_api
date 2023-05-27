@@ -31,6 +31,11 @@ import { DepartmentsService } from '../departments/departments.service';
 import { DepartmentsRepository } from '../departments/departments.repository';
 import { Department } from '../../entities/departments.entity';
 import { StatisticController } from './statistic.controller';
+import { StatisticService } from './statistic.service';
+import { OrdersRepository } from '../orders/orders.repository';
+import { OrdersService } from '../orders/orders.service';
+import { CampaignsRepository } from '../campaigns/campaigns.repository';
+import { Campaign } from '../../entities/campaigns.entity';
 
 @Module({
   imports: [
@@ -45,15 +50,19 @@ import { StatisticController } from './statistic.controller';
       User,
       Branch,
       Department,
+      Campaign,
     ]),
     PassportModule,
   ],
   controllers: [StatisticController],
   providers: [
+    StatisticService,
     ProductsService,
     ProductsRepository,
     CategoriesService,
     CategoriesRepository,
+    OrdersRepository,
+    OrdersService,
     OrdersProductsService,
     OrdersProductsRepository,
     CustomersService,
@@ -71,6 +80,7 @@ import { StatisticController } from './statistic.controller';
     StoresRepository,
     DepartmentsService,
     DepartmentsRepository,
+    CampaignsRepository,
   ],
 })
 export class StatisticModule {}
