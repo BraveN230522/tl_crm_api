@@ -1,6 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { IsNumber } from 'class-validator';
-import { BeforeUpdate, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeUpdate, Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 //Unix timestamp
 
@@ -9,32 +9,14 @@ export abstract class BaseTable {
   @IsNumber()
   public id: number;
 
-  // @Exclude({ toPlainOnly: true })
-  @Column({
+  @CreateDateColumn({
     name: 'created_at',
-    type: 'bigint',
-    default: new Date().getTime(),
-    transformer: {
-      to: (value) => value,
-      from: (value) => parseInt(value),
-    },
   })
   public createdAt: number;
 
-  // @Exclude({ toPlainOnly: true })
-  @Column({
+  @UpdateDateColumn({
     name: 'updated_at',
-    type: 'bigint',
-    default: new Date().getTime(),
-    transformer: {
-      to: (value) => value,
-      from: (value) => parseInt(value),
-    },
   })
   public updatedAt: number;
 
-  // @BeforeUpdate()
-  // updateManagedAt(): void {
-  //   this.updatedAt = new Date().getTime();
-  // }
 }
