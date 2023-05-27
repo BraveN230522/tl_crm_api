@@ -13,7 +13,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../../common/guards';
 import { Order } from '../../entities/orders.entity';
-import { IPaginationResponse } from '../../interfaces';
+import { IOrderResponse, IPaginationResponse } from '../../interfaces';
 import { UserDecorator } from './../../common/decorators/user.decorator';
 import { CreateOrderDto, GetOrderDto, UpdateOrderDto } from './dto/orders.dto';
 import { OrdersService } from './orders.service';
@@ -27,7 +27,7 @@ export class OrdersController {
 
   @UseGuards(AuthGuard(), RolesGuard)
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto, @UserDecorator() currentUser): Promise<Order> {
+  create(@Body() createOrderDto: CreateOrderDto, @UserDecorator() currentUser): Promise<IOrderResponse> {
     return this.ordersService.create(createOrderDto, currentUser);
   }
 
@@ -42,13 +42,13 @@ export class OrdersController {
   }
 
   @Get()
-  readList(@Query() getOrderDto: GetOrderDto): Promise<IPaginationResponse<Order>> {
+  readList(@Query() getOrderDto: GetOrderDto): Promise<IPaginationResponse<IOrderResponse>> {
     return this.ordersService.readList(getOrderDto);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
   @Get('/:id')
-  readOne(@Param('id') id): Promise<Order> {
+  readOne(@Param('id') id): Promise<IOrderResponse> {
     return this.ordersService.getOne(id);
   }
 

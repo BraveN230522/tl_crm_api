@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { Order } from '../../entities/orders.entity';
 import { Product } from '../../entities/products.entity';
 import { ErrorHelper } from '../../helpers';
-import { IOrderResponse, IPaginationResponse } from '../../interfaces';
+import { IOrderResponse, IPaginationResponse, IProduct } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey } from '../../utilities';
 import { CustomersService } from '../customers/customers.service';
@@ -49,7 +49,7 @@ export class OrdersService {
     const customer = await this.customersService.readOne(customerId);
     const store = await this.storesService.readOne(storeId);
 
-    const mappingOrderProducts: Product[] = _.map(products, (product, index) => {
+    const mappingOrderProducts: IProduct[] = _.map(products, (product, index) => {
       if (product.quantity <= 0)
         ErrorHelper.ConflictException(APP_MESSAGE.OUT_OF_STOCK(product.name));
 
@@ -141,7 +141,7 @@ export class OrdersService {
       const products = await this.productsService.getProductByIds(
         _.map(orderProducts, (orderProduct) => orderProduct.id),
       );
-      const mappingOrderProducts: Product[] = _.map(products, (product, index) => {
+      const mappingOrderProducts: IProduct[] = _.map(products, (product, index) => {
         let quantity = product.quantity - orderProducts[index]?.quantity;
         const prevProduct = _.find(order.orderProducts, (op) => op?.product?.id === product?.id);
 

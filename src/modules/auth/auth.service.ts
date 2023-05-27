@@ -8,12 +8,13 @@ import { Role } from '../../enums';
 import { EncryptHelper, ErrorHelper } from '../../helpers';
 import { APP_MESSAGE } from '../../messages';
 import { UsersService } from '../users/users.service';
+import { IUser } from '../../interfaces';
 
 @Injectable()
 export class AuthService {
   constructor(private jwtService: JwtService, private userService: UsersService) {}
 
-  async loginUser({ username, password }): Promise<User> {
+  async loginUser({ username, password }): Promise<IUser> {
     const found = await this.userService.getUserByUsername({ username });
 
     const isMatchPassword = await EncryptHelper.compare(password || '', found?.password || '');
@@ -45,7 +46,7 @@ export class AuthService {
   }
 
   // async validate({ username, role }): Promise<User | Customer> {
-  async validate({ username, role }): Promise<User> {
+  async validate({ username, role }): Promise<IUser> {
     switch (role) {
       case Role.ADMIN:
       case Role.B_MANAGER:

@@ -5,7 +5,7 @@ import { BaseRepository } from '../../base';
 import { Branch } from '../../entities/branches.entity';
 
 @Injectable()
-export class BranchesRepository extends BaseRepository<Branch> {
+export class BranchesRepository extends BaseRepository<any> {
   constructor(
     @InjectRepository(Branch)
     repository: Repository<Branch>,

@@ -14,11 +14,14 @@ export class Customer extends BaseTable {
     Object.assign(this, partial);
   }
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   phone: string;
 
   @Column({
     name: 'first_name',
+    nullable: true,
   })
   firstName: string;
 
@@ -27,26 +30,35 @@ export class Customer extends BaseTable {
   })
   lastName: string;
 
-  @Column({ type: 'bigint' })
+  @Column({ type: 'bigint', nullable: true })
   dob: number;
 
   @Column({
     type: 'enum',
     enum: Gender,
     default: Gender.Male,
+    nullable: true,
   })
   gender: Gender;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   address: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   point: number;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   cashback: number;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   rate: number;
 
   @Column({
