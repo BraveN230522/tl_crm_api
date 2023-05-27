@@ -26,7 +26,7 @@ export class StatisticController {
   @UseGuards(AuthGuard(), RolesGuard)
   @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
   @Get('/overview')
-  readList(@Query() getOverviewDto: GetOverviewDto): Promise<IPaginationResponse<Store>> {
-    return this.statisticService.readList(getOverviewDto);
+  getOverview(@Query() getOverviewDto: GetOverviewDto): Promise<IPaginationResponse<Store>> {
+    return this.statisticService.getOverview(getOverviewDto);
   }
 }
