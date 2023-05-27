@@ -222,6 +222,7 @@ export class OrdersService {
         .createQueryBuilder('o')
         .leftJoinAndSelect('o.orderProducts', 'oo')
         .leftJoinAndSelect('oo.product', 'oop')
+        .leftJoinAndSelect('oop.category', 'oopc')
         .leftJoinAndSelect('o.customer', 'oc')
         .leftJoinAndSelect('o.store', 'os')
         .leftJoinAndSelect('o.importer', 'oi')
@@ -281,6 +282,7 @@ export class OrdersService {
         relations: [
           'orderProducts',
           'orderProducts.product',
+          'orderProducts.product.category',
           'customer',
           'store',
           'importer',
@@ -293,6 +295,31 @@ export class OrdersService {
     if (!found) ErrorHelper.NotFoundException(`Order is not found`);
 
     return found;
+  }
+
+  async getOne(id: string | number): Promise<any> {
+    const found = await this.ordersRepository.findOne(
+      { id },
+      {
+        relations: [
+          'orderProducts',
+          'orderProducts.product',
+          'customer',
+          'store',
+          'importer',
+          'exporter',
+          'voucher',
+        ],
+      },
+    );
+
+    if (!found) ErrorHelper.NotFoundException(`Order is not found`);
+
+    const orderProducts = _.map(found?.orderProducts, (item) => {
+      return { ...item?.product, quantity: item?.quantity };
+    });
+
+    return { ...found, orderProducts };
   }
 
   async delete(id: string): Promise<string> {

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import _ from 'lodash';
 import { ErrorHelper } from '../../helpers';
 import { IPaginationResponse } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
@@ -9,7 +10,6 @@ import { Product } from './../../entities/products.entity';
 import { assignIfHasKey } from './../../utilities/mapping';
 import { CreateProductDto, UpdateProductDto } from './dto/products.dto';
 import { ProductsRepository } from './products.repository';
-import _ from 'lodash';
 
 @Injectable()
 export class ProductsService {
@@ -52,7 +52,9 @@ export class ProductsService {
       .orderBy('products.id', 'DESC');
 
     if (search) {
-      query.andWhere('LOWER(products.name) LIKE LOWER(:search)', { search: `%${search}%` });
+      query
+        .andWhere('LOWER(products.name) LIKE LOWER(:search)', { search: `%${search}%` })
+        .where("products.id = :id", { id: search })
     }
 
     const products = this.productsRepository.paginationQueryBuilder(query, getFilterProducts);
