@@ -16,7 +16,6 @@ import { Gender } from '../../../enums';
 export class CreateCustomerDto {
   @Matches(VIETNAM_PHONE_PATTERN, { message: 'phone must be a valid phone number' })
   @IsString()
-  @IsNotEmpty()
   phone: string;
 
   @IsString()
@@ -87,7 +86,6 @@ export class CreateCustomerDto {
   desc?: string;
 
   @IsOptional()
-  @IsNotEmpty()
   portalCode?: string;
 }
 
