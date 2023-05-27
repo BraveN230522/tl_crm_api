@@ -6,7 +6,7 @@ import { Product } from '../../entities/products.entity';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
 import { ErrorHelper, isValidRole } from '../../helpers';
-import { IChanceResponse, IPaginationResponse } from '../../interfaces';
+import { IChanceResponse, IPaginationResponse, IProduct } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey } from '../../utilities';
 import { CampaignsService } from '../campaigns/campaigns.service';
@@ -52,7 +52,7 @@ export class ChancesService {
     const customer = await this.customersService.readOne(customerId);
     const campaign = await this.campaignsService.readOne(campaignId);
 
-    const mappingChanceProducts: Product[] = _.map(products, (product, index) => {
+    const mappingChanceProducts: IProduct[] = _.map(products, (product, index) => {
       if (product.quantity <= 0)
         ErrorHelper.ConflictException(APP_MESSAGE.OUT_OF_STOCK(product.name));
 
@@ -140,7 +140,7 @@ export class ChancesService {
       const products = await this.productsService.getProductByIds(
         _.map(chanceProducts, (chanceProducr) => chanceProducr.id),
       );
-      const mappingChanceProducts: Product[] = _.map(products, (product, index) => {
+      const mappingChanceProducts: IProduct[] = _.map(products, (product, index) => {
         let quantity = product.quantity - chanceProducts[index]?.quantity;
         const prevProduct = _.find(chance.chanceProducts, (op) => op?.product?.id === product?.id);
 

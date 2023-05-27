@@ -24,7 +24,7 @@ export class AuthController {
   @UseInterceptors(ClassSerializerInterceptor)
   loginUser(
     @Body(new ValidationPipe({ transform: true })) adminCredentialsDto: AdminCredentialsDto,
-  ): Promise<User> {
+  ): Promise<any> {
     return this.adminService.loginUser(adminCredentialsDto);
   }
 
