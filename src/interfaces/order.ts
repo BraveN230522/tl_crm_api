@@ -1,5 +1,4 @@
 import { Chance } from '../entities/chances.entity';
-import { Chance } from '../entities/chances.entity';
 import { Order } from '../entities/orders.entity';
 import { Product } from '../entities/products.entity';
 import { IProduct } from './response';
