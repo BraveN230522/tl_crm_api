@@ -21,9 +21,15 @@ export class Product extends BaseTable {
   })
   desc: string;
 
+  @Column({
+    nullable: true,
+  })
   @Column()
   cost: number;
 
+  @Column({
+    nullable: true,
+  })
   @Column()
   quantity: number;
 

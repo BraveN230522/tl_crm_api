@@ -161,11 +161,9 @@ export class UpdateCustomerDto {
   storeId?: string;
 
   @IsOptional()
-  @IsNotEmpty()
   desc?: string;
 
   @IsOptional()
-  @IsNotEmpty()
   portalCode?: string;
 }
 
