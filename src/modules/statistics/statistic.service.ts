@@ -8,6 +8,7 @@ import { CampaignsRepository } from '../campaigns/campaigns.repository';
 import { CustomersRepository } from '../customers/customers.repository';
 import { OrdersRepository } from '../orders/orders.repository';
 import { GetOverviewDto, GetStatisticChartDto, GetStatisticDto } from './dto/statistic.dto';
+import { ChancesRepository } from '../chances/chances.repository';
 
 @Injectable()
 export class StatisticService {
@@ -15,6 +16,7 @@ export class StatisticService {
     @InjectRepository(CustomersRepository) private customersRepository: CustomersRepository,
     @InjectRepository(OrdersRepository) private ordersRepository: OrdersRepository,
     @InjectRepository(CampaignsRepository) private campaignsRepository: CampaignsRepository,
+    @InjectRepository(ChancesRepository) private chancesRepository: ChancesRepository,
   ) {}
 
   async getOverview(getOverviewDto: GetOverviewDto): Promise<any> {
@@ -34,14 +36,14 @@ export class StatisticService {
         .createQueryBuilder('customer')
         .select('COUNT(customer.id)', 'totalCustomers')
         .getRawOne();
-      //console.log({ totalCustomers });
+      console.log({ totalCustomers });
       const createdCustomers = await this.customersRepository
         .createQueryBuilder('customer')
         .andWhere('customer.createdAt >= :startOfMonth', { startOfMonth })
         .andWhere('customer.createdAt <= :endOfMonth', { endOfMonth })
         .select('COUNT(customer.id)', 'total')
         .getRawOne();
-      //console.log({ createdCustomers });
+      console.log({ createdCustomers });
 
       const prevCreatedCustomers = await this.customersRepository
         .createQueryBuilder('customer')
@@ -49,7 +51,7 @@ export class StatisticService {
         .andWhere('customer.createdAt <= :endOfLastMonth', { endOfLastMonth })
         .select('COUNT(customer.id)', 'total')
         .getRawOne();
-      //console.log({ prevCreatedCustomers });
+      console.log({ prevCreatedCustomers });
 
       // orders
       const ordersRevenue = await this.ordersRepository
@@ -59,7 +61,7 @@ export class StatisticService {
         .andWhere('order.status = :paidStatus', { paidStatus })
         .select('SUM(order.total)', 'total')
         .getRawOne();
-      //console.log({ ordersRevenue });
+      console.log({ ordersRevenue });
       const prevOrdersRevenue = await this.ordersRepository
         .createQueryBuilder('order')
         .where('order.createdAt >= :startOfLastMonth', { startOfLastMonth })
@@ -67,7 +69,7 @@ export class StatisticService {
         .andWhere('order.status = :paidStatus', { paidStatus })
         .select('sum(order.total)', 'total')
         .getRawOne();
-      //console.log({ prevOrdersRevenue });
+      console.log({ prevOrdersRevenue });
 
       //campaigns
       const { totalCampaigns } = await this.campaignsRepository
@@ -75,14 +77,14 @@ export class StatisticService {
         .select('COUNT(campaigns.id)', 'totalCampaigns')
         .andWhere('campaigns.status = :campaignActiveStatus', { campaignActiveStatus })
         .getRawOne();
-      //console.log({ totalCampaigns });
+      console.log({ totalCampaigns });
       const createdCampaigns = await this.campaignsRepository
         .createQueryBuilder('campaigns')
         .andWhere('campaigns.createdAt >= :startOfMonth', { startOfMonth })
         .andWhere('campaigns.createdAt <= :endOfMonth', { endOfMonth })
         .select('COUNT(campaigns.id)', 'total')
         .getRawOne();
-      //console.log({ createdCampaigns });
+      console.log({ createdCampaigns });
 
       const prevCreatedCampaigns = await this.campaignsRepository
         .createQueryBuilder('campaigns')
@@ -90,7 +92,7 @@ export class StatisticService {
         .andWhere('campaigns.createdAt <= :endOfLastMonth', { endOfLastMonth })
         .select('COUNT(campaigns.id)', 'total')
         .getRawOne();
-      //console.log({ prevCreatedCampaigns });
+      console.log({ prevCreatedCampaigns });
 
       //products
       const soldProducts = await this.ordersRepository
@@ -101,7 +103,7 @@ export class StatisticService {
         .andWhere('orders.status = :paidStatus', { paidStatus })
         .select('SUM(orderProducts.quantity)', 'total')
         .getRawOne();
-      //console.log({ soldProducts });
+      console.log({ soldProducts });
 
       const prevSoldProducts = await this.ordersRepository
         .createQueryBuilder('orders')
@@ -111,7 +113,7 @@ export class StatisticService {
         .andWhere('orders.status = :paidStatus', { paidStatus })
         .select('SUM(orderProducts.quantity)', 'total')
         .getRawOne();
-      //console.log({ prevSoldProducts });
+      console.log({ prevSoldProducts });
       return {
         customers: {
           total: totalCustomers,
@@ -131,7 +133,7 @@ export class StatisticService {
         },
       };
     } catch (error) {
-      //console.log(error);
+      console.log(error);
       ErrorHelper.InternalServerErrorException();
     }
   }
@@ -159,10 +161,10 @@ export class StatisticService {
           };
         }),
       );
-      //console.log(data);
+      console.log(data);
       return data;
     } catch (error) {
-      //console.log(error);
+      console.log(error);
       ErrorHelper.InternalServerErrorException();
     }
   }
@@ -180,7 +182,7 @@ export class StatisticService {
         .andWhere('customer.createdAt <= :endTime', { endTime })
         .select('COUNT(customer.id)', 'total')
         .getRawOne();
-      //console.log({ createdCustomers });
+      console.log({ createdCustomers });
 
       const prevCreatedCustomers = await this.customersRepository
         .createQueryBuilder('customer')
@@ -188,14 +190,14 @@ export class StatisticService {
         .andWhere('customer.createdAt <= :prevEndTime', { prevEndTime })
         .select('COUNT(customer.id)', 'total')
         .getRawOne();
-      //console.log({ prevCreatedCustomers });
+      console.log({ prevCreatedCustomers });
       return {
         timePeriod: timePeriod,
         rate: getPeriodRate(createdCustomers?.total, prevCreatedCustomers?.total, timePeriod),
-        total: createdCustomers?.total,
+        total: Number(createdCustomers?.total),
       };
     } catch (error) {
-      //console.log(error);
+      console.log(error);
       ErrorHelper.InternalServerErrorException();
     }
   }
@@ -205,7 +207,7 @@ export class StatisticService {
     const paidStatus = OrderStatus.IS_PAID;
     const { startTime, endTime } = getTimeDataFilter(timePeriod);
 
-    //console.log({timePeriod, startTime, endTime});
+    console.log({timePeriod, startTime, endTime});
 
     try {
       //customers
@@ -215,7 +217,7 @@ export class StatisticService {
         .andWhere('customer.createdAt <= :endTime', { endTime })
         .select('COUNT(customer.id)', 'total')
         .getRawOne();
-      //console.log({ createdCustomers });
+      console.log({ createdCustomers });
 
       const conversionCustomers = await this.customersRepository
         .createQueryBuilder('customer')
@@ -225,14 +227,73 @@ export class StatisticService {
         .where('customerOrder.status = :paidStatus', { paidStatus })
         .select('COUNT(DISTINCT customer.id)', 'total')  // đếm tất cả các id không trùng (DISTINCT)
         .getRawOne();
-        // .getMany();
-      //console.log({ conversionCustomers });
+      console.log({ conversionCustomers });
       return {
-        createdCustomer: createdCustomers?.total,
-        conversedCustomer: conversionCustomers?.total,
+        createdCustomer: Number(createdCustomers?.total),
+        conversedCustomer: Number(conversionCustomers?.total),
       };
     } catch (error) {
-      //console.log(error);
+      console.log(error);
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async getNewChances(getStatisticChartDto: GetStatisticChartDto): Promise<any> {
+    const { timePeriod } = getStatisticChartDto;
+    //first and end time of current month
+    const times = getTimePeriodFilter(timePeriod);
+
+    try {
+      const data = await Promise.all(
+        _.map(times, async (item) => {
+          const startTime = item?.startTime;
+          const endTime = item?.endTime;
+          const chances = await this.chancesRepository
+            .createQueryBuilder('chance')
+            .andWhere('chance.createdAt >= :startTime', { startTime })
+            .andWhere('chance.createdAt <= :endTime', { endTime })
+            .select('COUNT(chance.id)', 'total')
+            .getRawOne();
+          return {
+            timePeriod: item?.timeLabel,
+            value: chances?.total,
+          };
+        }),
+      );
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.log(error);
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async getNewOrders(getStatisticChartDto: GetStatisticChartDto): Promise<any> {
+    const { timePeriod } = getStatisticChartDto;
+    //first and end time of current month
+    const times = getTimePeriodFilter(timePeriod);
+
+    try {
+      const data = await Promise.all(
+        _.map(times, async (item) => {
+          const startTime = item?.startTime;
+          const endTime = item?.endTime;
+          const orders = await this.ordersRepository
+            .createQueryBuilder('order')
+            .andWhere('order.createdAt >= :startTime', { startTime })
+            .andWhere('order.createdAt <= :endTime', { endTime })
+            .select('COUNT(order.id)', 'total')
+            .getRawOne();
+          return {
+            timePeriod: item?.timeLabel,
+            value: orders?.total,
+          };
+        }),
+      );
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.log(error);
       ErrorHelper.InternalServerErrorException();
     }
   }

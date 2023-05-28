@@ -36,6 +36,8 @@ import { OrdersRepository } from '../orders/orders.repository';
 import { OrdersService } from '../orders/orders.service';
 import { CampaignsRepository } from '../campaigns/campaigns.repository';
 import { Campaign } from '../../entities/campaigns.entity';
+import { Chance } from '../../entities/chances.entity';
+import { ChancesRepository } from '../chances/chances.repository';
 
 @Module({
   imports: [
@@ -51,11 +53,13 @@ import { Campaign } from '../../entities/campaigns.entity';
       Branch,
       Department,
       Campaign,
+      Chance,
     ]),
     PassportModule,
   ],
   controllers: [StatisticController],
   providers: [
+    ChancesRepository,
     StatisticService,
     ProductsService,
     ProductsRepository,
