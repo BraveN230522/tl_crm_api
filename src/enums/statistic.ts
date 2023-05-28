@@ -1,13 +1,13 @@
-// * Filter ago: 7 ngay qua/ 4 tuan qua/ 6 thang qua
+// * Filter for chart: 7 ngay qua/ 4 tuan qua/ 6 thang qua
 export enum enumDashboardFilter {
   DAY = 1,
   WEEK,
-  MOTH,
+  MONTH,
 }
 
-// * Filter last: tuan truoc/ thang truoc/ 5 truoc
-export enum enumDashboardLastFilter {
-  WEEK = 1,
-  MOTH,
-  YEAR,
+// * Filter for data: trong tuan/trong thang/trong nam
+export enum enumDashboardDataFilter {
+  WEEK = 'week',
+  MONTH = 'month',
+  YEAR = 'year',
 }
