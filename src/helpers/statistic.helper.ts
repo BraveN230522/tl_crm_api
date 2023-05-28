@@ -26,7 +26,7 @@ export function getPeriodRate(value: any, prevValue: any, type: 'week' | 'month'
     // Trong momentJs: Monday return 1, Sunday is return 0
     // dateInPeriod = moment().weekday() === 0 ? 7 : moment().weekday();
     dateInPeriod = moment().weekday() + 1;
-    console.log("check dateInPeriod", dateInPeriod, moment().weekday());
+    // console.log("check dateInPeriod", dateInPeriod, moment().weekday());
     dateInPrevPeriod = 7;
   }
   if (type === 'month') {
@@ -83,7 +83,7 @@ export function getListTimePeriod(subtract: number, type: 'day' | 'week' | 'mont
       label = current.startOf(type).format('DD/MM') + '-' + current.endOf(type).format('DD/MM');
     }
     if (type === 'month') {
-      label = current.format('MM/YY');
+      label = current.format('MM/YYYY');
     }
     resultDates.push({
       timeLabel: label,

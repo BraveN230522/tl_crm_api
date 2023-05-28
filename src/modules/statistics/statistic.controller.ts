@@ -50,4 +50,18 @@ export class StatisticController {
   getCustomerConversion(@Query() getStatisticDto: GetStatisticDto): Promise<IPaginationResponse<Store>> {
     return this.statisticService.getCustomerConversion(getStatisticDto);
   }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
+  @Get('/newChances')
+  getNewsChances(@Query() getStatisticChartDto: GetStatisticChartDto): Promise<IPaginationResponse<Store>> {
+    return this.statisticService.getNewChances(getStatisticChartDto);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
+  @Get('/newOrders')
+  getNewOrders(@Query() getStatisticChartDto: GetStatisticChartDto): Promise<IPaginationResponse<Store>> {
+    return this.statisticService.getNewOrders(getStatisticChartDto);
+  }
 }
