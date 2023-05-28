@@ -27,7 +27,7 @@ export abstract class BaseTable {
   })
   public createdAt: number;
 
-  @UpdateDateColumn({
+  @Column({
     name: 'updated_at',
     type: 'bigint',
     default: () => String(new Date().valueOf()),

@@ -42,6 +42,7 @@ import { DepartmentsModule } from './modules/departments/departments.module';
 import { VouchersModule } from './modules/vouchers/vouchers.module';
 import { Chance_Product } from './entities/chances_products.entity';
 import { ChancesProductsModule } from './modules/chances_products/chances_products.module';
+import { StatisticModule } from './modules/statistics/statistic.module';
 
 @Module({
   imports: [
@@ -94,6 +95,7 @@ import { ChancesProductsModule } from './modules/chances_products/chances_produc
     DepartmentsModule,
     BannersModule,
     VouchersModule,
+    StatisticModule,
   ],
 })
 export class AppModule {}

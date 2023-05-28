@@ -82,7 +82,6 @@ export class CreateCustomerDto {
   storeId?: string;
 
   @IsOptional()
-  @IsNotEmpty()
   desc?: string;
 
   @IsOptional()

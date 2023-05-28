@@ -26,7 +26,7 @@ export class ProductsService {
     categoryId,
     image,
   }: CreateProductDto): Promise<string> {
-    const category = await this.categoriesService.getCategoryById(categoryId);
+    const category = categoryId ? await this.categoriesService.getCategoryById(categoryId) : undefined;
 
     const product = this.productsRepository.create({
       name,
