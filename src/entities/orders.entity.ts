@@ -20,6 +20,8 @@ import { Tier } from './tiers.entity';
 import { User } from './users.entity';
 import { Voucher } from './vouchers.entity';
 
+const enumsVersion = 'v' + 1
+
 @Entity()
 export class Order extends BaseTable {
   constructor(partial: Partial<Order>) {
@@ -32,6 +34,7 @@ export class Order extends BaseTable {
 
   @Column({
     type: 'enum',
+    enumName: `order_status_enum_${enumsVersion}`,
     enum: OrderStatus,
     default: OrderStatus.IS_NOT_ACCEPTED,
   })

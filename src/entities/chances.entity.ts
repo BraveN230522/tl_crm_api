@@ -23,6 +23,8 @@ import { Chance_Product } from './chances_products.entity';
 // import { Project } from '../projects/projects.entity';
 // import { Task } from '../tasks/tasks.entity';
 
+const enumsVersion = 'v' + 1
+
 @Entity()
 export class Chance extends BaseTable {
   constructor(partial: Partial<Chance>) {
@@ -72,6 +74,7 @@ export class Chance extends BaseTable {
 
   @Column({
     type: 'enum',
+    enumName: `chance_status_enum_${enumsVersion}`,
     enum: ChanceStatus,
     default: ChanceStatus.IN_PROCESS,
   })

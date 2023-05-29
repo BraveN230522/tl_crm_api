@@ -7,6 +7,8 @@ import { Order } from './orders.entity';
 import { Store } from './stores.entity';
 import { Tier } from './tiers.entity';
 
+const enumsVersion = 'v' + 1
+
 @Entity()
 export class Customer extends BaseTable {
   constructor(partial: Partial<Customer>) {
@@ -35,6 +37,7 @@ export class Customer extends BaseTable {
 
   @Column({
     type: 'enum',
+    enumName: `customer_status_enum_${enumsVersion}`,
     enum: Gender,
     default: Gender.Male,
     nullable: true,

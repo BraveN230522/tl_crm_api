@@ -13,6 +13,8 @@ import { Banner } from './banners.entity';
 // import { Project } from '../projects/projects.entity';
 // import { Task } from '../tasks/tasks.entity';
 
+const enumsVersion = 'v' + 1
+
 @Entity()
 export class Campaign extends BaseTable {
   constructor(partial: Partial<Campaign>) {
@@ -56,6 +58,7 @@ export class Campaign extends BaseTable {
 
   @Column({
     type: 'enum',
+    enumName: `campaign_status_enum_${enumsVersion}`,
     enum: CampaignStatus,
     default: CampaignStatus.DRAFT,
   })
