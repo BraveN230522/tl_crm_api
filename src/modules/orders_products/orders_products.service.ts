@@ -42,7 +42,7 @@ export class OrdersProductsService {
     });
   }
 
-  async clearByOrder({ order }: IOrderProduct): Promise<void> {
+  async clearByOrder(order: any): Promise<void> {
     await this.ordersProductsRepository
       .createQueryBuilder('orderProducts')
       .delete()

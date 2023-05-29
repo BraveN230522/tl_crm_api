@@ -172,6 +172,8 @@ export class OrdersService {
         0,
       );
 
+      this.ordersProductsService.clearByOrder(order);
+
       await Promise.all(
         _.map(mappingOrderProducts, (orderProduct) => {
           // console.log('check2', orderProduct);
