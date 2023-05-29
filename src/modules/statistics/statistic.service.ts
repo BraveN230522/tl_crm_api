@@ -2,13 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
 import moment from 'moment';
-import { CampaignStatus, OrderStatus } from '../../enums';
-import { ErrorHelper, getMonthlyRate, getPeriodRate, getTimeDataFilter, getTimePeriodFilter } from '../../helpers';
+import { CampaignStatus, ChanceStatus, OrderStatus } from '../../enums';
+import {
+  ErrorHelper,
+  getMonthlyRate,
+  getPeriodRate,
+  getTimeDataFilter,
+  getTimePeriodFilter,
+} from '../../helpers';
 import { CampaignsRepository } from '../campaigns/campaigns.repository';
+import { ChancesRepository } from '../chances/chances.repository';
 import { CustomersRepository } from '../customers/customers.repository';
 import { OrdersRepository } from '../orders/orders.repository';
 import { GetOverviewDto, GetStatisticChartDto, GetStatisticDto } from './dto/statistic.dto';
-import { ChancesRepository } from '../chances/chances.repository';
 
 @Injectable()
 export class StatisticService {
@@ -57,7 +63,7 @@ export class StatisticService {
       const ordersRevenue = await this.ordersRepository
         .createQueryBuilder('order')
         .where('order.createdAt >= :startOfMonth', { startOfMonth })
-        .where('order.createdAt <= :endOfMonth', { endOfMonth })
+        .andWhere('order.createdAt <= :endOfMonth', { endOfMonth })
         .andWhere('order.status = :paidStatus', { paidStatus })
         .select('SUM(order.total)', 'total')
         .getRawOne();
@@ -65,7 +71,7 @@ export class StatisticService {
       const prevOrdersRevenue = await this.ordersRepository
         .createQueryBuilder('order')
         .where('order.createdAt >= :startOfLastMonth', { startOfLastMonth })
-        .where('order.createdAt <= :endOfLastMonth', { endOfLastMonth })
+        .andWhere('order.createdAt <= :endOfLastMonth', { endOfLastMonth })
         .andWhere('order.status = :paidStatus', { paidStatus })
         .select('sum(order.total)', 'total')
         .getRawOne();
@@ -207,25 +213,25 @@ export class StatisticService {
     const paidStatus = OrderStatus.IS_PAID;
     const { startTime, endTime } = getTimeDataFilter(timePeriod);
 
-    console.log({timePeriod, startTime, endTime});
+    console.log({ timePeriod, startTime, endTime });
 
     try {
       //customers
       const createdCustomers = await this.customersRepository
         .createQueryBuilder('customer')
-        .andWhere('customer.createdAt >= :startTime', { startTime })
-        .andWhere('customer.createdAt <= :endTime', { endTime })
-        .select('COUNT(customer.id)', 'total')
+        .where('customer.createdAt >= :startTime', { startTime })
+        .andWhere('customer.createdAt <= :endTime', { endTime })     // andWhere đi sau where để bổ sung điều kiện time < startTime and .....
+        .select('COUNT(DISTINCT customer.id)', 'total')
         .getRawOne();
       console.log({ createdCustomers });
 
       const conversionCustomers = await this.customersRepository
         .createQueryBuilder('customer')
-        .leftJoin('customer.order', 'customerOrder')
-        .andWhere('customer.createdAt >= :startTime', { startTime })  // lấy tất cả ở bảng bên trái + phù hợp bảng bên phải (k gán mà là cộng thêm)
+        .leftJoin('customer.order', 'customerOrder') // lấy tất cả ở bảng bên trái + phù hợp bảng bên phải (k gán mà là cộng thêm)
+        .where('customer.createdAt >= :startTime', { startTime })
         .andWhere('customer.createdAt <= :endTime', { endTime })
-        .where('customerOrder.status = :paidStatus', { paidStatus })
-        .select('COUNT(DISTINCT customer.id)', 'total')  // đếm tất cả các id không trùng (DISTINCT)
+        .andWhere('customerOrder.status = :paidStatus', { paidStatus })
+        .select('COUNT(DISTINCT customer.id)', 'total') // đếm tất cả các id không trùng (DISTINCT)
         .getRawOne();
       console.log({ conversionCustomers });
       return {
@@ -250,7 +256,7 @@ export class StatisticService {
           const endTime = item?.endTime;
           const chances = await this.chancesRepository
             .createQueryBuilder('chance')
-            .andWhere('chance.createdAt >= :startTime', { startTime })
+            .where('chance.createdAt >= :startTime', { startTime })
             .andWhere('chance.createdAt <= :endTime', { endTime })
             .select('COUNT(chance.id)', 'total')
             .getRawOne();
@@ -280,7 +286,7 @@ export class StatisticService {
           const endTime = item?.endTime;
           const orders = await this.ordersRepository
             .createQueryBuilder('order')
-            .andWhere('order.createdAt >= :startTime', { startTime })
+            .where('order.createdAt >= :startTime', { startTime })
             .andWhere('order.createdAt <= :endTime', { endTime })
             .select('COUNT(order.id)', 'total')
             .getRawOne();
@@ -292,6 +298,40 @@ export class StatisticService {
       );
       console.log(data);
       return data;
+    } catch (error) {
+      console.log(error);
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async getChanceConversion(getStatisticDto: GetStatisticDto): Promise<any> {
+    const { timePeriod } = getStatisticDto;
+    const completeStatus = ChanceStatus.SUCCESS_END;
+    const { startTime, endTime } = getTimeDataFilter(timePeriod);
+
+    console.log({ timePeriod, startTime, endTime });
+
+    try {
+      const createdChances = await this.chancesRepository
+        .createQueryBuilder('chance')
+        .where('chance.createdAt >= :startTime', { startTime }) 
+        .andWhere('chance.createdAt <= :endTime', { endTime })
+        .select('COUNT(DISTINCT chance.id)', 'total') // đếm tất cả các id không trùng (DISTINCT)
+        .getRawOne();
+      console.log({ createdChances });
+
+      const completeChances = await this.chancesRepository
+        .createQueryBuilder('chance')
+        .where('chance.createdAt >= :startTime', { startTime })
+        .andWhere('chance.createdAt <= :endTime', { endTime })
+        .andWhere('chance.status = :completeStatus', { completeStatus })
+        .select('COUNT(DISTINCT chance.id)', 'total') // đếm tất cả các id không trùng (DISTINCT)
+        .getRawOne();
+      console.log({ completeChances });
+      return {
+        createdChances: Number(createdChances?.total),
+        completedChances: Number(completeChances?.total),
+      };
     } catch (error) {
       console.log(error);
       ErrorHelper.InternalServerErrorException();

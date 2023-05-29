@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Chance_Product } from '../../entities/chances_products.entity';
 import { IChanceProduct } from '../../interfaces';
 import { ChancesProductsRepository } from './chances_products.repository';
-import { Chance_Product } from '../../entities/chances_products.entity';
 
 @Injectable()
 export class ChancesProductsService {
@@ -34,15 +34,16 @@ export class ChancesProductsService {
   }
 
   async update({ chance, product, quantity }: IChanceProduct): Promise<void> {
-    const chanceProduct = await this.readOne(product.id, chance.id);
-    await this.chancesProductsRepository.update(chanceProduct.id, {
+    const chanceProduct = await this.readOne(product?.id, chance?.id);
+    if (!chanceProduct?.id) return;
+    await this.chancesProductsRepository.update(chanceProduct?.id, {
       chance,
       product,
       quantity,
     });
   }
 
-  async clearByChance({ chance }: IChanceProduct): Promise<void> {
+  async clearByChance(chance: any): Promise<void> {
     await this.chancesProductsRepository
       .createQueryBuilder('chanceProducts')
       .delete()

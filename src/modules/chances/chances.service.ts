@@ -109,7 +109,6 @@ export class ChancesService {
     return { ...saveChances[0], products: mappingChanceProducts };
   }
 
-
   async update(
     id: number,
     {
@@ -171,10 +170,12 @@ export class ChancesService {
         0,
       );
 
+      this.chancesProductsService.clearByChance(chance);
+
       await Promise.all(
         _.map(mappingChanceProducts, (chanceProduct) => {
           // console.log('check2', chanceProduct);
-          const found = chance.chanceProducts.find((prod) => prod.product.id === chanceProduct.id);
+          const found = chance.chanceProducts.find((prod) => prod.product?.id === chanceProduct?.id);
           console.log({ found });
           if (!found)
             return this.chancesProductsService.create({
@@ -274,13 +275,7 @@ export class ChancesService {
     const found = await this.chancesRepository.findOne(
       { id },
       {
-        relations: [
-          'chanceProducts',
-          'chanceProducts.product',
-          'customer',
-          'campaign',
-          'user',
-        ],
+        relations: ['chanceProducts', 'chanceProducts.product', 'customer', 'campaign', 'user'],
       },
     );
 
@@ -293,13 +288,7 @@ export class ChancesService {
     const found = await this.chancesRepository.findOne(
       { id },
       {
-        relations: [
-          'chanceProducts',
-          'chanceProducts.product',
-          'customer',
-          'campaign',
-          'user',
-        ],
+        relations: ['chanceProducts', 'chanceProducts.product', 'customer', 'campaign', 'user'],
       },
     );
 

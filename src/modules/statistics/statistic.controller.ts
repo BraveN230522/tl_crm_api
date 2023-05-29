@@ -15,8 +15,8 @@ import { RolesGuard } from '../../common/guards';
 import { Store } from '../../entities/stores.entity';
 import { Role } from '../../enums';
 import { IPaginationResponse } from '../../interfaces';
-import { StatisticService } from './statistic.service';
 import { GetOverviewDto, GetStatisticChartDto, GetStatisticDto } from './dto/statistic.dto';
+import { StatisticService } from './statistic.service';
 
 @Controller('statistic')
 @UseGuards(AuthGuard(), RolesGuard)
@@ -33,35 +33,54 @@ export class StatisticController {
   @UseGuards(AuthGuard(), RolesGuard)
   @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
   @Get('/newCustomers')
-  getNewsCustomer(@Query() getStatisticChartDto: GetStatisticChartDto): Promise<IPaginationResponse<Store>> {
+  getNewsCustomer(
+    @Query() getStatisticChartDto: GetStatisticChartDto,
+  ): Promise<IPaginationResponse<Store>> {
     return this.statisticService.getNewCustomers(getStatisticChartDto);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
   @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
   @Get('/potentialCustomers')
-  getPotentialCustomers(@Query() getStatisticDto: GetStatisticDto): Promise<IPaginationResponse<Store>> {
+  getPotentialCustomers(
+    @Query() getStatisticDto: GetStatisticDto,
+  ): Promise<IPaginationResponse<Store>> {
     return this.statisticService.getPotentialCustomers(getStatisticDto);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
   @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
   @Get('/customerConversion')
-  getCustomerConversion(@Query() getStatisticDto: GetStatisticDto): Promise<IPaginationResponse<Store>> {
+  getCustomerConversion(
+    @Query() getStatisticDto: GetStatisticDto,
+  ): Promise<IPaginationResponse<Store>> {
     return this.statisticService.getCustomerConversion(getStatisticDto);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
   @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
   @Get('/newChances')
-  getNewsChances(@Query() getStatisticChartDto: GetStatisticChartDto): Promise<IPaginationResponse<Store>> {
+  getNewsChances(
+    @Query() getStatisticChartDto: GetStatisticChartDto,
+  ): Promise<IPaginationResponse<Store>> {
     return this.statisticService.getNewChances(getStatisticChartDto);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
   @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
   @Get('/newOrders')
-  getNewOrders(@Query() getStatisticChartDto: GetStatisticChartDto): Promise<IPaginationResponse<Store>> {
+  getNewOrders(
+    @Query() getStatisticChartDto: GetStatisticChartDto,
+  ): Promise<IPaginationResponse<Store>> {
     return this.statisticService.getNewOrders(getStatisticChartDto);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
+  @Get('/chanceConversion')
+  getChanceConversion(
+    @Query() getStatisticDto: GetStatisticDto,
+  ): Promise<IPaginationResponse<Store>> {
+    return this.statisticService.getChanceConversion(getStatisticDto);
   }
 }
