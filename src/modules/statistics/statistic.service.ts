@@ -11,12 +11,12 @@ import {
   getTimePeriodFilter,
 } from '../../helpers';
 import { CampaignsRepository } from '../campaigns/campaigns.repository';
+import { CategoriesRepository } from '../categories/categories.repository';
 import { ChancesRepository } from '../chances/chances.repository';
 import { CustomersRepository } from '../customers/customers.repository';
 import { OrdersRepository } from '../orders/orders.repository';
-import { GetOverviewDto, GetStatisticChartDto, GetStatisticDto } from './dto/statistic.dto';
-import { CategoriesRepository } from '../categories/categories.repository';
 import { ProductsRepository } from '../products/products.repository';
+import { GetOverviewDto, GetStatisticChartDto, GetStatisticDto } from './dto/statistic.dto';
 
 @Injectable()
 export class StatisticService {
@@ -224,7 +224,7 @@ export class StatisticService {
       const createdCustomers = await this.customersRepository
         .createQueryBuilder('customer')
         .where('customer.createdAt >= :startTime', { startTime })
-        .andWhere('customer.createdAt <= :endTime', { endTime })     // andWhere đi sau where để bổ sung điều kiện time < startTime and .....
+        .andWhere('customer.createdAt <= :endTime', { endTime }) // andWhere đi sau where để bổ sung điều kiện time < startTime and .....
         .select('COUNT(DISTINCT customer.id)', 'total')
         .getRawOne();
       console.log({ createdCustomers });
@@ -318,7 +318,7 @@ export class StatisticService {
     try {
       const createdChances = await this.chancesRepository
         .createQueryBuilder('chance')
-        .where('chance.createdAt >= :startTime', { startTime }) 
+        .where('chance.createdAt >= :startTime', { startTime })
         .andWhere('chance.createdAt <= :endTime', { endTime })
         .select('COUNT(DISTINCT chance.id)', 'total') // đếm tất cả các id không trùng (DISTINCT)
         .getRawOne();
@@ -352,19 +352,19 @@ export class StatisticService {
 
     try {
       const categories = await this.categoriesRepository
-      .createQueryBuilder('category')
-      .leftJoin('category.products', 'categoryProduct')
-      .leftJoin('categoryProduct.orderProducts', 'orderProd')
-      .leftJoin('orderProd.order', 'prodOrders')
-      .andWhere('prodOrders.status = :paidStatus', { paidStatus })
-      .andWhere('prodOrders.updatedAt >= :startTime', { startTime })
-      .andWhere('prodOrders.updatedAt <= :endTime', { endTime })
-      .select(["category.id", "category.name"])
-      .addSelect('SUM(orderProd.quantity)', 'totalQuantity')
-      .groupBy('category.id')
-      .orderBy('SUM(orderProd.quantity)')
-      .take(8)
-      .getRawMany();
+        .createQueryBuilder('category')
+        .leftJoin('category.products', 'categoryProduct')
+        .leftJoin('categoryProduct.orderProducts', 'orderProd')
+        .leftJoin('orderProd.order', 'prodOrders')
+        .andWhere('prodOrders.status = :paidStatus', { paidStatus })
+        .andWhere('prodOrders.updatedAt >= :startTime', { startTime })
+        .andWhere('prodOrders.updatedAt <= :endTime', { endTime })
+        .select(['category.id', 'category.name'])
+        .addSelect('SUM(orderProd.quantity)', 'totalQuantity')
+        .groupBy('category.id')
+        .orderBy('SUM(orderProd.quantity)')
+        .take(8)
+        .getRawMany();
       console.log({ categories });
       return categories;
     } catch (error) {
@@ -383,18 +383,18 @@ export class StatisticService {
 
     try {
       const products = await this.productsRepository
-      .createQueryBuilder('product')
-      .leftJoin('product.orderProducts', 'orderProd')
-      .leftJoin('orderProd.order', 'prodOrders')
-      .andWhere('prodOrders.status = :paidStatus', { paidStatus })
-      .andWhere('orderProd.createdAt >= :startTime', { startTime })
-      .andWhere('orderProd.createdAt <= :endTime', { endTime })
-      .select(["product.id", "product.name"])
-      .addSelect('SUM(orderProd.quantity)', 'prodQuantity')
-      .groupBy('product.id')
-      .orderBy('SUM(orderProd.quantity)')
-      .take(5)
-      .getRawMany();
+        .createQueryBuilder('product')
+        .leftJoin('product.orderProducts', 'orderProd')
+        .leftJoin('orderProd.order', 'prodOrders')
+        .andWhere('prodOrders.status = :paidStatus', { paidStatus })
+        .andWhere('orderProd.createdAt >= :startTime', { startTime })
+        .andWhere('orderProd.createdAt <= :endTime', { endTime })
+        .select(['product.id', 'product.name', 'product.image', 'product.cost'])
+        .addSelect('SUM(orderProd.quantity)', 'prodQuantity')
+        .groupBy('product.id')
+        .orderBy('SUM(orderProd.quantity)')
+        .take(5)
+        .getRawMany();
       console.log({ products });
       return products;
     } catch (error) {
@@ -413,18 +413,18 @@ export class StatisticService {
 
     try {
       const products = await this.productsRepository
-      .createQueryBuilder('product')
-      .leftJoin('product.orderProducts', 'orderProd')
-      .leftJoin('orderProd.order', 'prodOrders')
-      .andWhere('orderProd.createdAt >= :startTime', { startTime })
-      .andWhere('orderProd.createdAt <= :endTime', { endTime })
-      .andWhere('prodOrders.status = :paidStatus', { paidStatus })
-      .select(["product.id", "product.name"])
-      .addSelect('SUM(orderProd.quantity * product.cost)', 'totalCost')
-      .groupBy('product.id')
-      .orderBy('SUM(orderProd.quantity * product.cost)')
-      .take(5)
-      .getRawMany();
+        .createQueryBuilder('product')
+        .leftJoin('product.orderProducts', 'orderProd')
+        .leftJoin('orderProd.order', 'prodOrders')
+        .andWhere('orderProd.createdAt >= :startTime', { startTime })
+        .andWhere('orderProd.createdAt <= :endTime', { endTime })
+        .andWhere('prodOrders.status = :paidStatus', { paidStatus })
+        .select(['product.id', 'product.name', 'product.image', 'product.cost'])
+        .addSelect('SUM(orderProd.quantity * product.cost)', 'totalCost')
+        .groupBy('product.id')
+        .orderBy('SUM(orderProd.quantity * product.cost)')
+        .take(5)
+        .getRawMany();
       console.log({ products });
       return products;
     } catch (error) {
@@ -443,17 +443,21 @@ export class StatisticService {
 
     try {
       const customers = await this.customersRepository
-      .createQueryBuilder('customer')
-      .leftJoin('customer.order', 'customerOrder')
-      .andWhere('customerOrder.createdAt >= :startTime', { startTime })
-      .andWhere('customerOrder.createdAt <= :endTime', { endTime })
-      .andWhere('customerOrder.status = :paidStatus', { paidStatus })
-      .select(["customer.id", "customer.lastName"])
-      .addSelect('SUM(customerOrder.total)', 'totalSpent')
-      .groupBy('customer.id')
-      .orderBy('SUM(customerOrder.total)')
-      .take(5)
-      .getRawMany();
+        .createQueryBuilder('customer')
+        .leftJoin('customer.order', 'customerOrder')
+        .andWhere('customerOrder.createdAt >= :startTime', { startTime })
+        .andWhere('customerOrder.createdAt <= :endTime', { endTime })
+        .andWhere('customerOrder.status = :paidStatus', { paidStatus })
+        // .select(["customer.id"]) 
+        // .select("customer") // => lấy tất cả các field của customer nhưng sẽ gán customer_ ở đầu
+        .addSelect(['customer.id','customer.firstName', 'customer.lastName', 'customer.image'])
+        .addSelect('SUM(customerOrder.total)', 'totalSpent')
+        .groupBy('customer.id')
+        // .addGroupBy('customerOrder.id')
+        // .addGroupBy('customer.order')
+        .orderBy('SUM(customerOrder.total)')
+        .take(5)
+        .getRawMany();
       console.log({ customers });
       return customers;
     } catch (error) {
