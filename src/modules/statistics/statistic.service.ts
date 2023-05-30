@@ -266,7 +266,7 @@ export class StatisticService {
             .getRawOne();
           return {
             timePeriod: item?.timeLabel,
-            value: chances?.total,
+            value: Number(chances?.total),
           };
         }),
       );
@@ -357,12 +357,14 @@ export class StatisticService {
       .leftJoin('categoryProduct.orderProducts', 'orderProd')
       .leftJoin('orderProd.order', 'prodOrders')
       .andWhere('prodOrders.status = :paidStatus', { paidStatus })
-      .andWhere('orderProd.createdAt >= :startTime', { startTime })
-      .andWhere('orderProd.createdAt <= :endTime', { endTime })
+      .andWhere('prodOrders.updatedAt >= :startTime', { startTime })
+      .andWhere('prodOrders.updatedAt <= :endTime', { endTime })
+      .select(["category.id", "category.name"])
       .addSelect('SUM(orderProd.quantity)', 'totalQuantity')
-      .orderBy('totalQuantity')
+      .groupBy('category.id')
+      .orderBy('SUM(orderProd.quantity)')
       .take(8)
-      .getMany();
+      .getRawMany();
       console.log({ categories });
       return categories;
     } catch (error) {
@@ -387,10 +389,12 @@ export class StatisticService {
       .andWhere('prodOrders.status = :paidStatus', { paidStatus })
       .andWhere('orderProd.createdAt >= :startTime', { startTime })
       .andWhere('orderProd.createdAt <= :endTime', { endTime })
+      .select(["product.id", "product.name"])
       .addSelect('SUM(orderProd.quantity)', 'prodQuantity')
-      .orderBy('prodQuantity')
+      .groupBy('product.id')
+      .orderBy('SUM(orderProd.quantity)')
       .take(5)
-      .getMany();
+      .getRawMany();
       console.log({ products });
       return products;
     } catch (error) {
@@ -415,10 +419,12 @@ export class StatisticService {
       .andWhere('orderProd.createdAt >= :startTime', { startTime })
       .andWhere('orderProd.createdAt <= :endTime', { endTime })
       .andWhere('prodOrders.status = :paidStatus', { paidStatus })
+      .select(["product.id", "product.name"])
       .addSelect('SUM(orderProd.quantity * product.cost)', 'totalCost')
-      .orderBy('totalCost')
+      .groupBy('product.id')
+      .orderBy('SUM(orderProd.quantity * product.cost)')
       .take(5)
-      .getMany();
+      .getRawMany();
       console.log({ products });
       return products;
     } catch (error) {
@@ -442,10 +448,12 @@ export class StatisticService {
       .andWhere('customerOrder.createdAt >= :startTime', { startTime })
       .andWhere('customerOrder.createdAt <= :endTime', { endTime })
       .andWhere('customerOrder.status = :paidStatus', { paidStatus })
+      .select(["customer.id", "customer.lastName"])
       .addSelect('SUM(customerOrder.total)', 'totalSpent')
-      .orderBy('totalSpent')
+      .groupBy('customer.id')
+      .orderBy('SUM(customerOrder.total)')
       .take(5)
-      .getMany();
+      .getRawMany();
       console.log({ customers });
       return customers;
     } catch (error) {
