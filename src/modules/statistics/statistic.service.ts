@@ -15,6 +15,8 @@ import { ChancesRepository } from '../chances/chances.repository';
 import { CustomersRepository } from '../customers/customers.repository';
 import { OrdersRepository } from '../orders/orders.repository';
 import { GetOverviewDto, GetStatisticChartDto, GetStatisticDto } from './dto/statistic.dto';
+import { CategoriesRepository } from '../categories/categories.repository';
+import { ProductsRepository } from '../products/products.repository';
 
 @Injectable()
 export class StatisticService {
@@ -23,6 +25,8 @@ export class StatisticService {
     @InjectRepository(OrdersRepository) private ordersRepository: OrdersRepository,
     @InjectRepository(CampaignsRepository) private campaignsRepository: CampaignsRepository,
     @InjectRepository(ChancesRepository) private chancesRepository: ChancesRepository,
+    @InjectRepository(CategoriesRepository) private categoriesRepository: CategoriesRepository,
+    @InjectRepository(ProductsRepository) private productsRepository: ProductsRepository,
   ) {}
 
   async getOverview(getOverviewDto: GetOverviewDto): Promise<any> {
@@ -332,6 +336,118 @@ export class StatisticService {
         createdChances: Number(createdChances?.total),
         completedChances: Number(completeChances?.total),
       };
+    } catch (error) {
+      console.log(error);
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async getPopularCategories(getStatisticDto: GetStatisticDto): Promise<any> {
+    const { timePeriod } = getStatisticDto;
+    const completeStatus = ChanceStatus.SUCCESS_END;
+    const { startTime, endTime } = getTimeDataFilter(timePeriod);
+
+    const paidStatus = OrderStatus.IS_PAID;
+    console.log({ timePeriod, startTime, endTime });
+
+    try {
+      const categories = await this.categoriesRepository
+      .createQueryBuilder('category')
+      .leftJoin('category.products', 'categoryProduct')
+      .leftJoin('categoryProduct.orderProducts', 'orderProd')
+      .leftJoin('orderProd.order', 'prodOrders')
+      .andWhere('prodOrders.status = :paidStatus', { paidStatus })
+      .andWhere('orderProd.createdAt >= :startTime', { startTime })
+      .andWhere('orderProd.createdAt <= :endTime', { endTime })
+      .addSelect('SUM(orderProd.quantity)', 'totalQuantity')
+      .orderBy('totalQuantity')
+      .take(8)
+      .getMany();
+      console.log({ categories });
+      return categories;
+    } catch (error) {
+      console.log(error);
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async getPopularProductsByQuantity(getStatisticDto: GetStatisticDto): Promise<any> {
+    const { timePeriod } = getStatisticDto;
+    const completeStatus = ChanceStatus.SUCCESS_END;
+    const { startTime, endTime } = getTimeDataFilter(timePeriod);
+
+    const paidStatus = OrderStatus.IS_PAID;
+    console.log({ timePeriod, startTime, endTime });
+
+    try {
+      const products = await this.productsRepository
+      .createQueryBuilder('product')
+      .leftJoin('product.orderProducts', 'orderProd')
+      .leftJoin('orderProd.order', 'prodOrders')
+      .andWhere('prodOrders.status = :paidStatus', { paidStatus })
+      .andWhere('orderProd.createdAt >= :startTime', { startTime })
+      .andWhere('orderProd.createdAt <= :endTime', { endTime })
+      .addSelect('SUM(orderProd.quantity)', 'prodQuantity')
+      .orderBy('prodQuantity')
+      .take(5)
+      .getMany();
+      console.log({ products });
+      return products;
+    } catch (error) {
+      console.log(error);
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async getPopularProductsByRevenue(getStatisticDto: GetStatisticDto): Promise<any> {
+    const { timePeriod } = getStatisticDto;
+    const completeStatus = ChanceStatus.SUCCESS_END;
+    const { startTime, endTime } = getTimeDataFilter(timePeriod);
+
+    const paidStatus = OrderStatus.IS_PAID;
+    console.log({ timePeriod, startTime, endTime });
+
+    try {
+      const products = await this.productsRepository
+      .createQueryBuilder('product')
+      .leftJoin('product.orderProducts', 'orderProd')
+      .leftJoin('orderProd.order', 'prodOrders')
+      .andWhere('orderProd.createdAt >= :startTime', { startTime })
+      .andWhere('orderProd.createdAt <= :endTime', { endTime })
+      .andWhere('prodOrders.status = :paidStatus', { paidStatus })
+      .addSelect('SUM(orderProd.quantity * product.cost)', 'totalCost')
+      .orderBy('totalCost')
+      .take(5)
+      .getMany();
+      console.log({ products });
+      return products;
+    } catch (error) {
+      console.log(error);
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async getMostSpentCustomers(getStatisticDto: GetStatisticDto): Promise<any> {
+    const { timePeriod } = getStatisticDto;
+    const completeStatus = ChanceStatus.SUCCESS_END;
+    const { startTime, endTime } = getTimeDataFilter(timePeriod);
+
+    const paidStatus = OrderStatus.IS_PAID;
+    console.log({ timePeriod, startTime, endTime });
+
+    try {
+      const customers = await this.customersRepository
+      .createQueryBuilder('customer')
+      .leftJoin('customer.order', 'customerOrder')
+      .andWhere('customerOrder.createdAt >= :startTime', { startTime })
+      .andWhere('customerOrder.createdAt <= :endTime', { endTime })
+      .andWhere('customerOrder.status = :paidStatus', { paidStatus })
+      .addSelect('SUM(customerOrder.total)', 'totalSpent')
+      .orderBy('totalSpent')
+      .take(5)
+      .getMany();
+      console.log({ customers });
+      return customers;
     } catch (error) {
       console.log(error);
       ErrorHelper.InternalServerErrorException();

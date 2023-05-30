@@ -83,4 +83,42 @@ export class StatisticController {
   ): Promise<IPaginationResponse<Store>> {
     return this.statisticService.getChanceConversion(getStatisticDto);
   }
+
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
+  @Get('/popularCategories')
+  getPopularCategories(
+    @Query() getStatisticDto: GetStatisticDto,
+  ): Promise<IPaginationResponse<Store>> {
+    return this.statisticService.getPopularCategories(getStatisticDto);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
+  @Get('/popularProductByQuantity')
+  getPopularProductsByQuantity(
+    @Query() getStatisticDto: GetStatisticDto,
+  ): Promise<IPaginationResponse<Store>> {
+    return this.statisticService.getPopularProductsByQuantity(getStatisticDto);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
+  @Get('/popularProductByRevenue')
+  getPopularProductsByRevenue(
+    @Query() getStatisticDto: GetStatisticDto,
+  ): Promise<IPaginationResponse<Store>> {
+    return this.statisticService.getPopularProductsByRevenue(getStatisticDto);
+  }
+
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
+  @Get('/mostSpentCustomers')
+  getMostSpentCustomers(
+    @Query() getStatisticDto: GetStatisticDto,
+  ): Promise<IPaginationResponse<Store>> {
+    return this.statisticService.getMostSpentCustomers(getStatisticDto);
+  }
 }
