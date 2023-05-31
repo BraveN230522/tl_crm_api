@@ -16,7 +16,12 @@ import { ChancesRepository } from '../chances/chances.repository';
 import { CustomersRepository } from '../customers/customers.repository';
 import { OrdersRepository } from '../orders/orders.repository';
 import { ProductsRepository } from '../products/products.repository';
-import { GetOverviewDto, GetStatisticChartDto, GetStatisticDto } from './dto/statistic.dto';
+import {
+  GetCustomerStatisticDto,
+  GetOverviewDto,
+  GetStatisticChartDto,
+  GetStatisticDto,
+} from './dto/statistic.dto';
 
 @Injectable()
 export class StatisticService {
@@ -448,9 +453,9 @@ export class StatisticService {
         .andWhere('customerOrder.createdAt >= :startTime', { startTime })
         .andWhere('customerOrder.createdAt <= :endTime', { endTime })
         .andWhere('customerOrder.status = :paidStatus', { paidStatus })
-        // .select(["customer.id"]) 
+        // .select(["customer.id"])
         // .select("customer") // => lấy tất cả các field của customer nhưng sẽ gán customer_ ở đầu
-        .addSelect(['customer.id','customer.firstName', 'customer.lastName', 'customer.image'])
+        .addSelect(['customer.id', 'customer.firstName', 'customer.lastName', 'customer.image'])
         .addSelect('SUM(customerOrder.total)', 'totalSpent')
         .groupBy('customer.id')
         // .addGroupBy('customerOrder.id')
@@ -460,6 +465,180 @@ export class StatisticService {
         .getRawMany();
       console.log({ customers });
       return customers;
+    } catch (error) {
+      console.log(error);
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  //* Customer dashboard
+
+  async getCustomerOverview(getCustomerStatisticDto: GetCustomerStatisticDto): Promise<any> {
+    const { customerId } = getCustomerStatisticDto;
+    const paidStatus = OrderStatus.IS_PAID;
+    const refundStatus = OrderStatus.IS_REFUND;
+    try {
+      // orders
+      const customerOrders = await this.ordersRepository
+        .createQueryBuilder('order')
+        .leftJoin('order.customer', 'orderCustomer')
+        .where('orderCustomer.id = :customerId', { customerId })
+        .andWhere('order.status = :paidStatus', { paidStatus })
+        .select('COUNT(order.id)', 'total')
+        .getRawOne();
+      console.log({ customerOrders });
+
+      //products
+      const purchasedProducts = await this.ordersRepository
+        .createQueryBuilder('order')
+        .leftJoin('order.orderProducts', 'orderProducts')
+        .leftJoin('order.customer', 'orderCustomer')
+        .where('orderCustomer.id = :customerId', { customerId })
+        .andWhere('order.status = :paidStatus', { paidStatus })
+        .select('SUM(orderProducts.quantity)', 'total')
+        .getRawOne();
+      console.log({ purchasedProducts });
+
+      // bill
+      const customerBill = await this.ordersRepository
+        .createQueryBuilder('order')
+        .leftJoin('order.customer', 'orderCustomer')
+        .where('orderCustomer.id = :customerId', { customerId })
+        .andWhere('order.status = :paidStatus', { paidStatus })
+        .select('SUM(order.total)', 'total')
+        .getRawOne();
+      console.log({ customerBill });
+
+      return {
+        products: Number(purchasedProducts?.total),
+        orders: Number(customerOrders?.total),
+        spent: Number(customerBill?.total),
+      };
+    } catch (error) {
+      console.log(error);
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async getCustomerMonthlyOverview(getCustomerStatisticDto: GetCustomerStatisticDto): Promise<any> {
+    const { customerId } = getCustomerStatisticDto;
+    //first and end time of current month
+    const startOfMonth = moment().startOf('month').valueOf();
+    const endOfMonth = moment().endOf('month').valueOf();
+    //first and end time of last month
+    const startOfLastMonth = moment().subtract(1, 'month').startOf('month').valueOf();
+    const endOfLastMonth = moment().subtract(1, 'month').endOf('month').valueOf();
+    //
+    const paidStatus = OrderStatus.IS_PAID;
+    const refundStatus = OrderStatus.IS_REFUND;
+    try {
+      // orders
+      const customerOrders = await this.ordersRepository
+        .createQueryBuilder('order')
+        .leftJoin('order.customer', 'orderCustomer')
+        .where('orderCustomer.id = :customerId', { customerId })
+        .andWhere('order.createdAt >= :startOfMonth', { startOfMonth })
+        .andWhere('order.createdAt <= :endOfMonth', { endOfMonth })
+        .andWhere('order.status = :paidStatus', { paidStatus })
+        .select('COUNT(order.id)', 'total')
+        .getRawOne();
+      console.log({ customerOrders });
+      const prevCustomerOrders = await this.ordersRepository
+        .createQueryBuilder('order')
+        .leftJoin('order.customer', 'orderCustomer')
+        .where('orderCustomer.id = :customerId', { customerId })
+        .andWhere('order.createdAt >= :startOfLastMonth', { startOfLastMonth })
+        .andWhere('order.createdAt <= :endOfLastMonth', { endOfLastMonth })
+        .andWhere('order.status = :paidStatus', { paidStatus })
+        .select('COUNT(order.id)', 'total')
+        .getRawOne();
+      console.log({ prevCustomerOrders });
+
+      //products
+      const purchasedProducts = await this.ordersRepository
+        .createQueryBuilder('order')
+        .leftJoin('order.orderProducts', 'orderProducts')
+        .leftJoin('order.customer', 'orderCustomer')
+        .where('orderCustomer.id = :customerId', { customerId })
+        .andWhere('order.createdAt >= :startOfMonth', { startOfMonth })
+        .andWhere('order.createdAt <= :endOfMonth', { endOfMonth })
+        .andWhere('order.status = :paidStatus', { paidStatus })
+        .select('SUM(orderProducts.quantity)', 'total')
+        .getRawOne();
+      console.log({ purchasedProducts });
+
+      const prevPurchasedProducts = await this.ordersRepository
+        .createQueryBuilder('order')
+        .leftJoin('order.orderProducts', 'orderProducts')
+        .leftJoin('order.customer', 'orderCustomer')
+        .where('orderCustomer.id = :customerId', { customerId })
+        .andWhere('order.createdAt >= :startOfLastMonth', { startOfLastMonth })
+        .andWhere('order.createdAt <= :endOfLastMonth', { endOfLastMonth })
+        .andWhere('order.status = :paidStatus', { paidStatus })
+        .select('SUM(orderProducts.quantity)', 'total')
+        .getRawOne();
+      console.log({ prevPurchasedProducts });
+
+      // bill
+      const customerBill = await this.ordersRepository
+        .createQueryBuilder('order')
+        .leftJoin('order.customer', 'orderCustomer')
+        .where('orderCustomer.id = :customerId', { customerId })
+        .andWhere('order.createdAt >= :startOfMonth', { startOfMonth })
+        .andWhere('order.createdAt <= :endOfMonth', { endOfMonth })
+        .andWhere('order.status = :paidStatus', { paidStatus })
+        .select('SUM(order.total)', 'total')
+        .getRawOne();
+      console.log({ customerBill });
+      const prevCustomerBill = await this.ordersRepository
+        .createQueryBuilder('order')
+        .leftJoin('order.customer', 'orderCustomer')
+        .where('orderCustomer.id = :customerId', { customerId })
+        .andWhere('order.createdAt >= :startOfLastMonth', { startOfLastMonth })
+        .andWhere('order.createdAt <= :endOfLastMonth', { endOfLastMonth })
+        .andWhere('order.status = :paidStatus', { paidStatus })
+        .select('sum(order.total)', 'total')
+        .getRawOne();
+
+      // refund
+      const customerRefund = await this.ordersRepository
+        .createQueryBuilder('order')
+        .leftJoin('order.customer', 'orderCustomer')
+        .where('orderCustomer.id = :customerId', { customerId })
+        .andWhere('order.createdAt >= :startOfMonth', { startOfMonth })
+        .andWhere('order.createdAt <= :endOfMonth', { endOfMonth })
+        .andWhere('order.status = :refundStatus', { refundStatus })
+        .select('SUM(order.total)', 'total')
+        .getRawOne();
+      console.log({ customerRefund });
+      const prevCustomerRefund = await this.ordersRepository
+        .createQueryBuilder('order')
+        .leftJoin('order.customer', 'orderCustomer')
+        .where('orderCustomer.id = :customerId', { customerId })
+        .andWhere('order.createdAt >= :startOfLastMonth', { startOfLastMonth })
+        .andWhere('order.createdAt <= :endOfLastMonth', { endOfLastMonth })
+        .andWhere('order.status = :refundStatus', { refundStatus })
+        .select('sum(order.total)', 'total')
+        .getRawOne();
+      console.log({ prevCustomerRefund });
+      return {
+        products: {
+          total: Number(purchasedProducts?.total),
+          rate: getMonthlyRate(purchasedProducts?.total, prevPurchasedProducts?.total),
+        },
+        orders: {
+          total: Number(customerOrders?.total),
+          rate: getMonthlyRate(customerOrders?.total, prevCustomerOrders?.total),
+        },
+        spent: {
+          total: Number(customerBill?.total),
+          rate: getMonthlyRate(customerBill?.total, prevCustomerBill?.total),
+        },
+        refund: {
+          total: Number(customerRefund?.total),
+          rate: getMonthlyRate(customerRefund?.total, prevCustomerRefund?.total),
+        },
+      };
     } catch (error) {
       console.log(error);
       ErrorHelper.InternalServerErrorException();

@@ -1,9 +1,25 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../../common/guards';
 import { Product } from '../../entities/products.entity';
 import { IPaginationResponse } from '../../interfaces';
-import { CreateProductDto, GetFilterProductDto, UpdateProductDto } from './dto/products.dto';
+import {
+  CreateProductDto,
+  GetCustomerFavoriteProduct,
+  GetFilterProductDto,
+  UpdateProductDto,
+} from './dto/products.dto';
 import { ProductsService } from './products.service';
 
 @Controller('products')
@@ -17,6 +33,13 @@ export class ProductsController {
     @Query() getFilterProducts: GetFilterProductDto,
   ): Promise<IPaginationResponse<Product[]>> {
     return this.productService.getProducts(getFilterProducts);
+  }
+
+  @Get('/favorites')
+  getCustomerFavoriteProduct(
+    @Query() getCustomerFavoriteProduct: GetCustomerFavoriteProduct,
+  ): Promise<any> {
+    return this.productService.getCustomerFavoriteProduct(getCustomerFavoriteProduct);
   }
 
   @Get('/:id')

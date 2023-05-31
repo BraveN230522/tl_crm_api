@@ -75,3 +75,8 @@ export class GetFilterProductDto {
   @IsOptional()
   perPage?: number;
 }
+
+export class GetCustomerFavoriteProduct {
+  @IsOptional()
+  customerId?: string;
+}

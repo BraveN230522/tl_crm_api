@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import _ from 'lodash';
+import { OrderStatus } from '../../enums';
 import { ErrorHelper } from '../../helpers';
 import { IPaginationResponse } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
@@ -8,7 +9,7 @@ import { CategoriesService } from '../categories/categories.service';
 import { GetFilterCategoriesDto } from '../categories/dto/categories.dto';
 import { Product } from './../../entities/products.entity';
 import { assignIfHasKey } from './../../utilities/mapping';
-import { CreateProductDto, UpdateProductDto } from './dto/products.dto';
+import { CreateProductDto, GetCustomerFavoriteProduct, UpdateProductDto } from './dto/products.dto';
 import { ProductsRepository } from './products.repository';
 
 @Injectable()
@@ -26,7 +27,9 @@ export class ProductsService {
     categoryId,
     image,
   }: CreateProductDto): Promise<string> {
-    const category = categoryId ? await this.categoriesService.getCategoryById(categoryId) : undefined;
+    const category = categoryId
+      ? await this.categoriesService.getCategoryById(categoryId)
+      : undefined;
 
     const product = this.productsRepository.create({
       name,
@@ -54,7 +57,7 @@ export class ProductsService {
     if (search) {
       query
         .andWhere('LOWER(products.name) LIKE LOWER(:search)', { search: `%${search}%` })
-        .where("products.id = :id", { id: search })
+        .where('products.id = :id', { id: search });
     }
 
     const products = this.productsRepository.paginationQueryBuilder(query, getFilterProducts);
@@ -100,6 +103,34 @@ export class ProductsService {
       return APP_MESSAGE.UPDATED_SUCCESSFULLY('product');
     } catch (error) {
       console.log({ error });
+    }
+  }
+
+  async getCustomerFavoriteProduct(
+    getCustomerFavoriteProduct: GetCustomerFavoriteProduct,
+  ): Promise<any> {
+    const { customerId } = getCustomerFavoriteProduct;
+    const paidStatus = OrderStatus.IS_PAID;
+
+    try {
+      const products = await this.productsRepository
+        .createQueryBuilder('product')
+        .leftJoin('product.orderProducts', 'orderProd')
+        .leftJoin('orderProd.order', 'prodOrders')
+        .leftJoin('prodOrders.customer', 'orderCustomer')
+        .andWhere('prodOrders.status = :paidStatus', { paidStatus })
+        .andWhere('orderCustomer.id = :customerId', { customerId })
+        .select(['product.id', 'product.name', 'product.image', 'product.cost'])
+        .addSelect('SUM(orderProd.quantity)', 'numOfPurchases')
+        .groupBy('product.id')
+        .orderBy('SUM(orderProd.quantity)')
+        .take(5)
+        .getRawMany();
+      console.log({ products });
+      return products;
+    } catch (error) {
+      console.log(error);
+      ErrorHelper.InternalServerErrorException();
     }
   }
 }

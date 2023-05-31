@@ -15,3 +15,8 @@ export class GetStatisticChartDto {
   @IsOptional()
   timePeriod?: enumDashboardFilter;
 }
+
+export class GetCustomerStatisticDto {
+  @IsOptional()
+  customerId?: string | number;
+}
