@@ -483,10 +483,19 @@ export class StatisticService {
         .createQueryBuilder('order')
         .leftJoin('order.customer', 'orderCustomer')
         .where('orderCustomer.id = :customerId', { customerId })
-        .andWhere('order.status = :paidStatus', { paidStatus })
         .select('COUNT(order.id)', 'total')
         .getRawOne();
       console.log({ customerOrders });
+
+      // transaction
+      const customerPaid = await this.ordersRepository
+        .createQueryBuilder('order')
+        .leftJoin('order.customer', 'orderCustomer')
+        .where('orderCustomer.id = :customerId', { customerId })
+        .andWhere('order.status = :paidStatus', { paidStatus })
+        .select('COUNT(order.id)', 'total')
+        .getRawOne();
+      console.log({ customerPaid });
 
       //products
       const purchasedProducts = await this.ordersRepository
@@ -512,6 +521,7 @@ export class StatisticService {
       return {
         products: Number(purchasedProducts?.total),
         orders: Number(customerOrders?.total),
+        pays: Number(customerPaid?.total),
         spent: Number(customerBill?.total),
       };
     } catch (error) {
