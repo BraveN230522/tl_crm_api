@@ -367,7 +367,7 @@ export class StatisticService {
         .select(['category.id', 'category.name'])
         .addSelect('SUM(orderProd.quantity)', 'totalQuantity')
         .groupBy('category.id')
-        .orderBy('SUM(orderProd.quantity)')
+        .orderBy('SUM(orderProd.quantity)', "DESC")
         .take(8)
         .getRawMany();
       console.log({ categories });
@@ -397,7 +397,7 @@ export class StatisticService {
         .select(['product.id', 'product.name', 'product.image', 'product.cost'])
         .addSelect('SUM(orderProd.quantity)', 'prodQuantity')
         .groupBy('product.id')
-        .orderBy('SUM(orderProd.quantity)')
+        .orderBy('SUM(orderProd.quantity)', "DESC")
         .take(5)
         .getRawMany();
       console.log({ products });
@@ -427,7 +427,7 @@ export class StatisticService {
         .select(['product.id', 'product.name', 'product.image', 'product.cost'])
         .addSelect('SUM(orderProd.quantity * product.cost)', 'totalCost')
         .groupBy('product.id')
-        .orderBy('SUM(orderProd.quantity * product.cost)')
+        .orderBy('SUM(orderProd.quantity * product.cost)', "DESC")
         .take(5)
         .getRawMany();
       console.log({ products });
@@ -460,7 +460,7 @@ export class StatisticService {
         .groupBy('customer.id')
         // .addGroupBy('customerOrder.id')
         // .addGroupBy('customer.order')
-        .orderBy('SUM(customerOrder.total)')
+        .orderBy('SUM(customerOrder.total)', 'DESC')
         .take(5)
         .getRawMany();
       console.log({ customers });
