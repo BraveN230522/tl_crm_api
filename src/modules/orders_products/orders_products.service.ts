@@ -42,6 +42,12 @@ export class OrdersProductsService {
     });
   }
 
+  async delete({order, product}): Promise<void> {
+    const orderProduct = await this.readOne(product?.id, order?.id);
+    if(!orderProduct?.id) return;
+    await this.ordersProductsRepository.delete(orderProduct?.id);
+  }
+
   async clearByOrder(order: any): Promise<void> {
     await this.ordersProductsRepository
       .createQueryBuilder('orderProducts')

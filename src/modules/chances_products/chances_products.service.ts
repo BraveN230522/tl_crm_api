@@ -35,12 +35,20 @@ export class ChancesProductsService {
 
   async update({ chance, product, quantity }: IChanceProduct): Promise<void> {
     const chanceProduct = await this.readOne(product?.id, chance?.id);
+    console.log('Check sub table chanceProduct', chanceProduct);
+    console.log('-------------');
     if (!chanceProduct?.id) return;
     await this.chancesProductsRepository.update(chanceProduct?.id, {
       chance,
       product,
       quantity,
     });
+  }
+
+  async delete({chance, product}): Promise<void> {
+    const chanceProduct = await this.readOne(product?.id, chance?.id);
+    if(!chanceProduct?.id) return;
+    await this.chancesProductsRepository.delete(chanceProduct?.id);
   }
 
   async clearByChance(chance: any): Promise<void> {

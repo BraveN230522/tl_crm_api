@@ -172,12 +172,24 @@ export class OrdersService {
         0,
       );
 
-      this.ordersProductsService.clearByOrder(order);
+      // this.ordersProductsService.clearByOrder(order);
+
+      await Promise.all(
+        _.map(order.orderProducts, (prodChance) => {
+          const newUpdateProduct = mappingOrderProducts?.map((prod) => prod?.id);
+          if (!newUpdateProduct?.includes(prodChance?.product?.id)) {
+            this.ordersProductsService.delete({
+              order: order,
+              product: prodChance?.product,
+            });
+          }
+        }),
+      );
 
       await Promise.all(
         _.map(mappingOrderProducts, (orderProduct) => {
           // console.log('check2', orderProduct);
-          const found = order.orderProducts.find((prod) => prod.product.id === orderProduct.id);
+          const found = order.orderProducts.find((prod) => prod?.product?.id === orderProduct.id);
           console.log({ found });
           if (!found)
             return this.ordersProductsService.create({

@@ -96,6 +96,7 @@ export class ChancesService {
 
     const saveChances = await this.chancesRepository.save([chance]);
 
+    console.log('Check mappingChanceProducts', mappingChanceProducts);
     await Promise.all(
       _.map(mappingChanceProducts, (chanceProduct) => {
         return this.chancesProductsService.create({
@@ -137,7 +138,7 @@ export class ChancesService {
 
     if (chanceProducts) {
       const products = await this.productsService.getProductByIds(
-        _.map(chanceProducts, (chanceProducr) => chanceProducr.id),
+        _.map(chanceProducts, (chanceProduct) => chanceProduct.id),
       );
       const mappingChanceProducts: IProduct[] = _.map(products, (product, index) => {
         let quantity = product.quantity - chanceProducts[index]?.quantity;
@@ -170,13 +171,28 @@ export class ChancesService {
         0,
       );
 
-      this.chancesProductsService.clearByChance(chance);
+      // await this.chancesProductsService.clearByChance(chance);
 
+      // console.log('Check update mappingChanceProducts', mappingChanceProducts);
+      // console.log('------------');
+      await Promise.all(
+        _.map(chance.chanceProducts, (prodChance) => {
+          const newUpdateProduct = mappingChanceProducts?.map((prod) => prod?.id);
+          console.log('check 999', prodChance);
+          if (!newUpdateProduct?.includes(prodChance?.product?.id)) {
+            this.chancesProductsService.delete({
+              chance: chance,
+              product: prodChance?.product,
+            });
+          }
+        }),
+      );
+      
       await Promise.all(
         _.map(mappingChanceProducts, (chanceProduct) => {
-          // console.log('check2', chanceProduct);
-          const found = chance.chanceProducts.find((prod) => prod.product?.id === chanceProduct?.id);
-          console.log({ found });
+          const found = chance.chanceProducts.find(
+            (prod) => prod.product?.id === chanceProduct?.id,
+          );
           if (!found)
             return this.chancesProductsService.create({
               chance: chance,
