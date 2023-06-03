@@ -87,6 +87,12 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
+  @Get('/company/:id')
+  getCompany(@Param('id') id): Promise<User> {
+    return this.usersService.getAdminProfile(id);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
   @Patch('/active/:id')
   activateUser(@Param('id') id, @UserDecorator() currentUser): Promise<string> {
     return this.usersService.toggleActivateUser(id, currentUser, UserStatus.Active);

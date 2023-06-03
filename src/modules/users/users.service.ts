@@ -46,6 +46,15 @@ export class UsersService {
     return found;
   }
 
+  async getAdminProfile(id): Promise<User> {
+    // if (UUID_PATTERN.test(id)) found = await this.usersRepository.findOneBy({ inviteId: id });
+    const found = await this.usersRepository.findOne({ id }, { relations: ['department', 'branch']});
+
+    if (!found) ErrorHelper.NotFoundException(`User is not found`);
+
+    return found;
+  }
+
   async getUserByUsername({ username }): Promise<User> {
     const found = await this.usersRepository.findOneRaw(
       { username },
