@@ -51,6 +51,10 @@ export class CreateOrderDto {
   @IsOptional()
   deliveryDate: number;
 
+  @IsNumber()
+  @IsOptional()
+  actualTotal?: number;
+
   @Type(() => Product)
   @ValidateNested({
     each: true,
@@ -89,6 +93,10 @@ export class UpdateOrderDto {
   @IsNumber()
   @IsOptional()
   deliveryDate: number;
+
+  @IsNumber()
+  @IsOptional()
+  actualTotal?: number;
 
   @IsInt()
   @IsOptional()

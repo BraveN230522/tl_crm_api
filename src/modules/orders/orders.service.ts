@@ -39,6 +39,7 @@ export class OrdersService {
       billingAddress,
       paymentDate,
       deliveryDate,
+      actualTotal,
     }: CreateOrderDto,
     currentUser,
   ): Promise<IOrderResponse> {
@@ -77,12 +78,12 @@ export class OrdersService {
     const order = this.ordersRepository.create({
       name,
       status,
-      total,
       note,
       shippingAddress,
       billingAddress,
       paymentDate,
       deliveryDate,
+      total: actualTotal || total,
       importer: currentUser,
       customer: _.omit(customer, ['stores', 'classifications']),
       store,
@@ -113,6 +114,7 @@ export class OrdersService {
       billingAddress,
       paymentDate,
       deliveryDate,
+      actualTotal,
       customerId,
       storeId,
       orderProducts,
@@ -210,7 +212,6 @@ export class OrdersService {
     assignIfHasKey(order, {
       name,
       status,
-      total,
       note,
       shippingAddress,
       billingAddress,
@@ -218,6 +219,7 @@ export class OrdersService {
       deliveryDate,
       importer,
       exporter,
+      total: actualTotal || total,
       customer: _.omit(customer, ['stores', 'classifications']),
       store,
     });
