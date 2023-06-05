@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../../common/guards';
 import { Category } from '../../entities/categories.entity';
 import { IPaginationResponse } from '../../interfaces';
 import { CategoriesService } from './categories.service';
-import { CreateCategoryDto, GetFilterCategoriesDto } from './dto/categories.dto';
+import { CreateCategoryDto, GetFilterCategoriesDto, UpdateCategoryDto } from './dto/categories.dto';
 
 @Controller('categories')
 @UseGuards(AuthGuard(), RolesGuard)
@@ -26,6 +26,11 @@ export class CategoriesController {
   @Post()
   createCategory(@Body() createCategoryDto: CreateCategoryDto): Promise<string> {
     return this.categoriesService.createCategory(createCategoryDto);
+  }
+
+  @Patch('/:id')
+  updateCategory(@Param('id') id: number, @Body() update: UpdateCategoryDto): Promise<string> {
+    return this.categoriesService.updateCategory(id, update);
   }
 
   @Delete('/:id')

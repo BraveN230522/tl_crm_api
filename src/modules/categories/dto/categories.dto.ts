@@ -9,6 +9,14 @@ export class CreateCategoryDto {
   desc?: string;
 }
 
+export class UpdateCategoryDto {
+  @IsOptional()
+  name?: string;
+
+  @IsOptional()
+  desc?: string;
+}
+
 export class GetFilterCategoriesDto {
   @IsOptional()
   @IsString()

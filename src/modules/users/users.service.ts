@@ -39,7 +39,7 @@ export class UsersService {
 
   async getUser(id): Promise<User> {
     // if (UUID_PATTERN.test(id)) found = await this.usersRepository.findOneBy({ inviteId: id });
-    const found = await this.usersRepository.findOne({ id }, { relations: ['department']});
+    const found = await this.usersRepository.findOne({ id }, { relations: ['department'] });
 
     if (!found) ErrorHelper.NotFoundException(`User is not found`);
 
@@ -48,7 +48,10 @@ export class UsersService {
 
   async getAdminProfile(id): Promise<User> {
     // if (UUID_PATTERN.test(id)) found = await this.usersRepository.findOneBy({ inviteId: id });
-    const found = await this.usersRepository.findOne({ id }, { relations: ['department', 'branch']});
+    const found = await this.usersRepository.findOne(
+      { id },
+      { relations: ['department', 'branch'] },
+    );
 
     if (!found) ErrorHelper.NotFoundException(`User is not found`);
 
@@ -179,7 +182,7 @@ export class UsersService {
 
     const hashedPassword = await EncryptHelper.hash(password);
 
-    const department = await this.departmentsService.readOne(departmentId);
+    const department = departmentId && await this.departmentsService.readOne(departmentId);
     const store = await this.storesService.readOne(storeId);
 
     try {
@@ -192,7 +195,7 @@ export class UsersService {
         email,
         role,
         store,
-        department,
+        ...(departmentId && { department: department }),
       });
 
       await this.usersRepository.save([user]);

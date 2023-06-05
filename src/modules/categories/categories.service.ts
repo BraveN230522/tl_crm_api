@@ -5,7 +5,9 @@ import { ErrorHelper } from '../../helpers';
 import { IPaginationResponse } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { CategoriesRepository } from './categories.repository';
-import { CreateCategoryDto, GetFilterCategoriesDto } from './dto/categories.dto';
+import { CreateCategoryDto, GetFilterCategoriesDto, UpdateCategoryDto } from './dto/categories.dto';
+import _ from 'lodash';
+import { assignIfHasKey } from '../../utilities';
 
 @Injectable()
 export class CategoriesService {
@@ -42,6 +44,17 @@ export class CategoriesService {
     });
     await this.categoriesRepository.save([category]);
     return APP_MESSAGE.ADDED_SUCCESSFULLY('category');
+  }
+
+  async updateCategory(id: number, updateCategoryDto: UpdateCategoryDto): Promise<string> {
+    const category = await this.getCategoryById(id);
+    try {
+      assignIfHasKey(category, updateCategoryDto);
+      await this.categoriesRepository.save([category]);
+      return APP_MESSAGE.UPDATED_SUCCESSFULLY('category');
+    } catch (error) {
+      console.log({ error });
+    }
   }
 
   async deleteCategoryById(id: number): Promise<string> {
