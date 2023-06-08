@@ -104,6 +104,10 @@ export class BaseRepository<Model extends BaseTable> extends Repository<Model> {
     return this.repo.softDelete(entity);
   }
 
+  async restore(entity): Promise<UpdateResult> {
+    return this.repo.restore(entity);
+  }
+
   async paginationRepository(
     repository: Repository<Model>,
     pageOption: IPageOption,

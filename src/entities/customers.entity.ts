@@ -1,4 +1,12 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { BaseTable } from '../base';
 import { Gender } from '../enums';
 import { Chance } from './chances.entity';
@@ -115,4 +123,8 @@ export class Customer extends BaseTable {
     inverseJoinColumn: { name: 'classificationId', referencedColumnName: 'id' },
   })
   classifications: Classification[];
+
+  // @DeleteDateColumn()
+  // @Column({ name: 'deleted_at', nullable: true })
+  // public deletedAt?: Date;
 }

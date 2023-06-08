@@ -10,12 +10,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { UserDecorator } from '../../common/decorators';
+import { RoleDecorator, UserDecorator } from '../../common/decorators';
 import { RolesGuard } from '../../common/guards';
 import { Customer } from '../../entities/customers.entity';
 import { IPaginationResponse } from '../../interfaces';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto, GetCustomerDto, UpdateCustomerDto } from './dto/customers.dto';
+import { Role } from '../../enums';
 
 @Controller('customers')
 @UseGuards(AuthGuard(), RolesGuard)
@@ -43,9 +44,10 @@ export class CustomersController {
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
+  // @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
   @Delete('/:id')
-  deleteUser(@Param('id') id): Promise<string> {
-    return this.customersService.delete(id);
+  deleteUser(@Param('id') id, @UserDecorator() currentUser): Promise<string> {
+    return this.customersService.delete(id, currentUser);
   }
 
   @UseGuards(AuthGuard(), RolesGuard)
@@ -58,5 +60,12 @@ export class CustomersController {
   @Get('/:id')
   getUser(@Param('id') id): Promise<Customer> {
     return this.customersService.readOne(id);
+  }
+
+  @UseGuards(AuthGuard(), RolesGuard)
+  @RoleDecorator(Role.ADMIN, Role.B_MANAGER)
+  @Delete('/destroy/:id')
+  destroyUser(@Param('id') id,  @UserDecorator() currentUser): Promise<string> {
+    return this.customersService.destroy(id, currentUser);
   }
 }

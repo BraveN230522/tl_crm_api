@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { Customer } from '../../entities/customers.entity';
 import { User } from '../../entities/users.entity';
 import { Role } from '../../enums';
-import { ErrorHelper } from '../../helpers';
+import { ErrorHelper, isValidRole } from '../../helpers';
 import { IPaginationResponse } from '../../interfaces';
 import { APP_MESSAGE } from '../../messages';
 import { assignIfHasKey, matchWord } from '../../utilities';
@@ -42,7 +42,7 @@ export class CustomersService {
     } = createCustomerDto;
 
     // if (!storeId) {
-      // ErrorHelper.BadRequestException('storeId should not be empty');
+    // ErrorHelper.BadRequestException('storeId should not be empty');
     // }
 
     const classifications = await Promise.all(
@@ -166,18 +166,40 @@ export class CustomersService {
     }
   }
 
-  async delete(id: string): Promise<string> {
+  async delete(id: string, currentUser?: User): Promise<string> {
     await this.readOne(id);
+    if (!isValidRole(currentUser?.role, Role.S_MANAGER)) {
+      console.log('Not have permission');
+      ErrorHelper.ForbiddenException();
+    }
+
+    try {
+      const result = await this.customersRepository.softDelete(id);
+
+      if (result.affected === 0) ErrorHelper.NotFoundException(`Customer ${id} is not found`);
+
+      return APP_MESSAGE.DELETED_SUCCESSFULLY('customer');
+    } catch (error) {
+      console.log(error);
+      ErrorHelper.InternalServerErrorException();
+    }
+  }
+
+  async destroy(id: string, currentUser?: User): Promise<string> {
+    await this.readOne(id);
+    if (!isValidRole(currentUser?.role, Role.S_MANAGER)) {
+      ErrorHelper.ForbiddenException();
+    }
 
     try {
       const result = await this.customersRepository.delete(id);
 
-      if (result.affected === 0) ErrorHelper.NotFoundException(`Project ${id} is not found`);
+      if (result.affected === 0) ErrorHelper.NotFoundException(`Customer ${id} is not found`);
 
       return APP_MESSAGE.DELETED_SUCCESSFULLY('customer');
     } catch (error) {
+      console.log(error);
       ErrorHelper.InternalServerErrorException();
     }
   }
-  
 }

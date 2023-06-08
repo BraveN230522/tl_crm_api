@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import bcrypt from 'bcrypt';
 import _ from 'lodash';
 import { Customer } from '../../entities/customers.entity';
 import { User } from '../../entities/users.entity';
@@ -17,7 +16,7 @@ export class AuthService {
   async loginUser({ username, password }): Promise<IUser> {
     const found = await this.userService.getUserByUsername({ username });
 
-    const isMatchPassword = await EncryptHelper.compare(password || '', found?.password || '');
+    const isMatchPassword = await EncryptHelper.compare(password || '', found?.password);
     const isMatchUsername = username === found?.username;
 
     const match = isMatchPassword && isMatchUsername;
