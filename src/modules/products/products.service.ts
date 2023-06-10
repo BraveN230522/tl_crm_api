@@ -55,9 +55,11 @@ export class ProductsService {
       .orderBy('products.id', 'DESC');
 
     if (search) {
-      query
-        .andWhere('LOWER(products.name) LIKE LOWER(:search)', { search: `%${search}%` })
-        .where('products.id = :id', { id: search });
+      if (!!Number(search)) {
+        query.andWhere('products.id = :id', { id: Number(search) });
+      } else {
+        query.andWhere('LOWER(products.name) LIKE LOWER(:search)', { search: `%${search}%` });
+      }
     }
 
     const products = this.productsRepository.paginationQueryBuilder(query, getFilterProducts);

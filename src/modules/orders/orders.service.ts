@@ -124,7 +124,7 @@ export class OrdersService {
     currentUser,
   ): Promise<string> {
     const order = await this.readOne(id);
-    const customer = await this.customersService.readOne(customerId);
+    const customer = customerId && await this.customersService.readOne(customerId);
     const store = await this.storesService.readOne(storeId);
 
     let total;
